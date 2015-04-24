@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Activity extends Model
 {
+    use \Eloquence\Database\Traits\CamelCaseModel;
 
     protected $fillable = [
         'description', 'rate', 'rate_reference', 'customer_id', 'project_id', 'service_id'

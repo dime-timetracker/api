@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
-
+    use \Eloquence\Database\Traits\CamelCaseModel;
+    
     protected $fillable = ['name', 'namespace', 'value'];
     protected $guarded = ['id', 'user_id'];
 

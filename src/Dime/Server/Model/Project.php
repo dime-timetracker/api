@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
+    use \Eloquence\Database\Traits\CamelCaseModel;
 
     protected $fillable = [
         'name', 'description', 'alias', 'enabled',

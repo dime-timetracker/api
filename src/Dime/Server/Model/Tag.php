@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tag extends Model
 {
+    use \Eloquence\Database\Traits\CamelCaseModel;
 
     protected $fillable = ['name', 'enabled'];
     protected $guarded = ['id', 'user_id'];

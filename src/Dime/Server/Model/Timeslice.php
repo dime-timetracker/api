@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Timeslice extends Model
 {
-
+    use \Eloquence\Database\Traits\CamelCaseModel;
+    
     protected $fillable = ['activity_id', 'duration', 'started_at', 'stopped_at'];
     protected $guarded = ['id', 'user_id'];
 

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
+    use \Eloquence\Database\Traits\CamelCaseModel;
 
     protected $fillable = ['name', 'alias', 'enabled', 'rate'];
     protected $guarded = ['id', 'user_id'];

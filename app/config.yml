@@ -24,8 +24,13 @@ routes:
 api:
   prefix: "/api"
   version: 1
+  headers:
+    Content-Type: "application/json; charset=utf-8"
+    Access-Control-Allow-Origin: "*"
+    Access-Control-Allow-Credentials: "true"
+    Access-Control-Allow-Methods: "GET,POST,PUT,DELETE"
   resources:
-    activities:
+    activity:
       model: "Dime\\Server\\Model\\Activity"
       with:
         - "customer"
@@ -34,28 +39,28 @@ api:
         - "tags"
         - "timeslices"
       filter: ~
-    customers:
+    customer:
       model: "Dime\\Server\\Model\\Customer"
       with: ~
       filter: ~
-    projects:
+    project:
       model: "Dime\\Server\\Model\\Project"
       with:
         - "customer"
       filter: ~
-    services:
+    service:
       model: "Dime\\Server\\Model\\Service"
       with: ~
       filter: ~
-    settings:
+    setting:
       model: "Dime\\Server\\Model\\Setting"
       with: ~
       filter: ~
-    tags:
+    tag:
       model: "Dime\\Server\\Model\\Tag"
       with: ~
       filter: ~
-    timeslices:
+    timeslice:
       model: "Dime\\Server\\Model\\Timeslice"
       with: ~
       filter: ~

@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model
 {
 
+    protected $fillable = ['username', 'email', 'firstname', 'lastname', 'enabled'];
+    protected $guarded = ['id'];
+
     public function activities()
     {
         return $this->hasMany('Dime\Server\Model\Activity');

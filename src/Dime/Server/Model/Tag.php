@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Tag extends Model
 {
 
+    protected $fillable = ['name', 'enabled'];
+    protected $guarded = ['id', 'user_id'];
+
     public function activities()
     {
         return $this->belongsToMany('Dime\Server\Model\Activity');

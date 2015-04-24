@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
+
     protected $fillable = ['name', 'alias', 'enabled', 'rate'];
     protected $guarded = ['id', 'user_id'];
 
@@ -18,4 +19,5 @@ class Customer extends Model
     {
         return $this->belongsTo('Dime\Server\Model\User');
     }
+
 }

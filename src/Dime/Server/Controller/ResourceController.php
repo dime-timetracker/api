@@ -172,8 +172,15 @@ class ResourceController implements SlimController
      */
     protected function render($data, $status = 200)
     {
-        $this->app->contentType("application/json");
-        $this->app->response()->status($status);
+        // Status
+        $this->app->response()->setStatus($status);
+
+        // Header
+        $header = $this->config['headers'];
+        foreach ($header as $key => $value) {
+            $this->app->response()->headers()->set($key, $value);
+        }
+
         if (is_array($data)) {
             $this->app->response()->body(json_encode($data));
         } else {

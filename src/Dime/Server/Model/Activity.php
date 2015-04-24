@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Activity extends Model
 {
 
+    protected $fillable = [
+        'description', 'rate', 'rate_reference', 'customer_id', 'project_id', 'service_id'
+    ];
+    protected $guarded = ['id', 'user_id'];
+
     public function customer()
     {
         return $this->belongsTo('Dime\Server\Model\Customer');

@@ -6,6 +6,7 @@ use Hampel\Json\Json;
 use Hampel\Json\JsonException;
 use Dime\Server\Controller\SlimController;
 use Dime\Server\Middleware\Initialize;
+use Dime\Server\Middleware\AuthBasic;
 use Dime\Server\Middleware\ResourceIdentifier;
 use Slim\Slim;
 
@@ -39,6 +40,7 @@ class ResourceController implements SlimController
         $this->config = $this->app->config('api');
 
         // Routes
+        $this->app->add(new AuthBasic($this->app->config('auth')));
         $this->app->add(new Initialize());
         $this->app->add(new ResourceIdentifier($this->config));
         $this->app->get($this->config['prefix'] . '/:resource/:id', [$this, 'getAction'])->conditions(['id' => '\d+']);

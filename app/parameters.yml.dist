@@ -1,0 +1,15 @@
+# Application
+debug: false
+mode: "production"
+log.level: 4
+
+# Database
+database:
+  driver:    "mysql"
+  host:      "127.0.0.1"
+  database:  "dime_laravel"
+  username:  "root"
+  password:
+  charset:   "utf8"
+  collation: "utf8_general_ci"
+  prefix:

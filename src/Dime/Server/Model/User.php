@@ -1,14 +1,11 @@
-<?php namespace Dime\Server\Model;
+<?php
+
+namespace Dime\Server\Model;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Auth\UserTrait;
-use Illuminate\Auth\UserInterface;
-use Illuminate\Auth\Reminders\RemindableTrait;
-use Illuminate\Auth\Reminders\RemindableInterface;
 
-class User extends Model implements UserInterface, RemindableInterface {
-
-    use UserTrait, RemindableTrait;
+class User extends Model
+{
 
     public function activities()
     {
@@ -39,4 +36,5 @@ class User extends Model implements UserInterface, RemindableInterface {
     {
         return $this->hasMany('Dime\Server\Model\Timeslice');
     }
+
 }

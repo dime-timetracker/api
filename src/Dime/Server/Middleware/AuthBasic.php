@@ -62,6 +62,7 @@ class AuthBasic extends Middleware
             $hasher = new \Dime\Server\Hash\SymfonySecurityHasher();
             $user = $modelClass::where('username', '=', $username)->firstOrFail();
             if (!empty($user) && $hasher->check($password, $user->password, ['salt' => $user->salt])) {
+                $this->app->user = $user;
                 $this->next->call();
             } else {
                 $this->fail();

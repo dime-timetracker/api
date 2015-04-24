@@ -1,0 +1,9 @@
+/app/parameters.yml
+/data
+/vendor
+composer.phar
+composer.lock
+.DS_Store
+Thumbs.db
+.idea
+/nbproject

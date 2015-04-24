@@ -1,0 +1,24 @@
+import:
+    - "%root_dir%/app/parameters.yml"
+
+debug: true
+mode: "development"
+
+# Paths
+app_dir:        "%root_dir%/app"
+data_dir:       "%root_dir%/data"
+cache_dir:      "%data_dir%/cache"
+
+# Logging
+log.enabled: true
+log.level:   8
+log_dir:     "%data_dir%/log"
+
+# Routes
+routes:
+  - "Dime\\Server\\Controller\\Resource"
+
+# Api
+api:
+  prefix: "/api"
+  version: 1

@@ -1,0 +1,26 @@
+{
+  "name": "dime/server",
+  "description": "Dime Timetracker Server",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Thomas Birke",
+      "email": "tbirke@netextreme.de",
+      "name": "Danilo Kuehn",
+      "email": "dk@nogo-software.de"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=5.4.0",
+    "slim/slim": "2.*",
+    "illuminate/database": "*",
+    "symfony/yaml": "2.6.*",
+    "hampel/json": "dev-master"
+  },
+  "autoload": {
+    "psr-0": {
+      "": "src/"
+    }
+  }
+}

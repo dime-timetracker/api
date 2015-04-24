@@ -17,6 +17,7 @@ log_dir:     "%data_dir%/log"
 # Routes
 routes:
   - "Dime\\Server\\Controller\\ResourceController"
+  - "Dime\\Server\\Controller\\ParseController"
 
 # Api
 api:

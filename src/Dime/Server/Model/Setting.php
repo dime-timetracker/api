@@ -12,15 +12,4 @@ class Setting extends Model
         return $this->belongsTo('Dime\Server\Model\User');
     }
 
-    public function getValidator($userId = null)
-    {
-        $userId = is_null($userId) ? \Auth::user()->id : $userId;
-        return \Validator::make($this->toArray(), [
-                    'name' => 'required',
-                    'namespace' => 'required',
-                    'value' => '',
-                    'userId' => 'required|between:' . $userId . ',' . $userId,
-        ]);
-    }
-
 }

@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
+    protected $fillable = [
+        'name', 'description', 'alias', 'enabled',
+        'rate', 'budget_price', 'budget_time', 'is_budget_fixed',
+        'customer_id'
+    ];
+    protected $guarded = ['id', 'user_id'];
 
     public function customer()
     {
@@ -20,18 +26,6 @@ class Project extends Model
     public function deepload()
     {
         $this->customer = Customer::find($this->customer_id);
-    }
-
-    public function getValidator($userId = null)
-    {
-        $userId = is_null($userId) ? \Auth::user()->id : $userId;
-        return \Validator::make($this->toArray(), [
-                    'name' => 'required',
-                    'alias' => 'required',
-                    'enabled' => 'boolean',
-                    'customerId' => 'required|exists:customers,id,user_id,' . $userId,
-                    'userId' => 'required|between:' . $userId . ',' . $userId,
-        ]);
     }
 
 }

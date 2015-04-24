@@ -38,16 +38,4 @@ class Timeslice extends Model
         }
     }
 
-    public function getValidator($userId = null)
-    {
-        $userId = is_null($userId) ? \Auth::user()->id : $userId;
-        return \Validator::make($this->toArray(), [
-                    'startedAt' => 'required|date',
-                    'stoppedAt' => 'date',
-                    //'duration'   => 'integer',
-                    'userId' => 'required|between:' . $userId . ',' . $userId,
-                    'activityId' => 'required|exists:activities,id,user_id,' . $userId,
-        ]);
-    }
-
 }

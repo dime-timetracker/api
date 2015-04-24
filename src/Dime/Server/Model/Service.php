@@ -12,15 +12,4 @@ class Service extends Model
         return $this->belongsTo('Dime\Server\Model\User');
     }
 
-    public function getValidator($userId = null)
-    {
-        $userId = is_null($userId) ? \Auth::user()->id : $userId;
-        return \Validator::make($this->toArray(), [
-                    'name' => 'required',
-                    'alias' => 'required',
-                    'enabled' => 'boolean',
-                    'userId' => 'required|between:' . $userId . ',' . $userId,
-        ]);
-    }
-
 }

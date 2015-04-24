@@ -37,16 +37,4 @@ class Activity extends Model
         return $this->belongsToMany('Dime\Server\Model\Tag', 'activity_tags');
     }
 
-    public function getValidator($userId = null)
-    {
-        $userId = is_null($userId) ? \Auth::user()->id : $userId;
-        return \Validator::make($this->toArray(), [
-                    'description' => 'required',
-                    'customerId' => 'exists:customers,id,user_id,' . $userId,
-                    'projectId' => 'exists:projects,id,user_id,' . $userId,
-                    'serviceId' => 'exists:services,id,user_id,' . $userId,
-                    'userId' => 'required|between:' . $userId . ',' . $userId,
-        ]);
-    }
-
 }

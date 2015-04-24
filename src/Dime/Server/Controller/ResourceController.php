@@ -13,9 +13,7 @@ use Slim\Slim;
 /**
  * Resource controller defined the rest api based on a resource name.
  *
- * @todo POST implementation
- * @todo PUT implementation
- * @todo abstract resource/repository
+ * @todo save relations
  */
 class ResourceController implements SlimController
 {
@@ -56,8 +54,10 @@ class ResourceController implements SlimController
      */
     public function listAction($resource)
     {
-        $modelClass = $this->modelClass($resource);
-        $collection = $modelClass::with($this->modelRelations($resource))->get();
+        $modelClass = $this->modelWithRelations($resource);
+        $collection = $modelClass
+                ->where('user_id', $this->app->user->id)
+                ->get();
         $this->render($collection->toJson());
     }
 
@@ -68,8 +68,10 @@ class ResourceController implements SlimController
      */
     public function getAction($resource, $id)
     {
-        $modelClass = $this->modelClass($resource);
-        $model = $modelClass::with($this->modelRelations($resource))->find($id);
+        $modelClass = $this->modelWithRelations($resource);
+        $model = $modelClass
+                ->where('user_id', $this->app->user->id)
+                ->find($id);
         $this->render($model->toJson());
     }
 
@@ -82,13 +84,19 @@ class ResourceController implements SlimController
     {
         $request_data = $this->json();
         if (empty($request_data)) {
-            $this->render([ 'msg' => 'Data not valid'], 400);
+            $this->render(['msg' => 'Data not valid'], 400);
             return;
         }
 
-        $repository = $this->repository($resource);
-        $identifier = $repository->persist($request_data);
-        $this->render($repository->find($identifier));
+        $modelClass = $this->modelClass($resource);
+
+        $model = new $modelClass();
+        $model->fill($request_data);
+        $model->user_id = $this->app->user->id;
+
+        $model->save();
+
+        $this->render($model->toJson());
     }
 
     /**
@@ -99,22 +107,25 @@ class ResourceController implements SlimController
      */
     public function putAction($resource, $id)
     {
-        $repository = $this->repository($resource);
+        $modelClass = $this->modelClass($resource);
+        $model = $modelClass::where('user_id', $this->app->user->id)
+                ->find($id);
 
-        $result = $repository->find($id);
-        if ($result === false) {
-            $this->render([ 'msg' => 'Not found'], 404);
+        if ($model === false) {
+            $this->render(['msg' => 'Not found'], 404);
             return;
         }
 
         $request_data = $this->json();
         if (empty($request_data)) {
-            $this->render([ 'msg' => 'Data not valid'], 400);
+            $this->render(['msg' => 'Data not valid'], 400);
             return;
         }
 
-        $identifier = $repository->persist($request_data);
-        $this->render($repository->find($identifier));
+        $model->fill($request_data);
+        $model->save();
+
+        $this->render($model->toJson());
     }
 
     /**
@@ -126,7 +137,8 @@ class ResourceController implements SlimController
     public function deleteAction($resource, $id)
     {
         $modelClass = $this->modelClass($resource);
-        $model = $modelClass::with($this->modelRelations($resource))->find($id);
+        $model = $modelClass::where('user_id', $this->app->user->id)
+                ->find($id);
         if ($model === false) {
             $this->render(['msg' => 'Not found'], 404);
             return;
@@ -162,7 +174,11 @@ class ResourceController implements SlimController
     {
         $this->app->contentType("application/json");
         $this->app->response()->status($status);
-        $this->app->response()->body($data);
+        if (is_array($data)) {
+            $this->app->response()->body(json_encode($data));
+        } else {
+            $this->app->response()->body($data);
+        }
     }
 
     protected function modelClass($name)
@@ -174,13 +190,21 @@ class ResourceController implements SlimController
         return $result;
     }
 
-    protected function modelRelations($name)
+    protected function modelWithRelations($name)
     {
-        $result = array();
-        if (isset($this->config['resources'][$name])
-                && isset($this->config['resources'][$name]['with'])) {
-            $result = $this->config['resources'][$name]['with'];
+        $result = NULL;
+        if (isset($this->config['resources'][$name])) {
+            $result = $this->config['resources'][$name]['model'];
+        }
+        if ($result !== NULL) {
+            $with = array();
+            if (isset($this->config['resources'][$name])
+                    && isset($this->config['resources'][$name]['with'])) {
+                $with = $this->config['resources'][$name]['with'];
+            }
+            $result = $result::with($with);
         }
         return $result;
     }
+
 }

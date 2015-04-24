@@ -40,7 +40,8 @@ api:
       filter: ~
     projects:
       model: "Dime\\Server\\Model\\Project"
-      with: ~
+      with:
+        - "customer"
       filter: ~
     services:
       model: "Dime\\Server\\Model\\Service"

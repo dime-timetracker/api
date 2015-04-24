@@ -16,9 +16,44 @@ log_dir:     "%data_dir%/log"
 
 # Routes
 routes:
-  - "Dime\\Server\\Controller\\Resource"
+  - "Dime\\Server\\Controller\\ResourceController"
 
 # Api
 api:
   prefix: "/api"
   version: 1
+  resources:
+    activities:
+      model: "Dime\\Server\\Model\\Activity"
+      with:
+        - "customer"
+        - "project"
+        - "service"
+        - "tags"
+        - "timeslices"
+      filter: ~
+    customers:
+      model: "Dime\\Server\\Model\\Customer"
+      with: ~
+      filter: ~
+    projects:
+      model: "Dime\\Server\\Model\\Project"
+      with: ~
+      filter: ~
+    services:
+      model: "Dime\\Server\\Model\\Service"
+      with: ~
+      filter: ~
+    settings:
+      model: "Dime\\Server\\Model\\Setting"
+      with: ~
+      filter: ~
+    tags:
+      model: "Dime\\Server\\Model\\Tag"
+      with: ~
+      filter: ~
+    timeslices:
+      model: "Dime\\Server\\Model\\Timeslice"
+      with: ~
+      filter: ~
+

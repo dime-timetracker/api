@@ -17,6 +17,7 @@ class CreateUsersTable extends Migration {
             $table->string('username')->unique();
             $table->string('email');
             $table->string('password');
+            $table->string('salt');
             $table->string('firstname');
             $table->string('lastname');
             $table->boolean('enabled');

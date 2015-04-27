@@ -43,21 +43,36 @@ class ResourceController implements SlimController
         $this->app->add(new ResourceIdentifier($this->config));
         $this->app->get($this->config['prefix'] . '/:resource/:id', [$this, 'getAction'])->conditions(['id' => '\d+']);
         $this->app->get($this->config['prefix'] . '/:resource', [$this, 'listAction']);
+        $this->app->get($this->config['prefix'] . '/:resource/page/:page', [$this, 'listAction'])->conditions(['page' => '\d+']);
+        $this->app->get($this->config['prefix'] . '/:resource/page/:page/pagesize/:pagesize', [$this, 'listAction'])->conditions(['page' => '\d+', 'pagesize' => '\d+']);
         $this->app->put($this->config['prefix'] . '/:resource/:id', [$this, 'putAction'])->conditions(['id' => '\d+']);
         $this->app->post($this->config['prefix'] . '/:resource', [$this, 'postAction']);
         $this->app->delete($this->config['prefix'] . '/:resource/:id', [$this, 'deleteAction'])->conditions(['id' => '\d+']);
     }
 
     /**
-     * [GET] /$resource/
+     * [GET] /$resource
      * @param string $resource
      */
-    public function listAction($resource)
+    public function listAction($resource, $page=1, $pagesize=30)
     {
         $modelClass = $this->modelWithRelations($resource);
         $collection = $modelClass
                 ->where('user_id', $this->app->user->id)
+                ->take($pagesize)
+                ->skip($pagesize*($page-1))
                 ->get();
+
+        $total = $collection->count();
+        $lastPage = ceil($total/$pagesize);
+        $this->app->response()->headers()->set('Total', $total);
+        $this->app->response()->headers()->set('Link', implode(', ', [
+            '/' . $this->config['prefix'] . '/' . $resource . '/1/perpage/' . $pagesize . '; rel="first"',
+            '/' . $this->config['prefix'] . '/' . $resource . '/' . $lastPage . '/perpage/' . $pagesize . '; rel="last"',
+            '/' . $this->config['prefix'] . '/' . $resource . '/' . ($page+1) . '/perpage/' . $pagesize . '; rel="next"',
+            '/' . $this->config['prefix'] . '/' . $resource . '/' . ($page-1) . '/perpage/' . $pagesize . '; rel="previous"',
+        ]));
+
         $this->render($collection->toJson());
     }
 

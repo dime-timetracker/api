@@ -59,6 +59,7 @@ class ResourceController implements SlimController
         $modelClass = $this->modelWithRelations($resource);
         $collection = $modelClass
                 ->where('user_id', $this->app->user->id)
+                ->latest('updated_at')
                 ->take($pagesize)
                 ->skip($pagesize*($page-1))
                 ->get();

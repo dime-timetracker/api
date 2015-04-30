@@ -2,11 +2,8 @@
 
 namespace Dime\Server\Model;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Project extends Model
+class Project extends Base
 {
-    use \Eloquence\Database\Traits\CamelCaseModel;
 
     protected $fillable = [
         'name', 'description', 'alias', 'enabled',
@@ -30,8 +27,4 @@ class Project extends Model
         $this->customer = Customer::find($this->customer_id);
     }
 
-    public function scopeOrdered($query)
-    {
-        return $query;
-    }
 }

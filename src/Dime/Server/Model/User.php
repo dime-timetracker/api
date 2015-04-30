@@ -2,9 +2,7 @@
 
 namespace Dime\Server\Model;
 
-use Illuminate\Database\Eloquent\Model;
-
-class User extends Model
+class User extends Base
 {
     use \Eloquence\Database\Traits\CamelCaseModel;
     
@@ -40,11 +38,6 @@ class User extends Model
     public function timeslices()
     {
         return $this->hasMany('Dime\Server\Model\Timeslice');
-    }
-
-    public function scopeOrdered($query)
-    {
-        return $query;
     }
 
 }

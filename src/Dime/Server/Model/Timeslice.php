@@ -2,12 +2,8 @@
 
 namespace Dime\Server\Model;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Timeslice extends Model
+class Timeslice extends Base
 {
-    use \Eloquence\Database\Traits\CamelCaseModel;
-    
     protected $fillable = ['duration', 'startedAt', 'stoppedAt'];
     protected $guarded = ['id', 'user_id'];
     protected $hidden = ['activity_id', 'user_id'];
@@ -47,11 +43,6 @@ class Timeslice extends Model
         } else {
             $this->duration = null;
         }
-    }
-
-    public function scopeOrdered($query)
-    {
-        return $query;
     }
 
 }

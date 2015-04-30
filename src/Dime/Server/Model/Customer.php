@@ -2,11 +2,8 @@
 
 namespace Dime\Server\Model;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Customer extends Model
+class Customer extends Base
 {
-    use \Eloquence\Database\Traits\CamelCaseModel;
 
     protected $fillable = ['name', 'alias', 'enabled', 'rate'];
     protected $guarded = ['id', 'user_id'];
@@ -20,11 +17,6 @@ class Customer extends Model
     public function user()
     {
         return $this->belongsTo('Dime\Server\Model\User');
-    }
-
-    public function scopeOrdered($query)
-    {
-        return $query;
     }
 
 }

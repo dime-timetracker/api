@@ -2,14 +2,10 @@
 
 namespace Dime\Server\Model;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Activity extends Model
+class Activity extends Base
 {
 
-    use \Eloquence\Database\Traits\CamelCaseModel;
-
-    protected $fillable = [ 'description', 'rate', 'rateReference' ];
+    protected $fillable = [ 'description', 'rate', 'rateReference'];
     protected $guarded = ['id', 'user_id'];
     protected $hidden = ['customer_id', 'project_id', 'service_id', 'user_id'];
 
@@ -43,41 +39,57 @@ class Activity extends Model
         return $this->belongsToMany('Dime\Server\Model\Tag', 'activity_tags');
     }
 
-    public function scopeBy($query, $name, $id = NULL)
-    {
-        if (is_null($id)) {
-            $result = $query->whereNull($name);
-        } else if (is_int($id)) {
-            $result = $query->where($name, intval($id));
-        } else if (is_array($id)) {
-            $result = $query->whereIn($name, intval($id));
-        }
-
-        return $result;
-    }
-
-    public function scopeDate($query, $date)
-    {
-        if (is_array($date) && count($date) == 1) {
-            $date = array_shift($date);
-        }
-
-        if (is_array($date)) {
-            $result = $query->whereBetween('updated_at', $date);
-        } else {
-            $result = $query->where('updated_at', $date);
-        }
-        return $result;
-    }
-
-    public function scopeSearch($query, $search)
-    {
-        return $query->where('description', 'like', '%' . $search . '%');
-    }
-
     public function scopeOrdered($query)
     {
         return $query->latest('updated_at');
+    }
+
+    public function scopeFiltered($query, $filter)
+    {
+        $filter = split(';', $filter);
+        
+        $customers = array();
+        $projects = array();
+        $services = array();
+        $tags = array();
+
+        foreach ($filter as $value) {
+            preg_match('/^([+-])?([@\/:#])?(.*)$/', $value, $match);
+            switch ($match[2]) {
+                case '@':
+                    $customers[] = $match[3];
+                    break;
+                case '/':
+                    $projects[] = $match[3];
+                    break;
+                case ':':
+                    $services[] = $match[3];
+                    break;
+                case '#':
+                    $tags[] = $match[3];
+                    break;
+            }
+        }
+
+        if (!empty($customers)) {
+            $query = $query->whereHas('customer', function($q) use ($customers) {
+                $q->whereIn('alias', $customers);
+            });
+        }
+
+        if (!empty($projects)) {
+            $query = $query->whereHas('project', function($q) use ($projects) {
+                $q->whereIn('alias', $projects);
+            });
+        }
+
+        if (!empty($services)) {
+            $query = $query->whereHas('service', function($q) use ($services) {
+                $q->whereIn('alias', $services);
+            });
+        }
+
+        return $query;
     }
 
 }

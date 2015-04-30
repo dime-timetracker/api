@@ -10,8 +10,7 @@ class Project extends Model
 
     protected $fillable = [
         'name', 'description', 'alias', 'enabled',
-        'rate', 'budget_price', 'budget_time', 'is_budget_fixed',
-        'customer_id'
+        'rate', 'budgetPrice', 'budgetTime', 'isBudgetFixed'
     ];
     protected $guarded = ['id', 'user_id'];
     protected $hidden = ['customer_id', 'user_id'];

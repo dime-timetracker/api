@@ -9,7 +9,7 @@ class Activity extends Model
 
     use \Eloquence\Database\Traits\CamelCaseModel;
 
-    protected $fillable = [ 'description', 'rate', 'rate_reference' ];
+    protected $fillable = [ 'description', 'rate', 'rateReference' ];
     protected $guarded = ['id', 'user_id'];
     protected $hidden = ['customer_id', 'project_id', 'service_id', 'user_id'];
 

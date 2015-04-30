@@ -59,8 +59,10 @@ class Factory implements \ArrayAccess, \Countable
                 $relatedData = $data[$relationName];
                 $foreignKey = $relationName . '_id';
 
-                if (is_null($relatedData)) {
+                if (is_null($relatedData) || $relatedData === 0) {
                     $model->$foreignKey = null;
+                } else if (is_int($relatedData)) {
+                    $model->$foreignKey = $relatedData;
                 } else {
                     if (isset($relatedData['id'])) {
                         $relatedModelClass = $this->getClass($relationName);

@@ -8,7 +8,7 @@ class Timeslice extends Model
 {
     use \Eloquence\Database\Traits\CamelCaseModel;
     
-    protected $fillable = ['activity_id', 'duration', 'started_at', 'stopped_at'];
+    protected $fillable = ['duration', 'startedAt', 'stoppedAt'];
     protected $guarded = ['id', 'user_id'];
     protected $hidden = ['activity_id', 'user_id'];
     protected $touches = ['activity'];
@@ -25,7 +25,7 @@ class Timeslice extends Model
 
     public function tags()
     {
-        return $this->belongsToMany('Dime\Server\Model\Tags', 'timeslice_tags');
+        return $this->belongsToMany('Dime\Server\Model\Tag', 'timeslice_tags');
     }
 
     public function setStartedAtAttribute($value)

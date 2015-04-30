@@ -32,13 +32,18 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->factory = new Factory(array(
             'activity' => array(
-                'model' => 'Dime\\Server\\Model\\Activity'
-
+                'model' => 'Dime\\Server\\Model\\Activity',
+                'with' => array(
+                    'customer'
+                )
+            ),
+            'timeslice' => array(
+                'model' => 'Dime\\Server\\Model\\Timeslice'
             )
         ));
     }
     
-    public function testCreate()
+    public function testCreateActivity()
     {
         $model = $this->factory->create('activity', [
             'id' => 1,
@@ -49,6 +54,18 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertNotNull($model);
         $this->assertEquals('Test', $model->description);
         $this->assertEquals('20', $model->rate);
+        $this->assertEquals('', $model->id);
+    }
+
+    public function testCreateTimeslice()
+    {
+        $model = $this->factory->create('timeslice', [
+            'id' => 1,
+            'startedAt' => '2015-04-30 15:00:00'
+        ]);
+
+        $this->assertNotNull($model);
+        $this->assertEquals('2015-04-30 15:00:00', $model->started_at);
         $this->assertEquals('', $model->id);
     }
 

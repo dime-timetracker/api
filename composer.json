@@ -15,7 +15,7 @@
     "php": ">=5.4.0",
     "slim/slim": "2.*",
     "illuminate/database": "*",
-    "kirkbushell/eloquence": "~1.3",
+    "kirkbushell/eloquence": "dev-master",
     "symfony/yaml": "2.6.*"
   },
   "require-dev": {

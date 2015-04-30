@@ -140,9 +140,7 @@ class ResourceController implements SlimController
         if (empty($env['slim.input'])) {
             $this->render(['error' => 'Data not valid'], 400);
         } else {
-            $model = $this->resourceFactory->createWith($resource, $env['slim.input']);
-            $model->user_id = $this->app->user->id;
-            $this->app->applyHook($resource . '.before.save', $model);
+            $model = $this->resourceFactory->createWith($resource, $env['slim.input'], $this->app->user->id);
             $model->save();
             $this->render($model->toArray());
         }

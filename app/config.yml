@@ -62,7 +62,9 @@ api:
       filter: ~
     timeslice:
       model: "Dime\\Server\\Model\\Timeslice"
-      with: ~
+      with:
+        - "activity"
+        - "tags"
       filter: ~
 
 auth:

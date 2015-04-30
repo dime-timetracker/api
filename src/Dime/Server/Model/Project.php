@@ -30,5 +30,4 @@ class Project extends Model
     {
         $this->customer = Customer::find($this->customer_id);
     }
-
 }

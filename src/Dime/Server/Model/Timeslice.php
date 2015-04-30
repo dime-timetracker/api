@@ -10,11 +10,17 @@ class Timeslice extends Model
     
     protected $fillable = ['activity_id', 'duration', 'started_at', 'stopped_at'];
     protected $guarded = ['id', 'user_id'];
-    protected $hidden = ['user_id'];
+    protected $hidden = ['activity_id', 'user_id'];
+    protected $touches = ['activity'];
+
+    public function activity()
+    {
+        return $this->belongsTo('Dime\Server\Model\Activity');
+    }
 
     public function user()
     {
-        return $this->belongsTo('User');
+        return $this->belongsTo('Dime\Server\Model\User');
     }
 
     public function tags()

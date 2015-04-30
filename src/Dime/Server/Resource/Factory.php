@@ -2,8 +2,6 @@
 
 namespace Dime\Server\Resource;
 
-use Slim\Slim;
-
 /**
  * Factory
  *
@@ -53,29 +51,31 @@ class Factory implements \ArrayAccess, \Countable
         }
 
         // Bind related models
-        foreach ($this->config[$resource]['with'] as $relationName) {
-            // has related model 
-            if (array_key_exists($relationName, $data)) {
-                $relatedData = $data[$relationName];
-                $foreignKey = $relationName . '_id';
+        if (!empty($this->config[$resource]['with'])) {
+            foreach ($this->config[$resource]['with'] as $relationName) {
+                // has related model
+                if (array_key_exists($relationName, $data)) {
+                    $relatedData = $data[$relationName];
+                    $foreignKey = $relationName . '_id';
 
-                if (is_null($relatedData) || $relatedData === 0) {
-                    $model->$foreignKey = null;
-                } else if (is_int($relatedData)) {
-                    $model->$foreignKey = $relatedData;
-                } else {
-                    if (isset($relatedData['id'])) {
-                        $relatedModelClass = $this->getClass($relationName);
-                        $relatedModel = $relatedModelClass::where('user_id', $userId)->find($relatedData['id']);
-                        $model->$relationName()->associate($relatedModel);
-                    } else if (isset($relatedData['alias'])) {
-                        $relatedModelClass = $this->getClass($relationName);
-                        $relatedModel = $relatedModelClass::where('user_id', $userId)->where('alias', $relatedData['alias'])->first();
-                        if ($relatedModel == NULL) {
-                            $relatedModel = $this->create($relationName, $relatedData);
-                            $relatedModel->user_id = $userId;
+                    if (is_null($relatedData) || $relatedData === 0) {
+                        $model->$foreignKey = null;
+                    } else if (is_int($relatedData)) {
+                        $model->$foreignKey = $relatedData;
+                    } else {
+                        if (isset($relatedData['id'])) {
+                            $relatedModelClass = $this->getClass($relationName);
+                            $relatedModel = $relatedModelClass::where('user_id', $userId)->find($relatedData['id']);
+                            $model->$relationName()->associate($relatedModel);
+                        } else if (isset($relatedData['alias'])) {
+                            $relatedModelClass = $this->getClass($relationName);
+                            $relatedModel = $relatedModelClass::where('user_id', $userId)->where('alias', $relatedData['alias'])->first();
+                            if ($relatedModel == NULL) {
+                                $relatedModel = $this->create($relationName, $relatedData);
+                                $relatedModel->user_id = $userId;
+                            }
+                            $model->$relationName()->associate($relatedModel);
                         }
-                        $model->$relationName()->associate($relatedModel);
                     }
                 }
             }

@@ -46,50 +46,83 @@ class Activity extends Base
 
     public function scopeFiltered($query, $filter)
     {
-        $filter = split(';', $filter);
-        
-        $customers = array();
-        $projects = array();
-        $services = array();
-        $tags = array();
+        $customers = array(
+            'in' => array(),
+            'out' => array()
+        );
+        $projects = array(
+            'in' => array(),
+            'out' => array()
+        );
+        $services = array(
+            'in' => array(),
+            'out' => array()
+        );
+        $tags = array(
+            'in' => array(),
+            'out' => array()
+        );
 
+        $filter = split(';', $filter);
         foreach ($filter as $value) {
             preg_match('/^([+-])?([@\/:#])?(.*)$/', $value, $match);
             switch ($match[2]) {
                 case '@':
-                    $customers[] = $match[3];
+                    if ($match[1] == '-') {
+                        $customers['out'][] = $match[3];
+                    } else {
+                        $customers['in'][] = $match[3];
+                    }
                     break;
                 case '/':
-                    $projects[] = $match[3];
+                    if ($match[1] == '-') {
+                        $projects['out'][] = $match[3];
+                    } else {
+                        $projects['in'][] = $match[3];
+                    }
                     break;
                 case ':':
-                    $services[] = $match[3];
+                    if ($match[1] == '-') {
+                        $services['out'][] = $match[3];
+                    } else {
+                        $services['in'][] = $match[3];
+                    }
                     break;
                 case '#':
-                    $tags[] = $match[3];
+                    if ($match[1] == '-') {
+                        $tags['out'][] = $match[3];
+                    } else {
+                        $tags['in'][] = $match[3];
+                    }
                     break;
             }
         }
-
-        if (!empty($customers)) {
-            $query = $query->whereHas('customer', function($q) use ($customers) {
-                $q->whereIn('alias', $customers);
-            });
-        }
-
-        if (!empty($projects)) {
-            $query = $query->whereHas('project', function($q) use ($projects) {
-                $q->whereIn('alias', $projects);
-            });
-        }
-
-        if (!empty($services)) {
-            $query = $query->whereHas('service', function($q) use ($services) {
-                $q->whereIn('alias', $services);
-            });
-        }
+        
+        $this->filterRelation($query, 'customer', $customers);
+        $this->filterRelation($query, 'project', $projects);
+        $this->filterRelation($query, 'service', $services);
+        $this->filterRelation($query, 'tags', $tags);
 
         return $query;
+    }
+
+    public function filterRelation($query, $name, array $values) {
+        if (!empty($values['in'])) {
+            $query = $this->inRelation($query, $name, $values['in']);
+        } else if (!empty($values['out'])) {
+            $query = $this->inRelation($query, $name, $values['out'], true);
+        }
+        return $query;
+    }
+
+    public function inRelation($query, $name, array $values, $not = false) {
+        return $query->whereHas($name, function($q) use ($values, $not) {
+            if ($not) {
+                $q->whereIn('alias', $values);
+            } else {
+                $q->whereNotIn('alias', $values);
+            }
+        });
     }
 
 }

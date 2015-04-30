@@ -41,37 +41,65 @@ class ResourceController implements SlimController
         $this->app->add(new AuthBasic($this->app->config('auth')));
         $this->app->add(new Initialize());
         $this->app->add(new ResourceIdentifier($this->config));
-        $this->app->get($this->config['prefix'] . '/:resource/:id', [$this, 'getAction'])->conditions(['id' => '\d+']);
-        $this->app->get($this->config['prefix'] . '/:resource', [$this, 'listAction']);
-        $this->app->get($this->config['prefix'] . '/:resource/page/:page', [$this, 'listAction'])->conditions(['page' => '\d+']);
-        $this->app->get($this->config['prefix'] . '/:resource/page/:page/pagesize/:pagesize', [$this, 'listAction'])->conditions(['page' => '\d+', 'pagesize' => '\d+']);
-        $this->app->put($this->config['prefix'] . '/:resource/:id', [$this, 'putAction'])->conditions(['id' => '\d+']);
-        $this->app->post($this->config['prefix'] . '/:resource', [$this, 'postAction']);
-        $this->app->delete($this->config['prefix'] . '/:resource/:id', [$this, 'deleteAction'])->conditions(['id' => '\d+']);
+
+        $this->app
+                ->get($this->config['prefix'] . '/:resource/:id', [$this, 'getAction'])
+                ->name('resource_get')
+                ->conditions(['id' => '\d+']);
+
+        $this->app
+                ->get($this->config['prefix'] . '/:resource/page/:page', [$this, 'listAction'])
+                ->name('resource_list_page')
+                ->conditions(['page' => '\d+']);
+
+        $this->app
+                ->get($this->config['prefix'] . '/:resource/page/:page/with/:with', [$this, 'listAction'])
+                ->name('resource_list_page_with')
+                ->conditions(['page' => '\d+', 'with' => '\d+']);
+
+        $this->app
+                ->get($this->config['prefix'] . '/:resource', [$this, 'listAction'])
+                ->name('resource_list');
+
+        $this->app
+                ->put($this->config['prefix'] . '/:resource/:id', [$this, 'putAction'])
+                ->name('resource_put')
+                ->conditions(['id' => '\d+']);
+
+        $this->app
+                ->post($this->config['prefix'] . '/:resource', [$this, 'postAction'])
+                ->name('resource_post');
+
+        $this->app
+                ->delete($this->config['prefix'] . '/:resource/:id', [$this, 'deleteAction'])
+                ->name('resource_delete')
+                ->conditions(['id' => '\d+']);
     }
 
     /**
      * [GET] /$resource
      * @param string $resource
+     * @param int $page
+     * @param int $with
      */
-    public function listAction($resource, $page=1, $pagesize=30)
+    public function listAction($resource, $page = 1, $with = 30)
     {
         $modelClass = $this->modelWithRelations($resource);
         $collection = $modelClass
                 ->where('user_id', $this->app->user->id)
                 ->latest('updated_at')
-                ->take($pagesize)
-                ->skip($pagesize*($page-1))
+                ->take($with)
+                ->skip($with * ($page - 1))
                 ->get();
 
         $total = $collection->count();
-        $lastPage = ceil($total/$pagesize);
-        $this->app->response()->headers()->set('Total', $total);
-        $this->app->response()->headers()->set('Link', implode(', ', [
-            '/' . $this->config['prefix'] . '/' . $resource . '/1/perpage/' . $pagesize . '; rel="first"',
-            '/' . $this->config['prefix'] . '/' . $resource . '/' . $lastPage . '/perpage/' . $pagesize . '; rel="last"',
-            '/' . $this->config['prefix'] . '/' . $resource . '/' . ($page+1) . '/perpage/' . $pagesize . '; rel="next"',
-            '/' . $this->config['prefix'] . '/' . $resource . '/' . ($page-1) . '/perpage/' . $pagesize . '; rel="previous"',
+        $lastPage = ceil($total / $with);
+        $this->app->response()->headers()->set('X-Dime-Total', $total);
+        $this->app->response()->headers()->set('X-Dime-Link', implode(', ', [
+            $this->pageUrl($resource, 1, $with, 'first'),
+            $this->pageUrl($resource, $lastPage, $with, 'last'),
+            $this->pageUrl($resource, ($page + 1), $with, 'next'),
+            $this->pageUrl($resource, ($page + 1), $with, 'previous')
         ]));
 
         $this->render($collection->toJson());
@@ -204,6 +232,17 @@ class ResourceController implements SlimController
         }
     }
 
+    protected function pageUrl($resource, $page = 1, $with = 30, $rel = null)
+    {
+        $url = $this->app->urlFor('resource_list_page_with', array('resource' => $resource, 'page' => $page, 'with' => $with));
+
+        if (!empty($rel)) {
+            $url .= '; rel=' . $rel;
+        }
+
+        return $url;
+    }
+
     protected function modelClass($name)
     {
         $result = NULL;
@@ -221,8 +260,7 @@ class ResourceController implements SlimController
         }
         if ($result !== NULL) {
             $with = array();
-            if (isset($this->config['resources'][$name])
-                    && isset($this->config['resources'][$name]['with'])) {
+            if (isset($this->config['resources'][$name]) && isset($this->config['resources'][$name]['with'])) {
                 $with = $this->config['resources'][$name]['with'];
             }
             $result = $result::with($with);

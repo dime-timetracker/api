@@ -36,8 +36,8 @@ api:
         - "customer"
         - "project"
         - "service"
-        - "tags"
         - "timeslices"
+        - "tags"
       filter: ~
     customer:
       model: "Dime\\Server\\Model\\Customer"

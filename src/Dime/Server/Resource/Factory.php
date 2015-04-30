@@ -2,6 +2,8 @@
 
 namespace Dime\Server\Resource;
 
+use Slim\Slim;
+
 /**
  * Factory
  *
@@ -9,11 +11,66 @@ namespace Dime\Server\Resource;
  */
 class Factory implements \ArrayAccess, \Countable
 {
+    /**
+     * @var array
+     */
     protected $config = array();
 
     public function __construct(array $config)
     {
         $this->config = $config;
+    }
+
+    /**
+     * Create new model object
+     * @param string $resource
+     * @param array $data
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function create($resource, array $data)
+    {
+        $modelClass = $this->getClass($resource);
+
+        $model = new $modelClass();
+        $model->fill($data);
+
+        return $model;
+    }
+
+    public function createWith($resource, array $data, $userId)
+    {
+        $model = $this->create($resource, $data);
+        if (!empty($userId)) {
+            $model->user_id = $userId;
+        }
+
+        // Bind related models
+        foreach ($this->config[$resource]['with'] as $relationName) {
+            // has related model 
+            if (array_key_exists($relationName, $data)) {
+                $relatedData = $data[$relationName];
+                $foreignKey = $relationName . '_id';
+
+                if (is_null($relatedData)) {
+                    $model->$foreignKey = null;
+                } else {
+                    if (isset($relatedData['id'])) {
+                        $relatedModelClass = $this->getClass($relationName);
+                        $relatedModel = $relatedModelClass::where('user_id', $userId)->find($relatedData['id']);
+                        $model->$relationName()->associate($relatedModel);
+                    } else if (isset($relatedData['alias'])) {
+                        $relatedModelClass = $this->getClass($relationName);
+                        $relatedModel = $relatedModelClass::where('user_id', $userId)->where('alias', $relatedData['alias'])->first();
+                        if ($relatedModel == NULL) {
+                            $relatedModel = $this->create($relationName, $relatedData);
+                        }
+                        $model->$relationName()->associate($relatedModel);
+                    }
+                }
+            }
+        }
+
+        return $model;
     }
 
     /**

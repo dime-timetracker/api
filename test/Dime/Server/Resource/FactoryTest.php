@@ -61,13 +61,14 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
             'customer' => array(
                 'name' => 'Customer'
             )
-        ]);
+        ], 1);
 
         $this->assertNotNull($model);
         $this->assertEquals('Test', $model->description);
         $this->assertEquals('20', $model->rate);
         $this->assertEquals('', $model->id);
-        $this->assertNotNull($model->customer());        
+        $this->assertNotNull($model->customer());
+        $this->assertEquals(1, $model->customer()->user_id);
     }
 
     public function testGetClass()

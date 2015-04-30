@@ -37,6 +37,14 @@ class Factory implements \ArrayAccess, \Countable
         return $model;
     }
 
+    /**
+     * Create new model object with its relations
+     *
+     * @param string $resource
+     * @param array $data
+     * @param int $userId
+     * @return \Illuminate\Database\Eloquent\Model
+     */
     public function createWith($resource, array $data, $userId)
     {
         $model = $this->create($resource, $data);
@@ -63,6 +71,7 @@ class Factory implements \ArrayAccess, \Countable
                         $relatedModel = $relatedModelClass::where('user_id', $userId)->where('alias', $relatedData['alias'])->first();
                         if ($relatedModel == NULL) {
                             $relatedModel = $this->create($relationName, $relatedData);
+                            $relatedModel->user_id = $userId;
                         }
                         $model->$relationName()->associate($relatedModel);
                     }

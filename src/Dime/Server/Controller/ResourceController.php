@@ -96,7 +96,7 @@ class ResourceController implements SlimController
         $modelClass = $this->resourceFactory->with($resource);
         $collection = $modelClass
             ->where('user_id', $this->app->user->id)
-            ->latest('updated_at');
+            ->ordered();
 
         $total    = $collection->count();
         $lastPage = ceil($total / $with);

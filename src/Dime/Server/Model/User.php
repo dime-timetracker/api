@@ -42,4 +42,9 @@ class User extends Model
         return $this->hasMany('Dime\Server\Model\Timeslice');
     }
 
+    public function scopeOrdered($query)
+    {
+        return $query;
+    }
+
 }

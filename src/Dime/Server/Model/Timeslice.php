@@ -49,4 +49,9 @@ class Timeslice extends Model
         }
     }
 
+    public function scopeOrdered($query)
+    {
+        return $query;
+    }
+
 }

@@ -75,4 +75,9 @@ class Activity extends Model
         return $query->where('description', 'like', '%' . $search . '%');
     }
 
+    public function scopeOrdered($query)
+    {
+        return $query->latest('updated_at');
+    }
+
 }

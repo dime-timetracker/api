@@ -29,4 +29,9 @@ class Project extends Model
     {
         $this->customer = Customer::find($this->customer_id);
     }
+
+    public function scopeOrdered($query)
+    {
+        return $query;
+    }
 }

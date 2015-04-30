@@ -17,4 +17,9 @@ class Setting extends Model
         return $this->belongsTo('Dime\Server\Model\User');
     }
 
+    public function scopeOrdered($query)
+    {
+        return $query;
+    }
+
 }

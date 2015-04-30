@@ -95,13 +95,10 @@ class ResourceController implements SlimController
     {
         $modelClass = $this->factory->with($resource);
         $collection = $modelClass
-                ->where('user_id', $this->app->user->id)
-                ->latest('updated_at')
-                ->take($with)
-                ->skip($with * ($page - 1))
-                ->get();
+            ->where('user_id', $this->app->user->id)
+            ->latest('updated_at');
 
-        $total = $collection->count();
+        $total    = $collection->count();
         $lastPage = ceil($total / $with);
         $this->app->response()->headers()->set('X-Dime-Total', $total);
         $this->app->response()->headers()->set('X-Dime-Link', implode(', ', [
@@ -111,7 +108,11 @@ class ResourceController implements SlimController
             $this->pageUrl($resource, ($page + 1), $with, 'previous')
         ]));
 
-        $this->render($collection->toArray());
+        $result = $collection->take($with)
+            ->skip($with * ($page - 1))
+            ->get();
+
+        $this->render($result->toArray());
     }
 
     /**

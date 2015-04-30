@@ -10,6 +10,7 @@ class Service extends Model
 
     protected $fillable = ['name', 'description', 'alias', 'rate', 'enabled'];
     protected $guarded = ['id', 'user_id'];
+    protected $hidden = ['user_id'];
 
     public function user()
     {

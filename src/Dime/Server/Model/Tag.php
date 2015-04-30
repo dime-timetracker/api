@@ -10,6 +10,7 @@ class Tag extends Model
 
     protected $fillable = ['name', 'enabled'];
     protected $guarded = ['id', 'user_id'];
+    protected $hidden = ['user_id'];
 
     public function activities()
     {

@@ -10,6 +10,7 @@ class Setting extends Model
     
     protected $fillable = ['name', 'namespace', 'value'];
     protected $guarded = ['id', 'user_id'];
+    protected $hidden = ['user_id'];
 
     public function user()
     {

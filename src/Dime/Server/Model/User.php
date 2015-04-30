@@ -10,6 +10,7 @@ class User extends Model
     
     protected $fillable = ['username', 'email', 'firstname', 'lastname', 'enabled'];
     protected $guarded = ['id'];
+    protected $hidden = ['password'];
 
     public function activities()
     {

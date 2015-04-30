@@ -14,6 +14,7 @@ class Project extends Model
         'customer_id'
     ];
     protected $guarded = ['id', 'user_id'];
+    protected $hidden = ['customer_id', 'user_id'];
 
     public function customer()
     {

@@ -10,6 +10,7 @@ class Timeslice extends Model
     
     protected $fillable = ['activity_id', 'duration', 'started_at', 'stopped_at'];
     protected $guarded = ['id', 'user_id'];
+    protected $hidden = ['user_id'];
 
     public function user()
     {

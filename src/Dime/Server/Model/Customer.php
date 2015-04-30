@@ -10,6 +10,7 @@ class Customer extends Model
 
     protected $fillable = ['name', 'alias', 'enabled', 'rate'];
     protected $guarded = ['id', 'user_id'];
+    protected $hidden = ['user_id'];
 
     public function projects()
     {

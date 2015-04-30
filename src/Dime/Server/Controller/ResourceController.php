@@ -2,12 +2,13 @@
 
 namespace Dime\Server\Controller;
 
-use Hampel\Json\Json;
-use Hampel\Json\JsonException;
 use Dime\Server\Controller\SlimController;
-use Dime\Server\Middleware\Initialize;
+use Dime\Server\Middleware\Database;
 use Dime\Server\Middleware\AuthBasic;
+use Dime\Server\Middleware\Json as JsonMiddleware;
 use Dime\Server\Middleware\ResourceIdentifier;
+use Dime\Server\Resource\Factory;
+use Dime\Server\View\Json as JsonView;
 use Slim\Slim;
 
 /**
@@ -29,6 +30,11 @@ class ResourceController implements SlimController
     protected $config;
 
     /**
+     * @var Factory
+     */
+    protected $factory;
+
+    /**
      * Enables controller and set routes
      * @param Slim $app
      */
@@ -36,12 +42,15 @@ class ResourceController implements SlimController
     {
         $this->app = $app;
         $this->config = $this->app->config('api');
+        $this->factory = new Factory($this->config['resources']);
 
-        // Routes
+        // Middleware
         $this->app->add(new AuthBasic($this->app->config('auth')));
-        $this->app->add(new Initialize());
+        $this->app->add(new JsonMiddleware($this->config));
+        $this->app->add(new Database());
         $this->app->add(new ResourceIdentifier($this->config));
 
+        // Routes
         $this->app
                 ->get($this->config['prefix'] . '/:resource/:id', [$this, 'getAction'])
                 ->name('resource_get')
@@ -84,7 +93,7 @@ class ResourceController implements SlimController
      */
     public function listAction($resource, $page = 1, $with = 30)
     {
-        $modelClass = $this->modelWithRelations($resource);
+        $modelClass = $this->factory->with($resource);
         $collection = $modelClass
                 ->where('user_id', $this->app->user->id)
                 ->latest('updated_at')
@@ -102,7 +111,7 @@ class ResourceController implements SlimController
             $this->pageUrl($resource, ($page + 1), $with, 'previous')
         ]));
 
-        $this->render($collection->toJson());
+        $this->render($collection->toArray());
     }
 
     /**
@@ -112,11 +121,11 @@ class ResourceController implements SlimController
      */
     public function getAction($resource, $id)
     {
-        $modelClass = $this->modelWithRelations($resource);
+        $modelClass = $this->factory->with($resource);
         $model = $modelClass
                 ->where('user_id', $this->app->user->id)
                 ->find($id);
-        $this->render($model->toJson());
+        $this->render($model->toArray());
     }
 
     /**
@@ -126,21 +135,20 @@ class ResourceController implements SlimController
      */
     public function postAction($resource)
     {
-        $request_data = $this->json();
-        if (empty($request_data)) {
-            $this->render(['msg' => 'Data not valid'], 400);
-            return;
+        $env = $this->app->environment();
+        if (empty($env['slim.input'])) {
+            $this->render(['error' => 'Data not valid'], 400);
+        } else {
+            $modelClass = $this->factory->getClass($resource);
+
+            $model = new $modelClass();
+            $model->fill($env['slim.input']);
+            $model->user_id = $this->app->user->id;
+
+            $model->save();
+
+            $this->render($model->toArray());
         }
-
-        $modelClass = $this->modelClass($resource);
-
-        $model = new $modelClass();
-        $model->fill($request_data);
-        $model->user_id = $this->app->user->id;
-
-        $model->save();
-
-        $this->render($model->toJson());
     }
 
     /**
@@ -151,25 +159,20 @@ class ResourceController implements SlimController
      */
     public function putAction($resource, $id)
     {
-        $modelClass = $this->modelClass($resource);
-        $model = $modelClass::where('user_id', $this->app->user->id)
-                ->find($id);
-
-        if ($model === false) {
-            $this->render(['msg' => 'Not found'], 404);
-            return;
+        $modelClass = $this->factory->with($resource);
+        $model = $modelClass->where('user_id', $this->app->user->id)->find($id);
+        if (is_null($model)) {
+            $this->render(['error' => 'Not found'], 404);
+        } else {
+            $env = $this->app->environment();
+            if (empty($env['slim.input'])) {
+                $this->render(['error' => 'Data not valid'], 400);
+            } else {
+                $model->fill($env['slim.input']);
+                $model->save();
+                $this->render($model->toArray());
+            }
         }
-
-        $request_data = $this->json();
-        if (empty($request_data)) {
-            $this->render(['msg' => 'Data not valid'], 400);
-            return;
-        }
-
-        $model->fill($request_data);
-        $model->save();
-
-        $this->render($model->toJson());
     }
 
     /**
@@ -180,32 +183,14 @@ class ResourceController implements SlimController
      */
     public function deleteAction($resource, $id)
     {
-        $modelClass = $this->modelClass($resource);
-        $model = $modelClass::where('user_id', $this->app->user->id)
-                ->find($id);
-        if ($model === false) {
-            $this->render(['msg' => 'Not found'], 404);
-            return;
+        $modelClass = $this->factory->getClass($resource);
+        $model = $modelClass::where('user_id', $this->app->user->id)->find($id);
+        if (is_null($model)) {
+            $this->render(['error' => 'Not found'], 404);
         } else {
             $model->delete();
-            $this->render($model->toJson());
+            $this->render($model->toArray());
         }
-    }
-
-    /**
-     * Decode json data from request
-     * @return mixed|null
-     */
-    protected function json()
-    {
-        try {
-            $input = Json::decode(trim($this->app->request()->getBody()), true);
-        } catch (JsonException $ex) {
-            $this->app->log->error($ex->getMessage());
-            $input = null;
-        }
-
-        return $input;
     }
 
     /**
@@ -216,20 +201,11 @@ class ResourceController implements SlimController
      */
     protected function render($data, $status = 200)
     {
-        // Status
+        $this->app->view(new JsonView());
+
         $this->app->response()->setStatus($status);
 
-        // Header
-        $header = $this->config['headers'];
-        foreach ($header as $key => $value) {
-            $this->app->response()->headers()->set($key, $value);
-        }
-
-        if (is_array($data)) {
-            $this->app->response()->body(json_encode($data));
-        } else {
-            $this->app->response()->body($data);
-        }
+        $this->app->render('', $data);
     }
 
     protected function pageUrl($resource, $page = 1, $with = 30, $rel = null)
@@ -241,31 +217,6 @@ class ResourceController implements SlimController
         }
 
         return $url;
-    }
-
-    protected function modelClass($name)
-    {
-        $result = NULL;
-        if (isset($this->config['resources'][$name])) {
-            $result = $this->config['resources'][$name]['model'];
-        }
-        return $result;
-    }
-
-    protected function modelWithRelations($name)
-    {
-        $result = NULL;
-        if (isset($this->config['resources'][$name])) {
-            $result = $this->config['resources'][$name]['model'];
-        }
-        if ($result !== NULL) {
-            $with = array();
-            if (isset($this->config['resources'][$name]) && isset($this->config['resources'][$name]['with'])) {
-                $with = $this->config['resources'][$name]['with'];
-            }
-            $result = $result::with($with);
-        }
-        return $result;
     }
 
 }

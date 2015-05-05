@@ -96,6 +96,7 @@ class ResourceController implements SlimController
         $modelClass = $this->resourceFactory->with($resource);
         $collection = $modelClass
             ->where('user_id', $this->app->user->id)
+            ->filtered($this->app->request()->get('filter'))
             ->ordered();
 
         $total    = $collection->count();

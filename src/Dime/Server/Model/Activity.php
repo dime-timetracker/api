@@ -92,7 +92,7 @@ class Activity extends Base
         ];
         // TODO: apply date filters :)
 
-        $filter = split(';', $filter);
+        $filter = split(' ', $filter);
         foreach ($filter as $value) {
             preg_match('/^([+-])?([@\/:#])?(.*)$/', $value, $match);
             switch ($match[2]) {

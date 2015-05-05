@@ -147,9 +147,9 @@ class Activity extends Base
     public function inRelation($query, $name, array $values, $not = false) {
         return $query->whereHas($name, function($q) use ($values, $not) {
             if ($not) {
-                $q->whereIn('alias', $values);
-            } else {
                 $q->whereNotIn('alias', $values);
+            } else {
+                $q->whereIn('alias', $values);
             }
         });
     }

@@ -63,6 +63,35 @@ class Activity extends Base
             'out' => array()
         );
 
+        $now = new \Moment\Moment();
+        $dateFilters = [
+            'today' => [
+                'start': $now->cloning()->startOf('day')
+            ],
+            'yesterday' => [
+                'start': $now->cloning()->subtractDays(1)->startOf('day'),
+                'stop': $now->cloning()->subtractDays(1)->endOf('day')
+            ],
+            'current week' => [
+                'start': $now->cloning()->startOf('week')
+            ],
+            'last week' => [
+                'start': $now->cloning()->subtract(1, 'week')->startOf('week'),
+                'stop': $now->cloning()->subtract(1, 'week')->endOf('week'),
+            ],
+            'last 4 weeks' => [
+                'start': $now->cloning()->subtract(4, 'week')->startOf('day')
+            ],
+            'current month' => [
+                'start': $now->cloning()->startOf('month')
+            ],
+            'last month' => [
+                'start': $now->cloning()->subtract(1, 'month')->startOf('month'),
+                'stop': $now->cloning()->subtract(1, 'month')->endOf('month')
+            ]
+        ];
+        // TODO: apply date filters :)
+
         $filter = split(';', $filter);
         foreach ($filter as $value) {
             preg_match('/^([+-])?([@\/:#])?(.*)$/', $value, $match);

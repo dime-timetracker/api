@@ -127,10 +127,10 @@ class Activity extends Base
             }
         }
         
-        $this->filterRelation($query, 'customer', $customers);
-        $this->filterRelation($query, 'project', $projects);
-        $this->filterRelation($query, 'service', $services);
-        $this->filterRelation($query, 'tags', $tags);
+        $query = $this->filterRelation($query, 'customer', $customers);
+        $query = $this->filterRelation($query, 'project', $projects);
+        $query = $this->filterRelation($query, 'service', $services);
+        $query = $this->filterRelation($query, 'tags', $tags);
 
         return $query;
     }

@@ -2,6 +2,8 @@
 
 namespace Dime\Server\Model;
 
+use Moment\Moment;
+
 class Activity extends Base
 {
 
@@ -63,31 +65,31 @@ class Activity extends Base
             'out' => array()
         );
 
-        $now = new \Moment\Moment();
+        $now = new Moment();
         $dateFilters = [
             'today' => [
-                'start': $now->cloning()->startOf('day')
+                'start' => $now->cloning()->startOf('day')
             ],
             'yesterday' => [
-                'start': $now->cloning()->subtractDays(1)->startOf('day'),
-                'stop': $now->cloning()->subtractDays(1)->endOf('day')
+                'start' => $now->cloning()->subtractDays(1)->startOf('day'),
+                'stop' => $now->cloning()->subtractDays(1)->endOf('day')
             ],
             'current week' => [
-                'start': $now->cloning()->startOf('week')
+                'start' => $now->cloning()->startOf('week')
             ],
             'last week' => [
-                'start': $now->cloning()->subtract(1, 'week')->startOf('week'),
-                'stop': $now->cloning()->subtract(1, 'week')->endOf('week'),
+                'start' => $now->cloning()->subtractWeeks(1)->startOf('week'),
+                'stop' => $now->cloning()->subtractWeeks(1)->endOf('week'),
             ],
             'last 4 weeks' => [
-                'start': $now->cloning()->subtract(4, 'week')->startOf('day')
+                'start' => $now->cloning()->subtractWeeks(4)->startOf('day')
             ],
             'current month' => [
-                'start': $now->cloning()->startOf('month')
+                'start' => $now->cloning()->startOf('month')
             ],
             'last month' => [
-                'start': $now->cloning()->subtract(1, 'month')->startOf('month'),
-                'stop': $now->cloning()->subtract(1, 'month')->endOf('month')
+                'start' => $now->cloning()->subtractMonths(1)->startOf('month'),
+                'stop' => $now->cloning()->subtractMonths(1)->endOf('month')
             ]
         ];
         // TODO: apply date filters :)

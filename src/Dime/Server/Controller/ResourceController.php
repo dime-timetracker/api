@@ -5,8 +5,7 @@ namespace Dime\Server\Controller;
 use Dime\Server\Controller\SlimController;
 use Dime\Server\Middleware\Database;
 use Dime\Server\Middleware\AuthBasic;
-use Dime\Server\Middleware\Json as JsonMiddleware;
-use Dime\Server\Middleware\ResourceIdentifier;
+use Dime\Server\Middleware\ApiMiddleware;
 use Dime\Server\Resource\Factory as ResourceFactory;
 use Dime\Server\View\Json as JsonView;
 use Slim\Slim;
@@ -46,10 +45,9 @@ class ResourceController implements SlimController
 
         // Middleware
         $this->app->add(new AuthBasic($this->app->config('auth')));
-        $this->app->add(new JsonMiddleware($this->config));
+        $this->app->add(new ApiMiddleware($this->config));
         $this->app->add(new Database());
-        $this->app->add(new ResourceIdentifier($this->config));
-
+        
         // Routes
         $this->app
                 ->get($this->config['prefix'] . '/:resource/:id', [$this, 'getAction'])
@@ -127,7 +125,11 @@ class ResourceController implements SlimController
         $model = $modelClass
                 ->where('user_id', $this->app->user->id)
                 ->find($id);
-        $this->render($model->toArray());
+        if (is_null($model)) {
+            $this->render(['error' => 'Not found'], 404);
+        } else {
+            $this->render($model->toArray());
+        }
     }
 
     /**

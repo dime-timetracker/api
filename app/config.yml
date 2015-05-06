@@ -19,6 +19,7 @@ routes:
   - "Dime\\Server\\Controller\\ResourceController"
   - "Dime\\Server\\Controller\\ParseController"
   - "Dime\\Server\\Controller\\MaintenanceController"
+  - "Dime\\Server\\Controller\\InvoiceController"
 
 # Api
 api:
@@ -66,6 +67,9 @@ api:
         - "activity"
         - "tags"
       filter: ~
+
+invoice:
+  prefix: "/invoice"
 
 auth:
   realm: "Dime Timetracker"

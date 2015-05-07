@@ -6,9 +6,9 @@ use Dime\Server\Controller\SlimController;
 use Slim\Slim;
 
 /**
- * Controller to generate invoices
+ * Controller to generate rst files and PDFs
  */
-class InvoiceController implements SlimController
+class DocController implements SlimController
 {
 
     /**
@@ -43,15 +43,19 @@ class InvoiceController implements SlimController
     public function enable(Slim $app)
     {
         $this->app = $app;
-        $this->config = $this->app->config('invoice');
+        $this->config = $this->app->config('doc');
 
         // Routes
         $this->app
+            ->get($this->config['prefix'] . '/rst', [$this, 'createRstAction']);
+        $this->app
+            ->get($this->config['prefix'] . '/pdf', [$this, 'createPdfAction']);
+        $this->app
             ->post($this->config['prefix'] . '/rst', [$this, 'createRstAction'])
-            ->name('invoice_rst');
+            ->name('doc_rst');
         $this->app
             ->post($this->config['prefix'] . '/pdf', [$this, 'createPdfAction'])
-            ->name('invoice_pdf');
+            ->name('doc_pdf');
     }
 
     /**
@@ -147,8 +151,9 @@ class InvoiceController implements SlimController
     {
         $data = json_decode($this->app->request()->getBody(), true);
         if (false === is_array($data)) {
-            $this->app->response()->setStatus(400);
-            die('invalid data');
+            //$this->app->response()->setStatus(400);
+            //die('invalid data');
+            $data=[];
         }
 
         $this->app->response()->setStatus(200);

@@ -68,14 +68,11 @@ class InvoiceController implements SlimController
         $data = $this->_prepareTemplate();
         $data = $this->_prepareData();
 
-        $tmpfile = tempnam('/tmp', 'dime-invoice');
-        $rst = $tmpfile . '.rst';
-        $pdf = $tmpfile . '.pdf';
-        file_put_contents($rst, $this->app->view->fetch($this->template, $data));
-        `rst2pdf $rst -o $pdf --stylesheets={$this->style}`;
+        $rst = addcslashes($this->app->view->fetch($this->template, $data), '"$`');
+        $pdf = `echo "$rst" | rst2pdf -q --stylesheets={$this->style} 2> /dev/null`;
 
         $this->app->response->headers->set('Content-Type', 'application/pdf');
-        $this->app->response->write(file_get_contents($pdf));
+        $this->app->response->write($pdf);
     }
     
     protected function getStylePath() {

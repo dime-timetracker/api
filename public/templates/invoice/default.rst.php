@@ -158,7 +158,7 @@ Bitte überweisen Sie den Rechnungsbetrag innerhalb von 14 Tagen an die unten an
 
   Mit freundlichen Grüßen
 
-  Thomas Birke
+  |sender-name|
 
 .. footer::
 

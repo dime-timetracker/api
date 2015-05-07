@@ -55,16 +55,6 @@ class ResourceController implements SlimController
                 ->conditions(['id' => '\d+']);
 
         $this->app
-                ->get($this->config['prefix'] . '/:resource/page/:page', [$this, 'listAction'])
-                ->name('resource_list_page')
-                ->conditions(['page' => '\d+']);
-
-        $this->app
-                ->get($this->config['prefix'] . '/:resource/page/:page/with/:with', [$this, 'listAction'])
-                ->name('resource_list_page_with')
-                ->conditions(['page' => '\d+', 'with' => '\d+']);
-
-        $this->app
                 ->get($this->config['prefix'] . '/:resource', [$this, 'listAction'])
                 ->name('resource_list');
 
@@ -86,25 +76,28 @@ class ResourceController implements SlimController
     /**
      * [GET] /$resource
      * @param string $resource
-     * @param int $page
-     * @param int $with
      */
-    public function listAction($resource, $page = 1, $with = 30)
+    public function listAction($resource)
     {
+        // Request parameter
+        $filter = $this->app->request()->get('filter');
+        $page = $this->app->request()->get('page', 1);
+        $with = $this->app->request()->get('with', 30);
+
         $modelClass = $this->resourceFactory->with($resource);
         $collection = $modelClass
             ->where('user_id', $this->app->user->id)
-            ->filtered($this->app->request()->get('filter'))
+            ->filtered($filter)
             ->ordered();
 
         $total    = $collection->count();
         $lastPage = ceil($total / $with);
         $this->app->response()->headers()->set('X-Dime-Total', $total);
         $this->app->response()->headers()->set('X-Dime-Link', implode(', ', [
-            $this->pageUrl($resource, 1, $with, 'first'),
-            $this->pageUrl($resource, $lastPage, $with, 'last'),
-            $this->pageUrl($resource, ($page + 1), $with, 'next'),
-            $this->pageUrl($resource, ($page + 1), $with, 'previous')
+            $this->pageUrl($resource, $filter, 1, $with, 'first'),
+            $this->pageUrl($resource, $filter, $lastPage, $with, 'last'),
+            $this->pageUrl($resource, $filter, ($page + 1), $with, 'next'),
+            $this->pageUrl($resource, $filter, ($page + 1), $with, 'previous')
         ]));
 
         $result = $collection->take($with)
@@ -206,9 +199,24 @@ class ResourceController implements SlimController
         $this->app->render('', $data);
     }
 
-    protected function pageUrl($resource, $page = 1, $with = 30, $rel = null)
+    protected function pageUrl($resource, $filter, $page = 1, $with = 30, $rel = null)
     {
-        $url = $this->app->urlFor('resource_list_page_with', array('resource' => $resource, 'page' => $page, 'with' => $with));
+        $url = $this->app->urlFor('resource_list', array('resource' => $resource));
+
+        $param = [];
+        if (!empty($filter)) {
+            $param[] = 'filter='. urlencode($filter);
+        }
+        if (!empty($page)) {
+            $param[] = 'page='. urlencode($page);
+        }
+        if (!empty($with)) {
+            $param[] = 'with='. urlencode($with);
+        }
+
+        if (!empty($param)) {
+            $url .= '?' . join('&', $param);
+        }
 
         if (!empty($rel)) {
             $url .= '; rel=' . $rel;

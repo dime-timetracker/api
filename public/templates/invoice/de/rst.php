@@ -45,7 +45,7 @@
 
   |
 
-  |sender-zipcity|
+  |sender-zip| |sender-city|
 
   |
   |
@@ -54,7 +54,7 @@
 
 .. class:: small
 
-  |sender-name| - |sender-street| - |sender-zipcity|
+  |sender-name| - |sender-street| - |sender-zip| |sender-city|
 
 .. class:: receiver
 
@@ -62,7 +62,7 @@
 
   |street|
 
-  |zipcity|
+  |zip| |city|
 
 |
 |

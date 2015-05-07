@@ -2,7 +2,9 @@
 
 .. |street| replace:: <?php echo $receiver['street']; ?>
 
-.. |zipcity| replace:: <?php echo $receiver['zipcity']; ?>
+.. |zip| replace:: <?php echo $receiver['city']; ?>
+
+.. |city| replace:: <?php echo $receiver['zip']; ?>
 
 .. |date| replace:: <?php echo isset($date) ? $date : date('d.m.Y'); ?>
 
@@ -16,7 +18,9 @@
 
 .. |sender-street| replace:: <?php echo $sender['street'] ?>
 
-.. |sender-zipcity| replace:: <?php echo $sender['zipcity'] ?>
+.. |sender-zip| replace:: <?php echo $sender['zip'] ?>
+
+.. |sender-city| replace:: <?php echo $sender['city'] ?>
 
 .. |sender-email| replace:: <?php echo $sender['email']; ?>
 

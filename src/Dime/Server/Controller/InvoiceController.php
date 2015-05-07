@@ -32,6 +32,11 @@ class InvoiceController implements SlimController
     protected $style;
 
     /**
+     * @var array
+     */
+    protected $themes = ['default', 'base'];
+
+    /**
      * Enables controller and set routes
      * @param Slim $app
      */
@@ -42,10 +47,10 @@ class InvoiceController implements SlimController
 
         // Routes
         $this->app
-            ->get($this->config['prefix'] . '/rst', [$this, 'createRstAction'])
+            ->post($this->config['prefix'] . '/rst', [$this, 'createRstAction'])
             ->name('invoice_rst');
         $this->app
-            ->get($this->config['prefix'] . '/pdf', [$this, 'createPdfAction'])
+            ->post($this->config['prefix'] . '/pdf', [$this, 'createPdfAction'])
             ->name('invoice_pdf');
     }
 
@@ -69,7 +74,8 @@ class InvoiceController implements SlimController
         $data = $this->_prepareData();
 
         $rst = addcslashes($this->app->view->fetch($this->template, $data), '"$`');
-        $pdf = `echo "$rst" | rst2pdf -q --stylesheets={$this->style} 2> /dev/null`;
+        $config = is_null($this->config) ? '' : ' --config=' . $this->config;
+        $pdf = `echo "$rst" | rst2pdf -q --stylesheets={$this->style}$config`;
 
         $this->app->response->headers->set('Content-Type', 'application/pdf');
         $this->app->response->write($pdf);
@@ -92,23 +98,52 @@ class InvoiceController implements SlimController
 
     protected function _prepareTemplate()
     {
-        $templateName = $this->getTemplateName($this->app->request()->get('template'));
-        $this->template = 'invoice/' . $templateName . '.rst.php';
+        $doctype = $this->app->request()->get('doctype');
+        if (is_null($doctype) || false === preg_match('/[a-zA-Z0-9_]/', $doctype)) {
+            $this->app->response()->setStatus(400);
+            die('invalid doctype');
+        }
 
-        $templatePath = $this->app->view->getTemplatePathname($this->template);
-        $this->style = dirname(realpath($templatePath)) . '/' . $templateName . '.style';
+        if ($themes = $this->app->request()->get('themes')) {
+            if (is_string($themes)) {
+                $themes = explode(',', $themes);
+            }
+            $this->themes = array_merge($themes, $this->themes);
+        }
+
+        $this->template = $this->_findThemeFile($doctype, 'rst.php');
+        $this->style    = $this->_findThemeFile($doctype, 'style');
+        $this->config   = $this->_findThemeFile($doctype, 'config');
+
+        if (is_null($this->template)) {
+            $this->app->response()->setStatus(400);
+            die('invalid type or template');
+        }
+    }
+
+    protected function _findThemeFile($doctype, $filetype)
+    {
+        foreach ($this->themes as $theme) {
+            if (is_null($theme) || false === preg_match('/[a-zA-Z0-9_]/', $theme)) {
+                continue;
+            }
+            $path = "$doctype/$theme/$filetype";
+            if (is_file($this->app->view->getTemplatePathname($path))) {
+                return $path;
+            }
+        }
     }
 
     protected function _prepareData()
     {
+        $data = json_decode($this->app->request()->getBody(), true);
+        if (false === is_array($data)) {
+            $this->app->response()->setStatus(400);
+            die('invalid data');
+        }
+
         $this->app->response()->setStatus(200);
 
-        $data = $this->app->request()->get('invoice');
-
-        // data get extracted using php's extract method, which might be a good entry point for remote code execution...
-        if (isset($data['templatePathname'])) {
-            unset($data['templatePathname']);
-        }
         if (!isset($data['currency'])) {
             $data['currency'] = '€';
         }

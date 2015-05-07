@@ -6,19 +6,17 @@
 
 .. |city| replace:: <?php echo isset($receiver['zip']) ? $receiver['zip'] : ''; ?>
 
-.. |date| replace:: <?php echo isset($date) ? $date : date('Y-m-d'); ?>
+.. |date| replace:: <?php echo isset($date) ? $date : date('d.m.Y'); ?>
 
-.. |month| replace:: <?php echo isset($month) ? $month : 'last month'; ?>
+.. |introduction| replace:: <?php echo isset($introduction) ? $introduction : 'für meine Arbeit im vergangenen Monat erlaube ich mir in Rechnung zu stellen'; ?>
 
 .. |invoicenumber| replace:: <?php echo isset($number) ? $number : ''; ?>
 
-.. |salutation| replace:: <?php echo isset($salutation) ? $salutation : 'Dear ladies and gentlemen,' ?>
+.. |salutation| replace:: <?php echo isset($salutation) ? $salutation : 'Sehr geehrte Damen und Herren' ?>
 
-.. |introduction| replace:: <?php echo isset($introduction) ? $introduction : 'You ordered:' ?>
+.. |ending| replace:: <?php echo isset($ending) ? $ending : 'Bitte überweisen Sie den Rechnungsbetrag innerhalb von 14 Tagen an die unten angegebene Bankverbindung.' ?>
 
-.. |ending| replace:: <?php echo isset($ending) ? $ending : '' ?>
-
-.. |greeting| replace:: <?php echo isset($greeting) ? $greeting : 'Kind regards,' ?>
+.. |greeting| replace:: <?php echo isset($greeting) ? $greeting : 'Mit freundlichen Grüßen,' ?>
 
 .. |sender-name| replace:: <?php echo isset($sender['name']) ? $sender['name'] : ''; ?>
 
@@ -76,7 +74,7 @@
   +----------------------+------------------+
   | .. class:: small     |                  |
   |                      |                  |
-  | Invoice #            |                  |
+  | Rechnungsnummer      |                  |
   +----------------------+------------------+
   | |invoicenumber|      | .. class:: right |
   |                      |                  |
@@ -101,8 +99,8 @@ Rechnung
   :widths: 13 2
   :class: invoicetableheader
 
-  * - **Service**
-    - **Amount**
+  * - **Leistungen**
+    - **Betrag**
 
 .. list-table::
   :widths: 10 2 1 2
@@ -138,14 +136,14 @@ Rechnung
 
   * - .. class:: right
 
-        Sum
+        Summe
     - .. class:: right
 
         <?php echo number_format($sum, 2, ',', '.'); ?> |currency|
 
   * - .. class:: right
 
-        Tax
+        zzgl. 19% USt.
     - .. class:: right
 
         <?php echo number_format($taxsum, 2, ',', '.'); ?> |currency|
@@ -157,14 +155,16 @@ Rechnung
 
   * - .. class:: right
 
-        **Total**
+        **Rechnungsbetrag**
     - .. class:: right
 
         **<?php echo number_format($sum + $taxsum, 2, ',', '.') . " $currency"; ?>**
 
+|
+
 <?php endif; ?>
 
-|additional_notes|
+|ending|
 
 .. class:: greeting
 
@@ -176,8 +176,8 @@ Rechnung
 
   .. class:: footertable
 
-    +----------------------+---------------------------+-----------------------------------+
-    | |sender-name|        |                           | IBAN: |iban|                      |
-    |                      |                           |                                   |
-    | |sender-email|       | VAT ID: |sender-vatid|    | BIC: |bic|                        |
-    +----------------------+---------------------------+-----------------------------------+
+    +----------------------+---------------------------------+-----------------------------------+
+    | |sender-name|        |                                 | IBAN: |iban|                      |
+    |                      |                                 |                                   |
+    | |sender-email|       | Steuernummer: |sender-vatid|    | BIC: |bic|                        |
+    +----------------------+---------------------------------+-----------------------------------+

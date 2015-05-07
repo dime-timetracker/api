@@ -74,8 +74,14 @@ class InvoiceController implements SlimController
         $data = $this->_prepareData();
 
         $rst = addcslashes($this->app->view->fetch($this->template, $data), '"$`');
-        $config = is_null($this->config) ? '' : ' --config=' . $this->config;
-        $pdf = `echo "$rst" | rst2pdf -q --stylesheets={$this->style}$config`;
+        $params = '';
+        if (false === is_null($this->config)) {
+            $params .= ' --config=' . realpath($this->config);
+        }
+        if (false === is_null($this->style)) {
+            $params .= ' --stylesheets=' . realpath($this->style);
+        }
+        $pdf = `echo "$rst" | rst2pdf -q$params`;
 
         $this->app->response->headers->set('Content-Type', 'application/pdf');
         $this->app->response->write($pdf);
@@ -127,8 +133,11 @@ class InvoiceController implements SlimController
             if (is_null($theme) || false === preg_match('/[a-zA-Z0-9_]/', $theme)) {
                 continue;
             }
-            $path = "$doctype/$theme/$filetype";
-            if (is_file($this->app->view->getTemplatePathname($path))) {
+            $path = $this->app->view->getTemplatePathname("$doctype/$theme/$filetype");
+            if (is_file($path)) {
+                if ('rst.php' === $filetype) {
+                    return "$doctype/$theme/$filetype";
+                }
                 return $path;
             }
         }

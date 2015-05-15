@@ -4,8 +4,9 @@ namespace Dime\Server\Controller;
 
 use Dime\Server\Controller\SlimController;
 use Dime\Server\Middleware\AuthBasic;
+use Dime\Server\Middleware\Route;
 use Dime\Server\Middleware\ApiMiddleware;
-use Dime\Server\Resource\Factory as ResourceFactory;
+use Dime\Server\Model\Factory as ModelFactory;
 use Dime\Server\View\Json as JsonView;
 use Slim\Slim;
 
@@ -28,9 +29,9 @@ class ResourceController implements SlimController
     protected $config;
 
     /**
-     * @var ResourceFactory
+     * @var ModelFactory
      */
-    protected $resourceFactory;
+    protected $modelFactory;
 
     /**
      * Enables controller and set routes
@@ -40,11 +41,12 @@ class ResourceController implements SlimController
     {
         $this->app = $app;
         $this->config = $this->app->config('api');
-        $this->resourceFactory = new ResourceFactory($this->config['resources']);
+        $this->modelFactory = new ModelFactory($this->config['resources']);
 
         // Middleware
-        $this->app->add(new AuthBasic($this->app->config('auth')));
+        $this->app->add(new Route($this->config['prefix'], new AuthBasic($this->app->config('auth'))));
         $this->app->add(new ApiMiddleware($this->config));
+
         
         // Routes
         $this->app
@@ -82,7 +84,7 @@ class ResourceController implements SlimController
         $page = $this->app->request()->get('page', 1);
         $with = $this->app->request()->get('with', 30);
 
-        $modelClass = $this->resourceFactory->with($resource);
+        $modelClass = $this->modelFactory->with($resource);
         $collection = $modelClass
             ->where('user_id', $this->app->user->id)
             ->filtered($filter)
@@ -112,7 +114,7 @@ class ResourceController implements SlimController
      */
     public function getAction($resource, $id)
     {
-        $modelClass = $this->resourceFactory->with($resource);
+        $modelClass = $this->modelFactory->with($resource);
         $model = $modelClass
                 ->where('user_id', $this->app->user->id)
                 ->find($id);
@@ -134,7 +136,7 @@ class ResourceController implements SlimController
         if (empty($env['slim.input'])) {
             $this->render(['error' => 'Data not valid'], 400);
         } else {
-            $model = $this->resourceFactory->createWith($resource, $env['slim.input'], $this->app->user->id);
+            $model = $this->modelFactory->createWith($resource, $env['slim.input'], $this->app->user->id);
             $model->save();
             $this->render($model->toArray());
         }
@@ -148,7 +150,7 @@ class ResourceController implements SlimController
      */
     public function putAction($resource, $id)
     {
-        $modelClass = $this->resourceFactory->with($resource);
+        $modelClass = $this->modelFactory->with($resource);
         $model = $modelClass->where('user_id', $this->app->user->id)->find($id);
         if (is_null($model)) {
             $this->render(['error' => 'Not found'], 404);
@@ -172,7 +174,7 @@ class ResourceController implements SlimController
      */
     public function deleteAction($resource, $id)
     {
-        $modelClass = $this->resourceFactory->getClass($resource);
+        $modelClass = $this->modelFactory->getClass($resource);
         $model = $modelClass::where('user_id', $this->app->user->id)->find($id);
         if (is_null($model)) {
             $this->render(['error' => 'Not found'], 404);

@@ -58,7 +58,7 @@ class AuthBasic extends Middleware
         $password = $this->app->request()->headers('PHP_AUTH_PW');
 
         if (!empty($username)  && !empty($password)) {
-            $modelClass = $this->config['model'];
+            $modelClass = $this->config['user'];
             $hasher = new \Dime\Server\Hash\SymfonySecurityHasher();
             $user = $modelClass::where('username', '=', $username)->firstOrFail();
             if (!empty($user) && $hasher->check($password, $user->password, ['salt' => $user->salt])) {

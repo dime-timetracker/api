@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Resource;
+namespace Dime\Server\Model;
 
 /**
  * Factory

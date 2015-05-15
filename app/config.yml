@@ -75,4 +75,5 @@ doc:
 
 auth:
   realm: "Dime Timetracker"
-  model: "Dime\\Server\\Model\\User"
+  user:   "Dime\\Server\\Model\\User"
+  access: "Dime\\Server\\Model\\Access"

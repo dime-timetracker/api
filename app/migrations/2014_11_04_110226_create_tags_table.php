@@ -1,37 +1,47 @@
 <?php
 
+use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTagsTable extends Migration {
+class CreateTagsTable extends Migration
+{
 
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-        Schema::create('tags', function(Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->boolean('enabled');
-            $table->integer('user_id')->unsigned();
-            $table->timestamps();
+    protected $table = 'tags';
 
-            $table->foreign('user_id')->references('id')->on('users');
-        });
-	}
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        if (!Capsule::schema()->hasTable($this->table)) {
+            Capsule::schema()->create($this->table, function(Blueprint $table) {
+                $table->increments('id');
+                $table->string('name');
+                $table->boolean('enabled');
+                $table->integer('user_id')->unsigned();
+                $table->timestamps();
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-        Schema::table('tags', function(Blueprint $table) {
-            $table->drop();
-        });
-	}
+                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            });
+        } else {
+            Capsule::schema()->table($this->table, function(Blueprint $table) {
+                $table->boolean('enabled')->default(true);
+                $table->removeColumn('system');
+            });
+        }
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Capsule::schema()->dropIfExists($this->table);
+    }
+
 }

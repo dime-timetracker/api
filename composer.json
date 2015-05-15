@@ -16,6 +16,7 @@
     "slim/slim": "2.*",
     "fightbulc/moment": "*",
     "illuminate/database": "*",
+    "illuminate/filesystem": "*",
     "kirkbushell/eloquence": "dev-master",
     "symfony/yaml": "2.6.*"
   },

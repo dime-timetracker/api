@@ -3,7 +3,6 @@
 namespace Dime\Server\Controller;
 
 use Dime\Server\Controller\SlimController;
-use Dime\Server\Middleware\Database;
 use Dime\Server\Middleware\AuthBasic;
 use Dime\Server\Middleware\ApiMiddleware;
 use Dime\Server\Resource\Factory as ResourceFactory;
@@ -46,7 +45,6 @@ class ResourceController implements SlimController
         // Middleware
         $this->app->add(new AuthBasic($this->app->config('auth')));
         $this->app->add(new ApiMiddleware($this->config));
-        $this->app->add(new Database());
         
         // Routes
         $this->app

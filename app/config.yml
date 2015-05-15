@@ -8,6 +8,8 @@ mode: "development"
 app_dir:        "%root_dir%/app"
 data_dir:       "%root_dir%/data"
 cache_dir:      "%data_dir%/cache"
+migration_dir:  "%app_dir%/migrations"
+seed_dir:       "%app_dir%/seeds"
 
 # Logging
 log.enabled: true

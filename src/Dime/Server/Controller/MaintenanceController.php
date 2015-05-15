@@ -15,13 +15,24 @@ class MaintenanceController implements SlimController
     public function enable(Slim $app)
     {
         $this->app = $app;
-        $this->app->post('/install', [$this, 'installAction']);
-        $this->app->post('/update', [$this, 'updateAction']);
+        $this->app->get('/migrate', [$this, 'migrateAction']);
+        $this->app->get('/update', [$this, 'updateAction']);
     }
 
-    public function installAction()
+    public function migrateAction()
     {
-        // TODO
+        $repository = new \Illuminate\Database\Migrations\DatabaseMigrationRepository($this->app->database->getDatabaseManager(), 'migrations');
+        if (!$repository->repositoryExists()) {
+            $repository->createRepository();
+        }
+
+        $migrator = new \Illuminate\Database\Migrations\Migrator(
+            $repository,
+            $this->app->database->getDatabaseManager(),
+            new \Illuminate\Filesystem\Filesystem()
+        );
+
+        $migrator->run($this->app->config('migration_dir'));
     }
 
     public function updateAction()

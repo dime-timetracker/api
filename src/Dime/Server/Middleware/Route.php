@@ -20,18 +20,34 @@ class Route extends Middleware
     
     public function __construct($route, Middleware $middleware)
     {
-        $this->route = $route;
+        if (!is_array($route)) {
+            $this->route = [ $route ];
+        } else {
+            $this->route = $route;
+        }
         $this->middleware = $middleware;
     }
     
     public function call()
     {
-        if (strpos($this->app->request()->getPathInfo(), $this->route) !== false) {
+        if ($this->checkRoute($this->app->request()->getPathInfo()) !== false) {
             $this->middleware->setApplication($this->app);
             $this->middleware->setNextMiddleware($this->next);
             $this->middleware->call();
         } else {
             $this->next->call();
         }
+    }
+    
+    public function checkRoute($path)
+    {
+        $result = false;
+        foreach ($this->route as $part) {
+            if (strpos($path, $part) !== false) {
+                $result = true;
+                break;
+            }
+        }
+        return $result;
     }
 }

@@ -3,9 +3,13 @@
 namespace Dime\Server\Controller;
 
 use Dime\Server\Controller\SlimController;
+use Dime\Server\Hash\SymfonySecurityHasher as Hasher;
+use Dime\Server\Middleware\Authorization;
+use Dime\Server\Middleware\Route;
+use Dime\Server\Middleware\ContentType;
 use Dime\Server\Model\Access;
 use Dime\Server\Model\User;
-use Dime\Server\Hash\SymfonySecurityHasher as Hasher;
+use Dime\Server\View\Json as JsonView;
 use Slim\Slim;
 
 /**
@@ -31,10 +35,11 @@ class AuthController implements SlimController
     {
         $this->app = $app;
         $this->hasher = new Hasher();
-        
+        $this->app->add(new Route('/login', new ContentType()));
         $this->app->post('/login', [$this, 'loginAction']);
 
-        $this->app->add(new Route('/logout', new AuthMiddleware($this->app->config('auth'))));
+        $this->app->add(new Route('/logout', new Authorization($this->app->config('auth'))));
+        $this->app->add(new Route('/logout', new ContentType()));
         $this->app->post('/logout', [$this, 'logoutAction']);
     }
 
@@ -51,18 +56,26 @@ class AuthController implements SlimController
      */
     public function loginAction()
     {
-        $username = filter_var($this->app->request->post('username'), FILTER_SANITIZE_STRING);
-        $client   = filter_var($this->app->request->post('client'), FILTER_SANITIZE_STRING);
-        $password = filter_var($this->app->request->post('password'), FILTER_SANITIZE_STRING);
+        $input = filter_var_array($this->app->request->getBody(), [
+            'username' => FILTER_SANITIZE_STRING,
+            'client' => FILTER_SANITIZE_STRING,
+            'password' => FILTER_SANITIZE_STRING
+        ]);
 
-        $user = User::where('username', '=', $username)->firstOrFail();
-        if ($this->authenticate($user, $password)) {
-            // TODO generate Token
-            $access = Access::create();
-            $access->user()->associate($user);
-            $access->clientId = $client;
-            $access->token =  $this->hasher->make(uniqid($username . $client . microtime(), true));
-            $access->save();
+        if (!empty($input['username']) && !empty($input['client']) && !empty($input['password'])) {
+            try {
+                $user = User::where('username', $input['username'])->firstOrFail();
+                if ($this->authenticate($user, $input['password'])) {
+                    $access = Access::firstOrNew([ 'user_id' => $user->id, 'client' => $input['client'] ]);
+                    $access->token =  $this->hasher->make(uniqid($input['username'] . $input['client'] . microtime(), true));
+                    $access->save();
+                    $this->render([ 'token' => $access->token ]);
+                }
+            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $ex) {
+                $this->render([ 'error' => 'Authentication error' ], 404);
+            }
+        } else {
+            $this->render([ 'error' => 'Authentication error' ], 404);
         }
     }
 
@@ -90,5 +103,20 @@ class AuthController implements SlimController
     protected function authenticate(User $user, $password) {
         return !empty($user)
             && $this->hasher->check($password, $user->password, ['salt' => $user->salt]);
+    }
+
+    /**
+     * Render content and status
+     *
+     * @param mixed $data
+     * @param int $status
+     */
+    protected function render($data, $status = 200)
+    {
+        $this->app->view(new JsonView());
+
+        $this->app->response()->setStatus($status);
+
+        $this->app->render('', $data);
     }
 }

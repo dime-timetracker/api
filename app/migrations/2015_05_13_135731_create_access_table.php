@@ -18,12 +18,13 @@ class CreateAccessTable extends Migration
     {
         if (!Capsule::schema()->hasTable($this->table)) {
             Capsule::schema()->create($this->table, function(Blueprint $table) {
+                $table->increments('id');
                 $table->integer('user_id');
                 $table->string('client');
                 $table->string('token');
                 $table->timestamps();
                 
-                $table->primary(['user_id', 'client']);
+                $table->unique(['user_id', 'client']);
                 $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             });
         }

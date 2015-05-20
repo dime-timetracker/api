@@ -9,46 +9,29 @@ use Slim\Middleware;
  *
  * @author Danilo Kuehn <dk@nogo-software.de>
  */
-class ContentMiddleware extends Middleware
+class ContentType extends Middleware
 {
 
-    protected $route = '/';
     protected $headers = [];
     protected $mediaType = 'text/html';
 
-    public function __construct($route, array $headers = [])
+    public function __construct(array $headers = [])
     {
-        $this->route = $route;
         $this->headers = $headers;
     }
 
     public function call()
     {
-        if (strpos($this->app->request()->getPathInfo(), $this->route) !== false) {
-            $this->app->hook('slim.before.dispatch', array($this, 'onBeforeDispatch'));
-            $this->app->hook('slim.after.router', array($this, 'onAfterRouter'));
-        }
-        
-        $this->next->call();
-    }
-
-    /**
-     * Check if resource is allowed and decode data
-     */
-    public function onBeforeDispatch()
-    {
         $this->mediaType = $this->app->request()->getMediaType();
-        
-        $env = $this->app->environment();
-        $env['slim.input_original'] = $env['slim.input'];
-        $env['slim.input'] = $this->decode($this->mediaType, $env['slim.input']);
-    }
 
-    /**
-     * Add api header to response
-     */
-    public function onAfterRouter()
-    {
+        if ($this->mediaType) {
+            $env = $this->app->environment();
+            $env['slim.input_original'] = $env['slim.input'];
+            $env['slim.input'] = $this->decode($this->mediaType, $env['slim.input']);
+        }
+
+        $this->next->call();
+
         if (isset($this->headers)) {
             foreach ($this->headers as $key => $value) {
                 $this->app->response()->headers()->set($key, $value);

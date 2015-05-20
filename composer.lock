@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c9d27a964cdb9f1018e4c23593d17602",
+    "hash": "10b67f2fcf772751de3f46353d24c5e0",
     "packages": [
         {
             "name": "danielstjules/stringy",
@@ -340,12 +340,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/database.git",
-                "reference": "764f58e07273f9c723022d1279c0a30954eabc01"
+                "reference": "daec427cc04da43d50bbc5386c15aae0c33c4761"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/database/zipball/764f58e07273f9c723022d1279c0a30954eabc01",
-                "reference": "764f58e07273f9c723022d1279c0a30954eabc01",
+                "url": "https://api.github.com/repos/illuminate/database/zipball/daec427cc04da43d50bbc5386c15aae0c33c4761",
+                "reference": "daec427cc04da43d50bbc5386c15aae0c33c4761",
                 "shasum": ""
             },
             "require": {
@@ -390,7 +390,7 @@
                 "orm",
                 "sql"
             ],
-            "time": "2015-05-11 01:55:35"
+            "time": "2015-05-19 02:06:21"
         },
         {
             "name": "illuminate/filesystem",
@@ -448,12 +448,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "9f9eadc7b2ce57ddc8cb0b0a3d60d1704c96a644"
+                "reference": "a610e57ac204879ef582c4080faed9c75a0eea35"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/9f9eadc7b2ce57ddc8cb0b0a3d60d1704c96a644",
-                "reference": "9f9eadc7b2ce57ddc8cb0b0a3d60d1704c96a644",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/a610e57ac204879ef582c4080faed9c75a0eea35",
+                "reference": "a610e57ac204879ef582c4080faed9c75a0eea35",
                 "shasum": ""
             },
             "require": {
@@ -493,7 +493,7 @@
             ],
             "description": "The Illuminate Support package.",
             "homepage": "http://laravel.com",
-            "time": "2015-05-12 10:28:08"
+            "time": "2015-05-19 02:06:21"
         },
         {
             "name": "kirkbushell/eloquence",
@@ -501,12 +501,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kirkbushell/eloquence.git",
-                "reference": "c5838f85571f79df02d09b133140885a1b7d7fab"
+                "reference": "ff26c1b1c5be763cb93653409d8db8807660e9c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kirkbushell/eloquence/zipball/c5838f85571f79df02d09b133140885a1b7d7fab",
-                "reference": "c5838f85571f79df02d09b133140885a1b7d7fab",
+                "url": "https://api.github.com/repos/kirkbushell/eloquence/zipball/ff26c1b1c5be763cb93653409d8db8807660e9c6",
+                "reference": "ff26c1b1c5be763cb93653409d8db8807660e9c6",
                 "shasum": ""
             },
             "require": {
@@ -545,7 +545,7 @@
                 "snake",
                 "snake_case"
             ],
-            "time": "2015-04-27 09:02:10"
+            "time": "2015-05-14 05:42:45"
         },
         {
             "name": "nesbot/carbon",
@@ -600,12 +600,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "4034e04e2772b83b0840cefe6689ebbf864c397c"
+                "reference": "60186232e06fd5169cc6da03f790720f6e7393d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/4034e04e2772b83b0840cefe6689ebbf864c397c",
-                "reference": "4034e04e2772b83b0840cefe6689ebbf864c397c",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/60186232e06fd5169cc6da03f790720f6e7393d5",
+                "reference": "60186232e06fd5169cc6da03f790720f6e7393d5",
                 "shasum": ""
             },
             "require": {
@@ -658,7 +658,7 @@
                 "identifier",
                 "uuid"
             ],
-            "time": "2015-04-21 13:15:39"
+            "time": "2015-05-14 14:23:04"
         },
         {
             "name": "slim/slim",
@@ -712,12 +712,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Finder.git",
-                "reference": "818480c101d7263e6e8fb36b67836d6fbf2c6dec"
+                "reference": "ccb8ed8339cf24824f2ef35dacec30d92ff44368"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Finder/zipball/818480c101d7263e6e8fb36b67836d6fbf2c6dec",
-                "reference": "818480c101d7263e6e8fb36b67836d6fbf2c6dec",
+                "url": "https://api.github.com/repos/symfony/Finder/zipball/ccb8ed8339cf24824f2ef35dacec30d92ff44368",
+                "reference": "ccb8ed8339cf24824f2ef35dacec30d92ff44368",
                 "shasum": ""
             },
             "require": {
@@ -753,7 +753,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2015-05-02 15:21:08"
+            "time": "2015-05-15 14:02:48"
         },
         {
             "name": "symfony/translation",
@@ -761,12 +761,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Translation.git",
-                "reference": "f90ed6d09619791ea7c2db305e1b557c77b859f5"
+                "reference": "a0735db452c5e592cb742333a32c6634a6d1ece1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Translation/zipball/f90ed6d09619791ea7c2db305e1b557c77b859f5",
-                "reference": "f90ed6d09619791ea7c2db305e1b557c77b859f5",
+                "url": "https://api.github.com/repos/symfony/Translation/zipball/a0735db452c5e592cb742333a32c6634a6d1ece1",
+                "reference": "a0735db452c5e592cb742333a32c6634a6d1ece1",
                 "shasum": ""
             },
             "require": {
@@ -814,7 +814,7 @@
             ],
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
-            "time": "2015-05-12 15:16:46"
+            "time": "2015-05-15 14:11:12"
         },
         {
             "name": "symfony/yaml",

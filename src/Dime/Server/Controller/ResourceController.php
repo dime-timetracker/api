@@ -3,9 +3,9 @@
 namespace Dime\Server\Controller;
 
 use Dime\Server\Controller\SlimController;
-use Dime\Server\Middleware\AuthBasic;
+use Dime\Server\Middleware\Authorization;
 use Dime\Server\Middleware\Route;
-use Dime\Server\Middleware\ContentMiddleware;
+use Dime\Server\Middleware\ContentType;
 use Dime\Server\Model\Factory as ModelFactory;
 use Dime\Server\View\Json as JsonView;
 use Slim\Slim;
@@ -44,8 +44,8 @@ class ResourceController implements SlimController
         $this->modelFactory = new ModelFactory($this->config['resources']);
 
         // Middleware
-        $this->app->add(new Route($this->config['prefix'], new AuthBasic($this->app->config('auth'))));
-        $this->app->add(new ContentMiddleware($this->config['prefix'], $this->config['headers']));
+        $this->app->add(new Route($this->config['prefix'], new Authorization($this->app->config('auth'))));
+        $this->app->add(new Route($this->config['prefix'], new ContentType($this->config['headers'])));
         
         // Routes
         $this->app

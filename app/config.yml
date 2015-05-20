@@ -18,6 +18,7 @@ log_dir:     "%data_dir%/log"
 
 # Routes
 routes:
+  - "Dime\\Server\\Controller\\AuthController"
   - "Dime\\Server\\Controller\\ResourceController"
   - "Dime\\Server\\Controller\\ParseController"
   - "Dime\\Server\\Controller\\MaintenanceController"
@@ -75,5 +76,5 @@ doc:
 
 auth:
   realm: "Dime Timetracker"
+  valid: 2 weeks
   user:   "Dime\\Server\\Model\\User"
-  access: "Dime\\Server\\Model\\Access"

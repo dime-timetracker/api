@@ -9,19 +9,17 @@ use Slim\Middleware;
  *
  * @author Danilo Kuehn <dk@nogo-software.de>
  */
-class ApiMiddleware extends Middleware
+class ContentMiddleware extends Middleware
 {
 
-    protected $config;
     protected $route = '/';
-    protected $mediaType;
+    protected $headers = [];
+    protected $mediaType = 'text/html';
 
-    public function __construct($config)
+    public function __construct($route, array $headers = [])
     {
-        $this->config = $config;
-        if (isset($this->config['prefix'])) {
-            $this->route = $this->config['prefix'];
-        }
+        $this->route = $route;
+        $this->headers = $headers;
     }
 
     public function call()
@@ -39,15 +37,11 @@ class ApiMiddleware extends Middleware
      */
     public function onBeforeDispatch()
     {
-        $route = $this->app->router()->getCurrentRoute();
-        $name = $route->getParam('resource');
-        if (!array_key_exists($name, $this->config['resources'])) {
-            $this->app->halt(404, 'Resource [' . $name . '] not found.');
-        } else {
-            $env = $this->app->environment();
-            $env['slim.input_original'] = $env['slim.input'];
-            $env['slim.input'] = $this->decode($this->app->request()->getMediaType(), $env['slim.input']);
-        }
+        $this->mediaType = $this->app->request()->getMediaType();
+        
+        $env = $this->app->environment();
+        $env['slim.input_original'] = $env['slim.input'];
+        $env['slim.input'] = $this->decode($this->mediaType, $env['slim.input']);
     }
 
     /**
@@ -55,13 +49,12 @@ class ApiMiddleware extends Middleware
      */
     public function onAfterRouter()
     {
-        if (isset($this->config['headers'])) {
-            $header = $this->config['headers'];
-            foreach ($header as $key => $value) {
+        if (isset($this->headers)) {
+            foreach ($this->headers as $key => $value) {
                 $this->app->response()->headers()->set($key, $value);
             }
         } else {
-            $this->app->contentType('application/json');
+            $this->app->contentType($this->mediaType);
         }
     }
 

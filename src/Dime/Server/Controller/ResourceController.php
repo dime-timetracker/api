@@ -5,7 +5,7 @@ namespace Dime\Server\Controller;
 use Dime\Server\Controller\SlimController;
 use Dime\Server\Middleware\AuthBasic;
 use Dime\Server\Middleware\Route;
-use Dime\Server\Middleware\ApiMiddleware;
+use Dime\Server\Middleware\ContentMiddleware;
 use Dime\Server\Model\Factory as ModelFactory;
 use Dime\Server\View\Json as JsonView;
 use Slim\Slim;
@@ -45,32 +45,39 @@ class ResourceController implements SlimController
 
         // Middleware
         $this->app->add(new Route($this->config['prefix'], new AuthBasic($this->app->config('auth'))));
-        $this->app->add(new ApiMiddleware($this->config));
-
+        $this->app->add(new ContentMiddleware($this->config['prefix'], $this->config['headers']));
         
         // Routes
         $this->app
-                ->get($this->config['prefix'] . '/:resource/:id', [$this, 'getAction'])
+                ->get($this->config['prefix'] . '/:resource/:id', [$this, 'beforeAction'], [$this, 'getAction'])
                 ->name('resource_get')
                 ->conditions(['id' => '\d+']);
 
         $this->app
-                ->get($this->config['prefix'] . '/:resource', [$this, 'listAction'])
+                ->get($this->config['prefix'] . '/:resource', [$this, 'beforeAction'], [$this, 'listAction'])
                 ->name('resource_list');
 
         $this->app
-                ->put($this->config['prefix'] . '/:resource/:id', [$this, 'putAction'])
+                ->put($this->config['prefix'] . '/:resource/:id', [$this, 'beforeAction'], [$this, 'putAction'])
                 ->name('resource_put')
                 ->conditions(['id' => '\d+']);
 
         $this->app
-                ->post($this->config['prefix'] . '/:resource', [$this, 'postAction'])
+                ->post($this->config['prefix'] . '/:resource', [$this, 'beforeAction'], [$this, 'postAction'])
                 ->name('resource_post');
 
         $this->app
-                ->delete($this->config['prefix'] . '/:resource/:id', [$this, 'deleteAction'])
+                ->delete($this->config['prefix'] . '/:resource/:id', [$this, 'beforeAction'], [$this, 'deleteAction'])
                 ->name('resource_delete')
                 ->conditions(['id' => '\d+']);
+    }
+
+    public function beforeAction(\Slim\Route $route)
+    {
+        $resource = $route->getParam('resource');
+        if (!array_key_exists($resource, $this->config['resources'])) {
+            $this->app->halt(404, json_encode(['error' => 'Resource [' . $resource . '] not found.']));
+        }
     }
 
     /**
@@ -93,11 +100,11 @@ class ResourceController implements SlimController
         $total    = $collection->count();
         $lastPage = ceil($total / $with);
         $this->app->response()->headers()->set('X-Dime-Total', $total);
-        $this->app->response()->headers()->set('X-Dime-Link', implode(', ', [
+        $this->app->response()->headers()->set('Link', implode(', ', [
+            $this->pageUrl($resource, $filter, ($page + 1), $with, 'next'),
+            $this->pageUrl($resource, $filter, ($page + 1), $with, 'prev'),
             $this->pageUrl($resource, $filter, 1, $with, 'first'),
             $this->pageUrl($resource, $filter, $lastPage, $with, 'last'),
-            $this->pageUrl($resource, $filter, ($page + 1), $with, 'next'),
-            $this->pageUrl($resource, $filter, ($page + 1), $with, 'previous')
         ]));
 
         $result = $collection->take($with)
@@ -201,8 +208,6 @@ class ResourceController implements SlimController
 
     protected function pageUrl($resource, $filter, $page = 1, $with = 30, $rel = null)
     {
-        $url = $this->app->urlFor('resource_list', array('resource' => $resource));
-
         $param = [];
         if (!empty($filter)) {
             $param[] = 'filter='. urlencode($filter);
@@ -214,15 +219,12 @@ class ResourceController implements SlimController
             $param[] = 'with='. urlencode($with);
         }
 
+        $uri = $this->app->urlFor('resource_list', array('resource' => $resource));
         if (!empty($param)) {
-            $url .= '?' . join('&', $param);
+            $uri .= '?' . join('&', $param);
         }
 
-        if (!empty($rel)) {
-            $url .= '; rel=' . $rel;
-        }
-
-        return $url;
+        return '<' . $uri . '>' . ( (!empty($rel)) ? '; rel="' . $rel . '"' : '' );
     }
 
 }

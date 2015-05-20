@@ -16,7 +16,9 @@
 
 .. |introduction| replace:: <?php echo isset($introduction) ? $introduction : 'You ordered:' ?>
 
-.. |ending| replace:: <?php echo isset($ending) ? $ending : '' ?>
+<?php if (isset($ending)): ?>
+.. |ending| replace:: <?php echo $ending ?>
+<?php endif; ?>
 
 .. |greeting| replace:: <?php echo isset($greeting) ? $greeting : 'Kind regards,' ?>
 
@@ -164,7 +166,9 @@ Rechnung
 
 <?php endif; ?>
 
-|additional_notes|
+<?php if (isset($ending)): ?>
+|ending|
+<?php endif; ?>
 
 .. class:: greeting
 

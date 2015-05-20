@@ -163,7 +163,11 @@ class DocController implements SlimController
 
     protected function _prepareData()
     {
-        $data = json_decode($this->app->request()->getBody(), true);
+        $body = $this->app->request()->getBody();
+        if ('data=' === substr($body, 0, 5)) {
+            $body = substr($body, 5);
+        }
+        $data = json_decode($body, true);
         if (false === is_array($data)) {
             //$this->app->response()->setStatus(400);
             //die('invalid data');

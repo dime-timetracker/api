@@ -24,6 +24,11 @@ class DocController implements SlimController
     /**
      * @var string
      */
+    protected $doctype;
+
+    /**
+     * @var string
+     */
     protected $template;
 
     /**
@@ -106,14 +111,21 @@ class DocController implements SlimController
         return $template;
     }
 
-    protected function _prepareTemplate()
+    protected function _getDoctype()
     {
-        $doctype = $this->app->request()->get('doctype');
-        if (is_null($doctype) || false === preg_match('/[a-zA-Z0-9_]/', $doctype)) {
-            $this->app->response()->setStatus(400);
-            die('invalid doctype');
+        if (is_null($this->doctype)) {
+            $this->doctype = $this->app->request()->get('doctype');
+            if (is_null($this->doctype) || false === preg_match('/[a-zA-Z0-9_]/', $this->doctype)) {
+                $this->app->response()->setStatus(400);
+                die('invalid doctype');
+            }
         }
 
+        return $this->doctype;
+    }
+
+    protected function _prepareTemplate()
+    {
         if ($themes = $this->app->request()->get('themes')) {
             if (is_string($themes)) {
                 $themes = explode(',', $themes);
@@ -121,9 +133,9 @@ class DocController implements SlimController
             $this->themes = array_merge($themes, $this->themes);
         }
 
-        $this->template = $this->_findThemeFile($doctype, 'rst.php');
-        $this->style    = $this->_findThemeFile($doctype, 'style');
-        $this->config   = $this->_findThemeFile($doctype, 'config');
+        $this->template = $this->_findThemeFile('rst.php');
+        $this->style    = $this->_findThemeFile('style');
+        $this->config   = $this->_findThemeFile('config');
 
         if (is_null($this->template)) {
             $this->app->response()->setStatus(400);
@@ -131,8 +143,10 @@ class DocController implements SlimController
         }
     }
 
-    protected function _findThemeFile($doctype, $filetype)
+    protected function _findThemeFile($filetype)
     {
+        $doctype = $this->_getDoctype();
+
         foreach ($this->themes as $theme) {
             if (is_null($theme) || false === preg_match('/[a-zA-Z0-9_]/', $theme)) {
                 continue;
@@ -157,6 +171,18 @@ class DocController implements SlimController
         }
 
         $this->app->response()->setStatus(200);
+
+        if (isset($data['logo'])) {
+            $logoFilename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '', $data['logo']);
+            if ($logoFilename) {
+                $logoPath = $this->_findThemeFile($data['logo']);
+            }
+            if (isset($logoPath) && strlen($logoPath)) {
+                $data['logo'] = $logoPath;
+            } else {
+                unset($data['logo']);
+            }
+        }
 
         if (!isset($data['currency'])) {
             $data['currency'] = '€';

@@ -41,20 +41,32 @@
 .. |currency| replace:: <?php echo isset($currency) ? $currency : ''; ?>
 
 
-.. class:: sender
+.. list-table::
+  :widths: 1 1
+  :class: headtable
 
-  |sender-name|
+  * - .. class:: sender
+ 
+        |sender-name|
+ 
+        |sender-street|
+ 
+        |
+ 
+        |sender-city| |sender-zip|
 
-  |sender-street|
+    -
 
-  |
+<?php if (isset($logo)): ?>
+      .. image:: <?php echo $logo; ?>
 
-  |sender-city| |sender-zip|
+        :width: 5.0cm
+<?php endif; ?>
 
-  |
-  |
-  |
-  |
+|
+|
+|
+|
 
 .. class:: small
 

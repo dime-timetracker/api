@@ -457,6 +457,13 @@
     aafigure:
       parent: literal
 
+    headtable:
+      commands: []
+             [VALIGN, [ 0, 0 ], [ -1, -1 ], TOP ]
+             [LEFTPADDING, [ 0, 0 ], [ -1, -1 ], 0 ]
+             [RIGHTPADDING, [ 0, 0 ], [ -1, -1 ], 0 ]
+             [ALIGN, [1, 0], [-1, -1], RIGHT]
+
     footertable:
       commands: []
              [LEFTPADDING, [ 0, 0 ], [ -1, -1 ], 0 ]

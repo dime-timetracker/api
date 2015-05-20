@@ -103,7 +103,7 @@ Rechnung
 
 .. class:: salutation
 
-  |salutation|,
+  |salutation|
 
   |introduction|
 

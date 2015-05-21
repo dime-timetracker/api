@@ -7,7 +7,6 @@ use Dime\Server\Middleware\Authorization;
 use Dime\Server\Middleware\Route;
 use Dime\Server\Middleware\ContentType;
 use Dime\Server\Model\Factory as ModelFactory;
-use Dime\Server\View\Json as JsonView;
 use Slim\Slim;
 
 /**
@@ -17,6 +16,8 @@ use Slim\Slim;
  */
 class ResourceController implements SlimController
 {
+
+    use \Dime\Server\Traits\Json;
 
     /**
      * @var Slim
@@ -189,21 +190,6 @@ class ResourceController implements SlimController
             $model->delete();
             $this->render($model->toArray());
         }
-    }
-
-    /**
-     * Render content and status
-     *
-     * @param mixed $data
-     * @param int $status
-     */
-    protected function render($data, $status = 200)
-    {
-        $this->app->view(new JsonView());
-
-        $this->app->response()->setStatus($status);
-
-        $this->app->render('', $data);
     }
 
     protected function pageUrl($resource, $filter, $page = 1, $with = 30, $rel = null)

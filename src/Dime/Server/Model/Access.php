@@ -20,4 +20,15 @@ class Access extends Model
     {
         return $this->belongsTo('Dime\Server\Model\User');
     }
+
+    /**
+     * Compare updated_at with strtotime('-' . $period).
+     *
+     * @param string $period will be strtotime
+     * @return boolean
+     */
+    public function expired($period)
+    {
+        return strtotime('-' . $period) >= strtotime($this->updated_at);
+    }
 }

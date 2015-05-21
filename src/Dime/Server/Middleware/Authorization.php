@@ -2,18 +2,33 @@
 
 namespace Dime\Server\Middleware;
 
-use Dime\Server\Model\Access;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Slim\Middleware;
 
 /**
- * Auth
+ * Authorization is a middleware and read the HTTP header Authorization or X-Authorization.
  *
- * Authorization: ALGORITHM USER,CLIENT-ID,TOKEN
+ * Tasks:
+ * - MUST check realm configuration
+ * - MUST check the username, client, token exists in storage
+ * - MUST check the updated_at with the configured expire period
+ * - MUST delete token when expired
+ *
+ * Header:
+ * Authorization: REALM USER,CLIENT,TOKEN
+ *
+ * or
+ *
+ * X-Authorization: REALM USER,CLIENT,TOKEN
  *
  * @author Danilo Kuehn <dk@nogo-software.de>
  */
 class Authorization extends Middleware
 {
+
+    /**
+     * @var array
+     */
     protected $config;
 
     /**
@@ -29,27 +44,28 @@ class Authorization extends Middleware
 
     public function call()
     {
-        $authentication = $this->app->request()->headers('X-Authorization');
-        if (!empty($authentication)) {
-            $authentication = preg_split('/[\s,]/', $authentication);
-
+        $next = false;
+        $authorization = $this->headerAuthorization();
+        if (!empty($authorization) && $authorization[0] === $this->config['realm']) {
             try {
-                $access = Access::whereHas('user', function ($q) use ($authentication) {
-                    $q->where('username', $authentication[1]);
-                })->whereClientAndToken($authentication[2], $authentication[3])->firstOrFail();
-                if (!empty($access)) {
-
-                    // TODO Check ExpireDate
-
+                $accessClass = $this->config['access'];
+                $access = $accessClass::whereHas('user', function ($q) use ($authorization) {
+                            $q->where('username', $authorization[1]);
+                        })->whereClientAndToken($authorization[2], $authorization[3])->firstOrFail();
+                if (!$access->expired($this->config['expires'])) {
                     $this->app->access = $access;
                     $this->app->user = $access->user;
-                    $this->next->call();
+                    $next = true;
                 } else {
-                    $this->fail();
+                    $access->delete();
                 }
-            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $ex) {
-                $this->fail();
+            } catch (ModelNotFoundException $ex) {
+                $this->app->error($ex);
             }
+        }
+
+        if ($next) {
+            $this->next->call();
         } else {
             $this->fail();
         }
@@ -62,6 +78,28 @@ class Authorization extends Middleware
      */
     protected function fail()
     {
-        $this->app->response()->status(400);
+        $this->app->response()->status(401);
+        $this->app->response()->body(json_encode(['error' => 'Authentication error']));
     }
+
+    /**
+     * Read Authorization / X-Authorization header and split it into an array;
+     * @return mixed array or false
+     */
+    protected function headerAuthorization()
+    {
+        $authorization = false;
+        $headers = $this->app->request()->headers();
+        if (!isset($headers['Authorization']) && function_exists('apache_request_headers')) {
+            $all = apache_request_headers();
+            if (isset($all['Authorization'])) {
+                $authorization = $all['Authorization'];
+            }
+        } else {
+            $authorization = $headers['X-Authorization'];
+        }
+
+        return (!empty($authorization)) ? preg_split('/[\s,]/', $authorization) : false;
+    }
+
 }

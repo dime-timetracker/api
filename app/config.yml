@@ -75,6 +75,7 @@ doc:
   prefix: "/doc"
 
 auth:
-  realm: "Dime Timetracker"
-  valid: 2 weeks
+  realm: "DimeTimetracker"
   user:   "Dime\\Server\\Model\\User"
+  access:   "Dime\\Server\\Model\\Access"
+  expires: 1 hour

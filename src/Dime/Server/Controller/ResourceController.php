@@ -140,11 +140,11 @@ class ResourceController implements SlimController
      */
     public function postAction($resource)
     {
-        $env = $this->app->environment();
-        if (empty($env['slim.input'])) {
+        $data = $this->app->request->getBody();
+        if (empty($data)) {
             $this->render(['error' => 'Data not valid'], 400);
         } else {
-            $model = $this->modelFactory->createWith($resource, $env['slim.input'], $this->app->user->id);
+            $model = $this->modelFactory->createWith($resource, $data, $this->app->user->id);
             $model->save();
             $this->render($model->toArray());
         }
@@ -163,11 +163,11 @@ class ResourceController implements SlimController
         if (is_null($model)) {
             $this->render(['error' => 'Not found'], 404);
         } else {
-            $env = $this->app->environment();
-            if (empty($env['slim.input'])) {
+            $data = $this->app->request->getBody();
+            if (empty($data)) {
                 $this->render(['error' => 'Data not valid'], 400);
             } else {
-                $model->fill($env['slim.input']);
+                $model->fill($data);
                 $model->save();
                 $this->render($model->toArray());
             }

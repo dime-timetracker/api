@@ -2,14 +2,12 @@
 
 namespace Dime\Server\Traits;
 
-use Dime\Server\View\Json as JsonView;
-
 /**
- * JsonTrait
+ * Renderer
  *
  * @author Danilo Kuehn <dk@nogo-software.de>
  */
-trait Json
+trait Renderer
 {
     /**
      * Render content and status
@@ -19,10 +17,6 @@ trait Json
      */
     protected function render($data, $status = 200)
     {
-        $this->app->view(new JsonView());
-
-        $this->app->response()->setStatus($status);
-
-        $this->app->render('', $data);
+        $this->app->render('', $data, $status);
     }
 }

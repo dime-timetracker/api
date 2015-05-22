@@ -17,7 +17,7 @@ use Slim\Slim;
 class ResourceController implements SlimController
 {
 
-    use \Dime\Server\Traits\Json;
+    use \Dime\Server\Traits\Renderer;
 
     /**
      * @var Slim

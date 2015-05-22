@@ -18,7 +18,7 @@ use Slim\Slim;
 class AuthController implements SlimController
 {
 
-    use \Dime\Server\Traits\Json;
+    use \Dime\Server\Traits\Renderer;
     
     /**
      * @var Slim
@@ -78,7 +78,10 @@ class AuthController implements SlimController
                     $access = $accessClass::firstOrNew([ 'user_id' => $user->id, 'client' => $input['client'] ]);
                     $access->token =  $this->hasher->make(uniqid($input['username'] . $input['client'] . microtime(), true));
                     $access->save();
-                    $this->render([ 'token' => $access->token ]);
+                    $this->render([
+                        'token' => $access->token,
+                        'expires' => $access->expires($this->config['expires'])
+                    ]);
                 }
             } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $ex) {
                 $this->render([ 'error' => 'Authentication error' ], 401);

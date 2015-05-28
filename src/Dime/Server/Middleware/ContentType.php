@@ -50,17 +50,17 @@ class ContentType extends Middleware
     }
 
     /**
-     * Extract request type from accept header if content-type is not available.
+     * Extract request type from accept header.
      *
      * @return type content-type or accept header
      */
     public function extractAcceptHeader() {
-        $mediaType = $this->app->request()->getMediaType();
-        if (empty($mediaType)) {
-            $acceptParts = preg_split('/\s*[;,]\s*/', $this->app->request()->headers('accept'));
-            $mediaType = strtolower($acceptParts[0]);
+        $acceptHeader = $this->app->request()->headers('accept');
+        if (!empty($acceptHeader)) {
+            $acceptParts = preg_split('/\s*[;,]\s*/', $acceptHeader);
+            $acceptHeader = strtolower($acceptParts[0]);
         }
-        return $mediaType;
+        return $acceptHeader;
     }
 
     /**

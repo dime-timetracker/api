@@ -60,7 +60,7 @@ class Authorization extends Middleware
                     $access->delete();
                 }
             } catch (ModelNotFoundException $ex) {
-                $this->app->error($ex);
+                $this->app->log->error($ex);
             }
         }
 

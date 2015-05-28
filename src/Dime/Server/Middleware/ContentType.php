@@ -7,7 +7,9 @@ use Dime\Server\View\Json;
 use Slim\Middleware;
 
 /**
- * ContentType
+ * ContentType Middleware read the accept header of the request,
+ * install view and decode content on its content-type.
+ * At the moment only "application/json" is supported.
  *
  * @author Danilo Kuehn <dk@nogo-software.de>
  */
@@ -15,7 +17,6 @@ class ContentType extends Middleware
 {
 
     protected $headers = [];
-    protected $mediaType = 'text/html';
 
     public function __construct(array $headers = [])
     {
@@ -24,12 +25,16 @@ class ContentType extends Middleware
 
     public function call()
     {
-        $this->mediaType = $this->extractMediaType();
-        if ($this->mediaType) {
+        $acceptHeader = $this->extractAcceptHeader();
+        if (!empty($acceptHeader)) {
+            $this->install($acceptHeader);
+        }
+
+        $contentType = $this->app->request()->getMediaType();
+        if (!empty($contentType)) {
             $env = $this->app->environment();
-            $this->install($this->mediaType);
             $env['slim.input_original'] = $env['slim.input'];
-            $env['slim.input'] = $this->decode($this->mediaType, $env['slim.input']);
+            $env['slim.input'] = $this->decode($contentType, $env['slim.input']);
         }
 
         $this->next->call();
@@ -38,8 +43,9 @@ class ContentType extends Middleware
             foreach ($this->headers as $key => $value) {
                 $this->app->response()->headers()->set($key, $value);
             }
+            $this->app->contentType($acceptHeader);
         } else {
-            $this->app->contentType($this->mediaType);
+            $this->app->contentType('text/html');
         }
     }
 
@@ -48,7 +54,7 @@ class ContentType extends Middleware
      *
      * @return type content-type or accept header
      */
-    public function extractMediaType() {
+    public function extractAcceptHeader() {
         $mediaType = $this->app->request()->getMediaType();
         if (empty($mediaType)) {
             $acceptParts = preg_split('/\s*[;,]\s*/', $this->app->request()->headers('accept'));
@@ -60,14 +66,14 @@ class ContentType extends Middleware
     /**
      * Decode data by given media type
      * 
-     * @param type $mediaType
+     * @param type $acceptHeader
      * @param type $data
      * @return type
      */
-    public function decode($mediaType, $data)
+    public function decode($acceptHeader, $data)
     {
         $result = $data;
-        switch ($mediaType) {
+        switch ($acceptHeader) {
             case 'application/json':
                 $decoded = json_decode($data, true);
                 if (JSON_ERROR_NONE === json_last_error()) {
@@ -81,13 +87,13 @@ class ContentType extends Middleware
 
     /**
      * Install view and error handler
-     * 
-     * @param type $mediaType
+     *
+     * @param type $acceptHeader
      */
-    public function install($mediaType)
+    public function install($acceptHeader)
     {
         $app = $this->app;
-        switch ($mediaType) {
+        switch ($acceptHeader) {
             case 'application/json':
                 // Error handler
                 $this->app->error(function (Exception $e) use ($app) {

@@ -82,6 +82,8 @@ class AuthController implements SlimController
                         'token' => $access->token,
                         'expires' => $access->expires($this->config['expires'])
                     ]);
+                } else {
+                    $this->render([ 'error' => 'Authentication error' ], 403);
                 }
             } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $ex) {
                 $this->render([ 'error' => 'Authentication error' ], 401);

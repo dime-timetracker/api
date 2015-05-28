@@ -24,8 +24,7 @@ class ContentType extends Middleware
 
     public function call()
     {
-        $this->mediaType = $this->app->request()->getMediaType();
-
+        $this->mediaType = $this->extractMediaType();
         if ($this->mediaType) {
             $env = $this->app->environment();
             $this->install($this->mediaType);
@@ -42,6 +41,20 @@ class ContentType extends Middleware
         } else {
             $this->app->contentType($this->mediaType);
         }
+    }
+
+    /**
+     * Extract request type from accept header if content-type is not available.
+     *
+     * @return type content-type or accept header
+     */
+    public function extractMediaType() {
+        $mediaType = $this->app->request()->getMediaType();
+        if (empty($mediaType)) {
+            $acceptParts = preg_split('/\s*[;,]\s*/', $this->app->request()->headers('accept'));
+            $mediaType = strtolower($acceptParts[0]);
+        }
+        return $mediaType;
     }
 
     /**
@@ -66,6 +79,11 @@ class ContentType extends Middleware
         return $result;
     }
 
+    /**
+     * Install view and error handler
+     * 
+     * @param type $mediaType
+     */
     public function install($mediaType)
     {
         $app = $this->app;
@@ -94,6 +112,11 @@ class ContentType extends Middleware
         }
     }
 
+    /**
+     * Translate error number into string
+     * @param type $type
+     * @return string
+     */
     static function _errorType($type = 1)
     {
         switch ($type) {

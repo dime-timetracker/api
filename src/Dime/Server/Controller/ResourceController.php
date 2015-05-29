@@ -168,7 +168,8 @@ class ResourceController implements SlimController
                 $this->render(['error' => 'Data not valid'], 400);
             } else {
                 $model->fill($data);
-                $model->save();
+                $this->modelFactory->updateRelations($resource, $model, $data, $this->app->user->id)
+                    ->save();
                 $this->render($model->toArray());
             }
         }

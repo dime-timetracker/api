@@ -50,6 +50,20 @@ class Factory implements \ArrayAccess, \Countable
             $model->user_id = $userId;
         }
 
+        return $this->updateRelations($resource, $model, $data, $userId);
+    }
+
+    /**
+     * Update model object with its relations
+     *
+     * @param string $resource
+     * @param \Dime\Server\Model\Base $model
+     * @param array $data
+     * @param int $userId
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function updateRelations($resource, \Dime\Server\Model\Base $model, array $data, $userId)
+    {
         // Bind related models
         if (!empty($this->config[$resource]['with'])) {
             foreach ($this->config[$resource]['with'] as $relationName) {
@@ -62,6 +76,19 @@ class Factory implements \ArrayAccess, \Countable
                         $model->$foreignKey = null;
                     } else if (is_int($relatedData)) {
                         $model->$foreignKey = $relatedData;
+                    } else if (is_array($relatedData) && 'tags' === $relationName) {
+                        $tagIds = [];
+                        foreach ($relatedData as $newTag) {
+                            $tag = Tag::where('user_id', $userId)
+                                ->where('name', $newTag['name'])->first();
+                            if ($tag === NULL) {
+                                $tag = $this->create('tag', $newTag);
+                                $tag->user_id = $userId;
+                                $tag->save();
+                            }
+                            $tagIds[] = $tag->id;
+                        }
+                        $model->$relationName()->sync($tagIds);
                     } else {
                         if (isset($relatedData['id'])) {
                             $relatedModelClass = $this->getClass($relationName);
@@ -70,7 +97,7 @@ class Factory implements \ArrayAccess, \Countable
                         } else if (isset($relatedData['alias'])) {
                             $relatedModelClass = $this->getClass($relationName);
                             $relatedModel = $relatedModelClass::where('user_id', $userId)->where('alias', $relatedData['alias'])->first();
-                            if ($relatedModel == NULL) {
+                            if ($relatedModel === NULL) {
                                 $relatedModel = $this->create($relationName, $relatedData);
                                 $relatedModel->user_id = $userId;
                             }

@@ -2,8 +2,6 @@
 Authorization
 =============
 
-To authorize the user too access the api you have to request an access token.
-
 Authorize a request
 ===================
 
@@ -16,7 +14,6 @@ To authorize a request you have to send the **Authorization** field with the req
   Authorization: DimeTimetracker USERNAME,CLIENT-IDENTIFIER,TOKEN
 
 .. list-table:: Authorization
-  :widths: 1 20
   :header-rows: 1
 
   * - Parameter
@@ -53,9 +50,11 @@ Request
   * - Method:
     - POST
   * - Headers:
-    - Accept: application/json
+    - .. code-block:: http
       
-      Content-Type: application/json; charset=utf-8
+        Accept: application/json
+        Content-Type: application/json; charset=utf-8
+      
   * - Body:
     - .. code-block:: javascript
     
@@ -76,9 +75,10 @@ Success
   * - Status:
     - 200
   * - Headers:
-    - Content-Type: application/json
-    
-      Content-Length: <length>
+    - .. code-block:: http
+      
+        Content-Type: application/json
+        Content-Length: <length>
   * - Body:
     - .. code-block:: javascript
 
@@ -97,9 +97,10 @@ Failed
   * - Status:
     - 403
   * - Headers:
-    - Content-Type: application/json
-    
-      Content-Length: <length>
+    - .. code-block:: http
+        
+        Content-Type: application/json
+        Content-Length: <length>
   * - Body:
     - .. code-block:: javascript
 
@@ -125,9 +126,12 @@ Request
   * - Method:
     - POST
   * - Headers:
-    - Accept: application/json
-      Authoriztion: DimeTimetracker USERNAME,CLIENT-IDENTIFIER,TOKEN
-      Content-Type: application/json
+    - .. code-block:: http
+        
+        Accept: application/json
+        Authoriztion: DimeTimetracker USERNAME,CLIENT-IDENTIFIER,TOKEN
+        Content-Type: application/json
+        
   * - Body:
     - .. code-block:: javascript
     
@@ -148,9 +152,11 @@ Success
   * - Status:
     - 200
   * - Headers:
-    - Content-Type: application/json
-    
-      Content-Length: <length>
+    - .. code-block:: http
+        
+        Content-Type: application/json
+        Content-Length: <length>
+        
   * - Body:
     - .. code-block:: javascript
 
@@ -169,9 +175,11 @@ Failed
   * - Status:
     - 403
   * - Headers:
-    - Content-Type: application/json
-    
-      Content-Length: <length>
+    - .. code-block:: http
+        
+        Content-Type: application/json
+        Content-Length: <length>
+        
   * - Body:
     - .. code-block:: javascript
 

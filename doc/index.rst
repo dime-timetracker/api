@@ -10,5 +10,6 @@ and manage update for the database.
 .. contents:: Table of Contents
 
 .. include:: chapters/installation.rst
+.. include:: chapters/authorization.rst
 .. include:: chapters/usage.rst
 .. include:: chapters/development.rst

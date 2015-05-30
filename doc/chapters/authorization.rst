@@ -26,7 +26,7 @@ To authorize a request you have to send the **Authorization** field with the req
     - admin
     - String, the username
   * - CLIENT-IDENTIFIER
-    - admin
+    - 74738ff5-5367-5958-9aee-98fffdcd1876
     - String, must be unique, because every client has its own access token
   * - TOKEN
     - wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY

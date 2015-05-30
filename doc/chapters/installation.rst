@@ -53,4 +53,4 @@ The installation of Dime Timetracker server is easy. Just follow the steps.
        
 #. Create mysql database.
 
-#. Open you browser and go to the server location and open the route "http://domain.to/server/migrate".
+#. Open you browser and go to the server location and open the route "http://domain.to/server/public/migrate".

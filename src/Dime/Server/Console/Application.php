@@ -6,6 +6,7 @@ use Dime\Server\Config\Loader;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Webmozart\Console\Config\DefaultApplicationConfig;
 
+
 /**
  * Application
  *
@@ -36,27 +37,33 @@ class Application extends DefaultApplicationConfig
     {
         parent::configure();
 
-        $dbHandler = new DatabaseHandler($this->config, $this->database);
-
         $this
             ->setHelp('Dime Timetracker Configuration Console')
             
             ->beginCommand('database')
                 ->setDescription('Database commands')
+                ->setHandler(new DatabaseHandler($this->config, $this->database))
                 ->beginSubCommand('create')
                     ->setDescription('Create database')
-                    ->setHandler($dbHandler)
                     ->setHandlerMethod('create')
                 ->end()
                 ->beginSubCommand('migrate')
                     ->setDescription('Migrate database')
-                    ->setHandler($dbHandler)
                     ->setHandlerMethod('migrate')
                 ->end()
                 ->beginSubCommand('seed')
                     ->setDescription('Seed database')
-                    ->setHandler($dbHandler)
                     ->setHandlerMethod('seed')
+                ->end()
+            ->end()
+
+
+            ->beginCommand('user')
+                ->setDescription('User commands')
+                ->setHandler(new UserHandler())
+                ->beginSubCommand('create')
+                    ->setDescription('Create new user')
+                    ->setHandlerMethod('create')
                 ->end()
             ->end()
             ;

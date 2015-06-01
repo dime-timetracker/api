@@ -7,8 +7,8 @@ class User extends Base
     use \Eloquence\Database\Traits\CamelCaseModel;
     
     protected $fillable = ['username', 'email', 'firstname', 'lastname', 'enabled'];
-    protected $guarded = ['id'];
-    protected $hidden = ['password'];
+    protected $guarded = ['id', 'password', 'salt'];
+    protected $hidden = ['password', 'salt'];
 
     public function activities()
     {
@@ -39,5 +39,4 @@ class User extends Base
     {
         return $this->hasMany('Dime\Server\Model\Timeslice');
     }
-
 }

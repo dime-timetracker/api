@@ -12,6 +12,11 @@ class UserTableSeeder extends Seeder
      */
     protected $hasher;
 
+    protected $users = [
+        ['username' => 'admin', 'password' => 'kitten'],
+        ['username' => 'alien', 'password' => 'fromOuterSpace']
+    ];
+
     /**
      * Run the database seeds.
      *
@@ -20,22 +25,16 @@ class UserTableSeeder extends Seeder
     public function run()
     {
         $this->hasher = new SymfonySecurityHasher();
-        
-        $salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
-        User::create([
-            'id' => 1,
-            'username' => 'admin',
-            'salt' => $salt,
-            'password' => $this->hasher->make('kitten', array('salt' => $salt))
-        ]);
 
-        $salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
-        User::create([
-            'id' => 2,
-            'username' => 'alien',
-            'salt' => $salt,
-            'password' => $this->hasher->make('fromOuterSpace', array('salt' => $salt))
-        ]);
+        foreach ($this->users as  $user) {
+            $salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
+            $user = new User();
+            $user->username = $user['username'];
+            $user->salt = $salt;
+            $user->password = $this->hasher->make($user['password'], array('salt' => $salt));
+            $user->enabled = true;
+            $user->save();
+        }
     }
 
 }

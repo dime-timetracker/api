@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+<?php
+
+define('ROOT_DIR', realpath(dirname(__FILE__) . '/../' ));
+require_once ROOT_DIR . '/vendor/autoload.php';
+
+use Dime\Server\Config\Loader;
+use Dime\Server\Console\Application;
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Webmozart\Console\ConsoleApplication;
+
+$config = new Loader();
+$config->import(ROOT_DIR . '/app/config.yml');
+
+$database = new Capsule();
+$database->addConnection($config['database']);
+$database->setAsGlobal();
+$database->bootEloquent();
+
+$cli = new ConsoleApplication(new Application($config, $database));
+$cli->run();

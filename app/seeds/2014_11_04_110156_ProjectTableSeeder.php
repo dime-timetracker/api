@@ -1,8 +1,8 @@
 <?php
 
-use Dime\Core\Model\Customer;
-use Dime\Core\Model\Project;
-use Dime\Core\Model\User;
+use Dime\Server\Model\Customer;
+use Dime\Server\Model\Project;
+use Dime\Server\Model\User;
 
 class ProjectTableSeeder extends Seeder {
 

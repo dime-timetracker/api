@@ -19,7 +19,8 @@ class CreateAccessTable extends Migration
         if (!Capsule::schema()->hasTable($this->table)) {
             Capsule::schema()->create($this->table, function(Blueprint $table) {
                 $table->increments('id');
-                $table->integer('user_id');
+                // FIXME
+                $table->integer('user_id')->unsigned();
                 $table->string('client');
                 $table->string('token');
                 $table->timestamps();

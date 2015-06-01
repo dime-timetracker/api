@@ -20,7 +20,8 @@
     "illuminate/database": "*",
     "illuminate/filesystem": "*",
     "kirkbushell/eloquence": "dev-master",
-    "symfony/yaml": "2.6.*"
+    "symfony/yaml": "2.6.*",
+    "webmozart/console": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "~4.6"

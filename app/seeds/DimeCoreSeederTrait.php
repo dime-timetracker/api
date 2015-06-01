@@ -1,6 +1,7 @@
 <?php
 
-trait DimeCoreSeederTrait {
+trait DimeCoreSeederTrait
+{
 
     /**
      * Run the database seeds.
@@ -25,4 +26,5 @@ trait DimeCoreSeederTrait {
         $this->call('ActivityTableSeeder');
         $this->call('TimesliceTableSeeder');
     }
+
 }

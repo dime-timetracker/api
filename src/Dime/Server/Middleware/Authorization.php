@@ -50,7 +50,9 @@ class Authorization extends Middleware
             try {
                 $accessClass = $this->config['access'];
                 $access = $accessClass::whereHas('user', function ($q) use ($authorization) {
-                            $q->where('username', $authorization[1]);
+                            $q
+                            ->where('username', $authorization[1])
+                            ->where('enabled', true);
                         })->whereClientAndToken($authorization[2], $authorization[3])->firstOrFail();
                 if (!$access->expired($this->config['expires'])) {
                     $this->app->access = $access;

@@ -24,10 +24,8 @@ class UserHandler
 
     public function create(Args $args, IO $io, Command $command)
     {
-        $io->writeLine("Give a username:");
-        $username = $io->readLine();
         $io->writeLine("Give a password:");
-        $password = $io->readLine();
+        $password = trim($io->readLine());
 
         $salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
 
@@ -37,5 +35,45 @@ class UserHandler
         $user->password = $this->hasher->make($password, array('salt' => $salt));
         $user->enabled = true;
         $user->save();
+    }
+
+    public function password(Args $args, IO $io, Command $command)
+    {
+        $io->writeLine("Give a username:");
+        $username = trim($io->readLine());
+        $io->writeLine("Give a password:");
+        $password = trim($io->readLine());
+
+        $user = User::where('username', $username)->first();
+        if ($user) {
+            $salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
+            $user->salt = $salt;
+            $user->password = $this->hasher->make($password, array('salt' => $salt));
+            $user->save();
+        } else {
+            $io->error('Username not found');
+        }
+    }
+
+    public function enable(Args $args, IO $io, Command $command)
+    {
+        $user = User::where('username', $args->getArgument('username'))->first();
+        if ($user) {
+            $user->enabled = true;
+            $user->save();
+        } else {
+            $io->error('Username not found');
+        }
+    }
+
+    public function disable(Args $args, IO $io, Command $command)
+    {
+        $user = User::where('username', $args->getArgument('username'))->first();
+        if ($user) {
+            $user->enabled = false;
+            $user->save();
+        } else {
+            $io->error('Username not found');
+        }
     }
 }

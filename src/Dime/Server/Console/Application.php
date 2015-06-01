@@ -4,6 +4,7 @@ namespace Dime\Server\Console;
 
 use Dime\Server\Config\Loader;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Webmozart\Console\Api\Args\Format\Argument;
 use Webmozart\Console\Config\DefaultApplicationConfig;
 
 
@@ -63,7 +64,24 @@ class Application extends DefaultApplicationConfig
                 ->setHandler(new UserHandler())
                 ->beginSubCommand('create')
                     ->setDescription('Create new user')
+                    ->addArgument('username', Argument::REQUIRED, 'The username')
                     ->setHandlerMethod('create')
+                    ->markDefault()
+                ->end()
+                ->beginSubCommand('password')
+                    ->setDescription('Update users password')
+                    ->addArgument('username', Argument::REQUIRED, 'The username')
+                    ->setHandlerMethod('password')
+                ->end()
+                ->beginSubCommand('enable')
+                    ->setDescription('Disable user')
+                    ->addArgument('username', Argument::REQUIRED, 'The username')
+                    ->setHandlerMethod('enable')
+                ->end()
+                ->beginSubCommand('disable')
+                    ->setDescription('Disable user')
+                    ->addArgument('username', Argument::REQUIRED, 'The username')
+                    ->setHandlerMethod('disable')
                 ->end()
             ->end()
             ;

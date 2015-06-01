@@ -60,6 +60,18 @@ class DatabaseHandler
 
     public function seed(Args $args, IO $io, Command $command)
     {
+        if ($args->getOption('truncate')) {
+            $io->writeLine('Truncate tables...');
+            Capsule::connection()->statement('SET FOREIGN_KEY_CHECKS = 0;');
+            Capsule::table('timeslices')->truncate();
+            Capsule::table('activities')->truncate();
+            Capsule::table('projects')->truncate();
+            Capsule::table('services')->truncate();
+            Capsule::table('customers')->truncate();
+            Capsule::table('users')->truncate();
+            Capsule::connection()->statement('SET FOREIGN_KEY_CHECKS = 1;');
+        }
+
         $seeds_path = $this->config['seed_dir'];
 
         $fs = new Filesystem();

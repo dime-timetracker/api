@@ -15,7 +15,7 @@ class CustomerTableSeeder extends Seeder
     public function run()
     {
         $userId = User::where('username', 'admin')->first()->id;
-
+        Customer::unguard();
         Customer::create([
             'id' => 1,
             'name' => 'CWE Customer',
@@ -34,6 +34,7 @@ class CustomerTableSeeder extends Seeder
             'alias' => 'ac',
             'user_id' => User::where('username', 'alien')->first()->id,
         ]);
+        Customer::reguard();
     }
 
 }

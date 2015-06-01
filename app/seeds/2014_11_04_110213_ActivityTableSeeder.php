@@ -31,6 +31,7 @@ class ActivityTableSeeder extends Seeder
             'cwe' => Project::where('alias', 'cwe')->first()->id,
             'phpugl' => Project::where('alias', 'phpugl')->first()->id,
         ];
+        Activity::unguard();
         Activity::create([
             'id' => 1,
             'service_id' => $services['consulting'],
@@ -71,6 +72,7 @@ class ActivityTableSeeder extends Seeder
             'rate_reference' => 'service',
             'user_id' => $userId,
         ]);
+        Activity::reguard();
     }
 
 }

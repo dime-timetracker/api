@@ -15,6 +15,7 @@ class ServiceTableSeeder extends Seeder
     public function run()
     {
         $userId = User::where('username', 'admin')->first()->id;
+        Service::unguard();
         Service::create([
             'id' => 1,
             'name' => 'Consulting',
@@ -85,6 +86,7 @@ class ServiceTableSeeder extends Seeder
             'rate' => 70,
             'user_id' => $userId,
         ]);
+        Service::reguard();
     }
 
 }

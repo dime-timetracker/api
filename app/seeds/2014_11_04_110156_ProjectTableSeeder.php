@@ -3,6 +3,7 @@
 use Dime\Server\Model\Customer;
 use Dime\Server\Model\Project;
 use Dime\Server\Model\User;
+use Illuminate\Database\Seeder;
 
 class ProjectTableSeeder extends Seeder {
 
@@ -18,6 +19,7 @@ class ProjectTableSeeder extends Seeder {
             'cwe' => Customer::where('alias', 'cwe')->first()->id,
             'ac'  => Customer::where('alias', 'ac')->first()->id,
         ];
+        Project::unguard();
         Project::create([
             'id'          => 1,
             'name'        => 'PHPUGL Coding Weekend',
@@ -32,5 +34,6 @@ class ProjectTableSeeder extends Seeder {
             'customer_id' => $customers['ac'],
             'user_id'     => $userId,
         ]);
+        Project::reguard();
     }
 }

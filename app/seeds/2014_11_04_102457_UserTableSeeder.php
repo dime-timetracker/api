@@ -26,12 +26,12 @@ class UserTableSeeder extends Seeder
     {
         $this->hasher = new SymfonySecurityHasher();
 
-        foreach ($this->users as  $user) {
+        foreach ($this->users as  $u) {
             $salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
             $user = new User();
-            $user->username = $user['username'];
+            $user->username = $u['username'];
             $user->salt = $salt;
-            $user->password = $this->hasher->make($user['password'], array('salt' => $salt));
+            $user->password = $this->hasher->make($u['password'], array('salt' => $salt));
             $user->enabled = true;
             $user->save();
         }

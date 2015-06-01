@@ -5,6 +5,7 @@ namespace Dime\Server\Console;
 use Dime\Server\Config\Loader;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Webmozart\Console\Api\Args\Format\Argument;
+use Webmozart\Console\Api\Args\Format\Option;
 use Webmozart\Console\Config\DefaultApplicationConfig;
 
 
@@ -54,6 +55,7 @@ class Application extends DefaultApplicationConfig
                 ->end()
                 ->beginSubCommand('seed')
                     ->setDescription('Seed database')
+                    ->addOption('truncate', null, Option::NO_VALUE, 'Truncate database')
                     ->setHandlerMethod('seed')
                 ->end()
             ->end()

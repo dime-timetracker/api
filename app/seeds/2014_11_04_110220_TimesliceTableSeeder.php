@@ -15,6 +15,7 @@ class TimesliceTableSeeder extends Seeder
     public function run()
     {
         $userId = User::where('username', 'admin')->first()->id;
+        Timeslice::unguard();
         Timeslice::create([
             'id' => 1,
             'activity_id' => 1,
@@ -46,6 +47,7 @@ class TimesliceTableSeeder extends Seeder
             'stopped_at' => '2014-11-05 09:47:09',
             'user_id' => $userId,
         ]);
+        Timeslice::reguard();
     }
 
 }

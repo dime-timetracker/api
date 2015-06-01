@@ -28,9 +28,9 @@ class CreateActivitiesTable extends Migration
                 $table->integer('user_id')->unsigned();
                 $table->timestamps();
 
-                $table->foreign('customer_id')->references('id')->on('customers')->onDelete('null');
-                $table->foreign('project_id')->references('id')->on('projects')->onDelete('null');
-                $table->foreign('service_id')->references('id')->on('services')->onDelete('null');
+                $table->foreign('customer_id')->references('id')->on('customers')->onDelete('set null');
+                $table->foreign('project_id')->references('id')->on('projects')->onDelete('set null');
+                $table->foreign('service_id')->references('id')->on('services')->onDelete('set null');
                 $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             });
         }

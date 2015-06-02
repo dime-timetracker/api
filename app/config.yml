@@ -43,33 +43,40 @@ api:
         - "timeslices"
         - "tags"
       filter: ~
+      pageSize: 100
     customer:
       model: "Dime\\Server\\Model\\Customer"
       with: ~
       filter: ~
+      pageSize: -1
     project:
       model: "Dime\\Server\\Model\\Project"
       with:
         - "customer"
       filter: ~
+      pageSize: -1
     service:
       model: "Dime\\Server\\Model\\Service"
       with: ~
       filter: ~
+      pageSize: -1
     setting:
       model: "Dime\\Server\\Model\\Setting"
       with: ~
       filter: ~
+      pageSize: -1
     tag:
       model: "Dime\\Server\\Model\\Tag"
       with: ~
       filter: ~
+      pageSize: -1
     timeslice:
       model: "Dime\\Server\\Model\\Timeslice"
       with:
         - "activity"
         - "tags"
       filter: ~
+      pageSize: 100
 
 doc:
   prefix: "/doc"

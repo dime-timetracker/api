@@ -86,33 +86,22 @@ class ResourceController implements SlimController
      * @param string $resource
      */
     public function listAction($resource)
-    {
-        // Request parameter
-        $filter = $this->app->request()->get('filter');
-        $page = $this->app->request()->get('page', 1);
-        $with = $this->app->request()->get('with', 30);
-
+    {        
         $modelClass = $this->modelFactory->with($resource);
         $collection = $modelClass
             ->where('user_id', $this->app->user->id)
-            ->filtered($filter)
             ->ordered();
+     
+        // Request parameter
+        $filter = $this->app->request()->get('filter');
+        if (!empty($filter)) {
+            $collection = $collection->filtered($filter);
+        }
 
-        $total    = $collection->count();
-        $lastPage = ceil($total / $with);
-        $this->app->response()->headers()->set('X-Dime-Total', $total);
-        $this->app->response()->headers()->set('Link', implode(', ', [
-            $this->pageUrl($resource, $filter, ($page + 1), $with, 'next'),
-            $this->pageUrl($resource, $filter, ($page + 1), $with, 'prev'),
-            $this->pageUrl($resource, $filter, 1, $with, 'first'),
-            $this->pageUrl($resource, $filter, $lastPage, $with, 'last'),
-        ]));
-
-        $result = $collection->take($with)
-            ->skip($with * ($page - 1))
-            ->get();
-
-        $this->render($result->toArray());
+        $page = $this->app->request()->get('page', 1);
+        $with = $this->app->request()->get('with', -1);
+        $collection = $this->paged($resource, $collection, $page, $with, $filter);
+        $this->render($collection->get()->toArray());
     }
 
     /**
@@ -193,6 +182,50 @@ class ResourceController implements SlimController
         }
     }
 
+    /**
+     * Page collection
+     * 
+     * @param type $resource
+     * @param type $collection
+     * @param int $page
+     * @param int $with
+     * @param array $filter
+     * @return type
+     */
+    protected function paged($resource, $collection, $page, $with, $filter)
+    {
+        if (isset($this->modelFactory[$resource]['pageSize']) && $with < 1) {
+            $with = $this->modelFactory[$resource]['pageSize'];
+        }
+
+        $total    = $collection->count();
+        $this->app->response()->headers()->set('X-Dime-Total', $total);
+
+        if ($with > 0) {
+            $lastPage = ceil($total / $with);
+            $this->app->response()->headers()->set('Link', implode(', ', [
+                $this->pageUrl($resource, $filter, ($page + 1), $with, 'next'),
+                $this->pageUrl($resource, $filter, ($page + 1), $with, 'prev'),
+                $this->pageUrl($resource, $filter, 1, $with, 'first'),
+                $this->pageUrl($resource, $filter, $lastPage, $with, 'last'),
+            ]));
+
+            $collection = $collection->take($with)->skip($with * ($page - 1));
+        }
+
+        return $collection;
+    }
+
+    /**
+     * Generate page urls.
+     * 
+     * @param type $resource
+     * @param type $filter
+     * @param type $page
+     * @param type $with
+     * @param type $rel
+     * @return type
+     */
     protected function pageUrl($resource, $filter, $page = 1, $with = 30, $rel = null)
     {
         $param = [];

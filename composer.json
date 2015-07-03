@@ -20,9 +20,13 @@
     "illuminate/database": "*",
     "illuminate/filesystem": "*",
     "kirkbushell/eloquence": "dev-master",
+    "dime-timetracker/parser": "1.0",
     "symfony/yaml": "2.6.*",
     "webmozart/console": "*"
   },
+  "repositories": [
+    { "type": "vcs", "url": "git@github.com:dime-timetracker/parser.git" }
+  ],
   "require-dev": {
     "phpunit/phpunit": "~4.6"
   },

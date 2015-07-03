@@ -3,6 +3,8 @@
 namespace Dime\Server\Model;
 
 use Moment\Moment;
+use Dime\Parser\ActivityRelationParser as RelationParser;
+use Dime\Parser\ActivityDescriptionParser as DescriptionParser;
 
 class Activity extends Base
 {
@@ -46,7 +48,7 @@ class Activity extends Base
         return $query->latest('updated_at');
     }
 
-    public function scopeFiltered($query, $filter)
+    public function scopeFiltered($query, $filterString)
     {
         $customers = array(
             'in' => array(),
@@ -92,47 +94,44 @@ class Activity extends Base
                 'stop' => $now->cloning()->subtractMonths(1)->endOf('month')
             ]
         ];
-        // TODO: apply date filters :)
 
-        $filter = split(' ', $filter);
-        foreach ($filter as $value) {
-            preg_match('/^([+-])?([@\/:#])?(.*)$/', $value, $match);
-            switch ($match[2]) {
-                case '@':
-                    if ($match[1] == '-') {
-                        $customers['out'][] = $match[3];
-                    } else {
-                        $customers['in'][] = $match[3];
-                    }
-                    break;
-                case '/':
-                    if ($match[1] == '-') {
-                        $projects['out'][] = $match[3];
-                    } else {
-                        $projects['in'][] = $match[3];
-                    }
-                    break;
-                case ':':
-                    if ($match[1] == '-') {
-                        $services['out'][] = $match[3];
-                    } else {
-                        $services['in'][] = $match[3];
-                    }
-                    break;
-                case '#':
-                    if ($match[1] == '-') {
-                        $tags['out'][] = $match[3];
-                    } else {
-                        $tags['in'][] = $match[3];
-                    }
-                    break;
+        $relationParser = new RelationParser();
+        $filters = $relationParser->run($filterString);
+        $filterString = $relationParser->clean($filterString);
+        foreach ($filters as $relation=>$filter) {
+            if (!array_key_exists('in', $filter) && !array_key_exists('out', $filter)) {
+                $filter = ['in' => $filter];
             }
+            $query = $this->filterRelation($query, $relation, $filter);
         }
         
-        $query = $this->filterRelation($query, 'customer', $customers);
-        $query = $this->filterRelation($query, 'project', $projects);
-        $query = $this->filterRelation($query, 'service', $services);
-        $query = $this->filterRelation($query, 'tags', $tags);
+        /* TODO: apply timerange filter
+        $timerangeParser = new TimerangeParser()
+        $filters = $timerangeParser->run($filterString);
+        $filterString = $timerangeParser->clean($filterString);
+        */
+
+        /* TODO: apply duration filter
+        $durationParser = new DurationParser()
+        $filters = $durationParser->run($filterString);
+        $filterString = $durationParser->clean($filterString);
+        */
+
+        $descriptionParser = new DescriptionParser();
+        $filters = $descriptionParser->run($filterString);
+        $filterString = $descriptionParser->clean($filterString);
+        if (isset($filters['description'])) {
+            $filter = $filters['description'];
+            if (!is_array($filter)) {
+                $filter = ['in' => [$filter], 'out' => []];
+            }
+            if (!empty($filter['in'])) {
+                $query->where('description', 'like', array_map(function ($string) { return '%'.$string.'%'; }, $filter['in']));
+            }
+            if (!empty($filter['out'])) {
+                $query->where('description', 'like', array_map(function ($string) { return '%'.$string.'%'; }, $filter['out']));
+            }
+        }
 
         return $query;
     }

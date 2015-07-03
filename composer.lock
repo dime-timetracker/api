@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7b94dbc2f9d5024bd9427fd61fdcf42f",
+    "hash": "aaf380f439cb77e14806fa60005f9be1",
     "packages": [
         {
             "name": "danielstjules/stringy",
@@ -61,6 +61,46 @@
                 "utils"
             ],
             "time": "2015-02-10 06:19:18"
+        },
+        {
+            "name": "dime-timetracker/parser",
+            "version": "1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dime-timetracker/parser.git",
+                "reference": "0783c8b338f052698dd2bd7e8bd6a30ec0e53f30"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dime-timetracker/parser/zipball/0783c8b338f052698dd2bd7e8bd6a30ec0e53f30",
+                "reference": "0783c8b338f052698dd2bd7e8bd6a30ec0e53f30",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Dime\\Parser\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Danilo Kühne",
+                    "email": "dk@nogo-software.de"
+                },
+                {
+                    "name": "Thomas Birke",
+                    "email": "tbirke@netextreme.de"
+                }
+            ],
+            "description": "Parse magic input of Dime",
+            "support": {
+                "source": "https://github.com/dime-timetracker/parser/tree/1.0",
+                "issues": "https://github.com/dime-timetracker/parser/issues"
+            },
+            "time": "2015-07-03 11:29:43"
         },
         {
             "name": "doctrine/inflector",

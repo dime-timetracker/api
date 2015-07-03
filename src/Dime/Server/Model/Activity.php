@@ -50,51 +50,6 @@ class Activity extends Base
 
     public function scopeFiltered($query, $filterString)
     {
-        $customers = array(
-            'in' => array(),
-            'out' => array()
-        );
-        $projects = array(
-            'in' => array(),
-            'out' => array()
-        );
-        $services = array(
-            'in' => array(),
-            'out' => array()
-        );
-        $tags = array(
-            'in' => array(),
-            'out' => array()
-        );
-
-        $now = new Moment();
-        $dateFilters = [
-            'today' => [
-                'start' => $now->cloning()->startOf('day')
-            ],
-            'yesterday' => [
-                'start' => $now->cloning()->subtractDays(1)->startOf('day'),
-                'stop' => $now->cloning()->subtractDays(1)->endOf('day')
-            ],
-            'current week' => [
-                'start' => $now->cloning()->startOf('week')
-            ],
-            'last week' => [
-                'start' => $now->cloning()->subtractWeeks(1)->startOf('week'),
-                'stop' => $now->cloning()->subtractWeeks(1)->endOf('week'),
-            ],
-            'last 4 weeks' => [
-                'start' => $now->cloning()->subtractWeeks(4)->startOf('day')
-            ],
-            'current month' => [
-                'start' => $now->cloning()->startOf('month')
-            ],
-            'last month' => [
-                'start' => $now->cloning()->subtractMonths(1)->startOf('month'),
-                'stop' => $now->cloning()->subtractMonths(1)->endOf('month')
-            ]
-        ];
-
         $relationParser = new RelationParser();
         $filters = $relationParser->run($filterString);
         $filterString = $relationParser->clean($filterString);

@@ -21,7 +21,6 @@ routes:
   - "Dime\\Server\\Controller\\AuthController"
   - "Dime\\Server\\Controller\\ResourceController"
   - "Dime\\Server\\Controller\\ParseController"
-  - "Dime\\Server\\Controller\\MaintenanceController"
   - "Dime\\Server\\Controller\\DocController"
 
 # Api

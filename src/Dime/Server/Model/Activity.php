@@ -54,12 +54,12 @@ class Activity extends Base
         $filters = $relationParser->run($filterString);
         $filterString = $relationParser->clean($filterString);
         foreach ($filters as $relation=>$filter) {
-            if (!array_key_exists('in', $filter) && !array_key_exists('out', $filter)) {
-                $filter = ['in' => $filter];
+            if (!is_array($filter)) {
+                $filter = ['in' => [$filter]];
             }
             $query = $this->filterRelation($query, $relation, $filter);
         }
-        
+
         /* TODO: apply timerange filter
         $timerangeParser = new TimerangeParser()
         $filters = $timerangeParser->run($filterString);
@@ -84,7 +84,7 @@ class Activity extends Base
                 $query->where('description', 'like', array_map(function ($string) { return '%'.$string.'%'; }, $filter['in']));
             }
             if (!empty($filter['out'])) {
-                $query->where('description', 'like', array_map(function ($string) { return '%'.$string.'%'; }, $filter['out']));
+                $query->where('description', 'not like', array_map(function ($string) { return '%'.$string.'%'; }, $filter['out']));
             }
         }
 

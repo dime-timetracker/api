@@ -47,7 +47,7 @@ class ResourceController implements SlimController
         // Middleware
         $this->app->add(new Route($this->config['prefix'], new Authorization($this->app->config('auth'))));
         $this->app->add(new Route($this->config['prefix'], new ContentType($this->config['headers'])));
-        
+
         // Routes
         $this->app
                 ->get($this->config['prefix'] . '/:resource/:id', [$this, 'beforeAction'], [$this, 'getAction'])
@@ -86,12 +86,12 @@ class ResourceController implements SlimController
      * @param string $resource
      */
     public function listAction($resource)
-    {        
+    {
         $modelClass = $this->modelFactory->with($resource);
         $collection = $modelClass
             ->where('user_id', $this->app->user->id)
             ->ordered();
-     
+
         // Request parameter
         $filter = $this->app->request()->get('filter');
         if (!empty($filter)) {
@@ -184,7 +184,7 @@ class ResourceController implements SlimController
 
     /**
      * Page collection
-     * 
+     *
      * @param type $resource
      * @param type $collection
      * @param int $page
@@ -218,7 +218,7 @@ class ResourceController implements SlimController
 
     /**
      * Generate page urls.
-     * 
+     *
      * @param type $resource
      * @param type $filter
      * @param type $page

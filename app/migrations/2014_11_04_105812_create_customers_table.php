@@ -22,7 +22,7 @@ class CreateCustomersTable extends Migration
                 $table->string('name');
                 $table->string('alias');
                 $table->decimal('rate');
-                $table->boolean('enabled');
+                $table->boolean('enabled')->default(true);
                 $table->integer('user_id')->unsigned();
                 $table->timestamps();
 
@@ -32,7 +32,7 @@ class CreateCustomersTable extends Migration
             Capsule::schema()->dropIfExists('customer_tags');
             Capsule::schema()->table($this->table, function(Blueprint $table) {
                 $table->decimal('rate');
-                $table->boolean('enabled');
+                $table->boolean('enabled')->default(true);
             });
         }
     }

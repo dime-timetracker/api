@@ -20,7 +20,7 @@ class CreateTagsTable extends Migration
             Capsule::schema()->create($this->table, function(Blueprint $table) {
                 $table->increments('id');
                 $table->string('name');
-                $table->boolean('enabled');
+                $table->boolean('enabled')->default(true);
                 $table->integer('user_id')->unsigned();
                 $table->timestamps();
 
@@ -28,8 +28,8 @@ class CreateTagsTable extends Migration
             });
         } else {
             Capsule::schema()->table($this->table, function(Blueprint $table) {
-                $table->boolean('enabled')->default(true);
                 $table->removeColumn('system');
+                $table->boolean('enabled')->default(true);
             });
         }
     }

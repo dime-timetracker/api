@@ -25,7 +25,7 @@ class CreateUsersTable extends Migration
                 $table->string('salt');
                 $table->string('firstname');
                 $table->string('lastname');
-                $table->boolean('enabled');
+                $table->boolean('enabled')->default(true);
                 $table->boolean('expired');
                 $table->dateTime('expires_at');
                 $table->timestamps();

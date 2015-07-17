@@ -21,9 +21,8 @@ class CreateServicesTable extends Migration
                 $table->increments('id');
                 $table->string('name');
                 $table->string('alias');
-                $table->string('description');
                 $table->decimal('rate');
-                $table->boolean('enabled');
+                $table->boolean('enabled')->default(true);
                 $table->integer('user_id')->unsigned();
                 $table->timestamps();
 
@@ -31,6 +30,8 @@ class CreateServicesTable extends Migration
             });
         } else {
             Capsule::schema()->dropIfExists('service_tags');
+            $table->removeColumn('description');
+            $table->boolean('enabled')->default(true);
         }
     }
 

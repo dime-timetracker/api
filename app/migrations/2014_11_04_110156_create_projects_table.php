@@ -41,6 +41,7 @@ class CreateProjectsTable extends Migration
                 $table->removeColumn('stopped_at');
                 $table->removeColumn('deadline');
                 $table->removeColumn('fixed_price');
+                $table->boolean('enabled');
             });
         }
     }

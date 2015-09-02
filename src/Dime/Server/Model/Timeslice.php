@@ -2,6 +2,8 @@
 
 namespace Dime\Server\Model;
 
+use Dime\Parser\DatetimeFilterParser;
+
 class Timeslice extends Base
 {
     protected $fillable = ['duration', 'startedAt', 'stoppedAt'];
@@ -43,6 +45,23 @@ class Timeslice extends Base
         } else {
             $this->duration = null;
         }
+    }
+
+    public function scopeFiltered($query, $filterString)
+    {
+        $datetimeFilterParser = new DatetimeFilterParser();
+        $filters = $datetimeFilterParser->run($filterString);
+        $filterString = $datetimeFilterParser->clean($filterString);
+        if (isset($filters['range'])) {
+            $range = $filters['range'];
+            if (isset($range['start'])) {
+                $query->where('started_at', '>=', $range['start']->format('Y-m-d H:i'));
+            }
+            if (isset($range['stop'])) {
+                $query->where('stopped_at', '<=', $range['stop']->format('Y-m-d H:i'));
+            }
+        }
+        return $query;
     }
 
 }

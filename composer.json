@@ -20,7 +20,7 @@
     "illuminate/database": "*",
     "illuminate/filesystem": "*",
     "kirkbushell/eloquence": "dev-master",
-    "dime-timetracker/parser": "1.0",
+    "dime-timetracker/parser": "~1.1",
     "symfony/yaml": "2.6.*",
     "webmozart/console": "*"
   },

@@ -93,21 +93,20 @@ class Activity extends Base
 
     public function filterRelation($query, $name, array $values) {
         if (!empty($values['in'])) {
-            $query = $this->inRelation($query, $name, $values['in']);
+            $query = $this->inRelation($query, $name, $values['in'], true);
         } else if (!empty($values['out'])) {
-            $query = $this->inRelation($query, $name, $values['out'], true);
+            $query = $this->inRelation($query, $name, $values['out'], false);
         }
         return $query;
     }
 
-    public function inRelation($query, $name, array $values, $not = false) {
-        return $query->whereHas($name, function($q) use ($values, $not) {
-            if ($not) {
-                $q->whereNotIn('alias', $values);
-            } else {
+    public function inRelation($query, $name, array $values, $isRelated = true) {
+        return $query->whereHas($name, function($q) use ($values, $isRelated) {
+            if ($isRelated) {
                 $q->whereIn('alias', $values);
+            } else {
+                $q->whereNotIn('alias', $values);
             }
         });
     }
-
 }

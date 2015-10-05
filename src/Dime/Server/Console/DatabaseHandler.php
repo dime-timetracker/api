@@ -77,7 +77,7 @@ class DatabaseHandler
         $fs = new Filesystem();
         $files = $fs->glob($seeds_path . '/*_*.php');
 
-		if ($files !== false) {
+        if ($files !== false) {
 
             $files = array_map(function($file) {
                 return str_replace('.php', '', basename($file));

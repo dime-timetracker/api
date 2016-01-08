@@ -30,19 +30,33 @@ class Resource
     public function getAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
         $entity = $this->getRepository($args['resource'])->find($args['id']);
+        if (empty($entity)) {
+            throw new NotFoundException('Resource not found');
+        }
 
         return $this->render($request, $entity, $response);
     }
 
     public function postAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-	
+	      $entity = $request->getBodyParsed();
+        
+        if (empty($entity)) {
+            throw new NotValidException('Request data are not valid');
+        }
+        
+        // TODO createdAt / updatedAt
+        
+        $this->manager->persist($data);
+        $this->manager->flush();
+
         return $this->render($request, $entity, $response);
     }
 
     public function putAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
         $entity = $this->getRepository($args['resource'])->find($args['id']);
+        // TODO merge with entity
 
         return $this->render($request, $entity, $response);
     }

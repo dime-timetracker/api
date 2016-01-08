@@ -7,9 +7,14 @@ return [
         'controller' => 'Dime\Server\Endpoint\Authentication:login',
         'map' => ['POST']
     ],
-    'lougout' => [
+    'logout' => [
         'route' => '/logout',
         'controller' => 'Dime\Server\Endpoint\Authentication:logout',
+        'map' => ['POST']
+    ],
+    'parser_analyse' => [
+        'route' => '/analyse/{name}'
+        'controller' => 'Dime\Server\Endpoint\Parser:analyse',
         'map' => ['POST']
     ],
     'resource_get' => [

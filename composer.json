@@ -1,38 +1,26 @@
 {
-  "name": "dime/server",
-  "description": "Dime Timetracker Server",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Thomas Birke",
-      "email": "tbirke@netextreme.de"
+    "name": "nogo/server",
+    "description": "Description of project server.",
+    "authors": [
+        {
+            "name": "Danilo Kühn",
+            "email": "dk@nogo-software.de"
+        }
+    ],
+    "require": {
+        "slim/slim": "3.x-dev",
+        "juliangut/slim-doctrine": "dev-master",
+        "jms/serializer": "1.1.0"
     },
-    {
-      "name": "Danilo Kuehn",
-      "email": "dk@nogo-software.de"
+    "repositories": [
+      { "type": "vcs", "url": "git@github.com:nogo/slim-doctrine.git" }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "~4.6"
+    },
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
     }
-  ],
-  "minimum-stability": "dev",
-  "require": {
-    "php": ">=5.5.0",
-    "slim/slim": "2.*",
-    "fightbulc/moment": "*",
-    "illuminate/database": "*",
-    "illuminate/filesystem": "*",
-    "kirkbushell/eloquence": "dev-master",
-    "dime-timetracker/parser": "~1.1",
-    "symfony/yaml": "2.6.*",
-    "webmozart/console": "*"
-  },
-  "repositories": [
-    { "type": "vcs", "url": "git@github.com:dime-timetracker/parser.git" }
-  ],
-  "require-dev": {
-    "phpunit/phpunit": "~4.6"
-  },
-  "autoload": {
-    "psr-0": {
-      "": "src/"
-    }
-  }
 }

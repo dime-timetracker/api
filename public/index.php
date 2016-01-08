@@ -1,48 +1,106 @@
 <?php
 
-define('ROOT_DIR', realpath(dirname(__FILE__) . '/../' ));
-require_once ROOT_DIR . '/vendor/autoload.php';
-
-use Dime\Server\Config\SlimLoader;
-use Illuminate\Database\Capsule\Manager as Capsule;
-use Slim\Slim;
-
-$app = new Slim();
-
-// start framework configuration
-$app->container->singleton('configuration', function() use ($app) {
-    return new SlimLoader($app);
-});
-$app->configuration->import(ROOT_DIR . '/app/config.yml')->refresh();
-
-$app->config(
-    'log.writer', new Dime\Server\Log\Writer(array('path' => $app->config('log_dir')))
-);
-
-// database
-$configuration = $app->config('database');
-if (!empty($configuration)) {
-    $app->container->singleton('database', function () {
-        return new Capsule();
-    });
-    $app->database->addConnection($configuration);
-    $app->database->setAsGlobal();
-    $app->database->bootEloquent();
-} else {
-    $app->log->error('Database: No configuration [database] found.');
+if (PHP_SAPI == 'cli-server') {
+    // To help the built-in PHP dev server, check if the request was actually for
+    // something which should probably be served as a static file
+    $file = __DIR__ . $_SERVER['REQUEST_URI'];
+    if (is_file($file)) {
+        return false;
+    }
 }
 
+define('ROOT_DIR', realpath(dirname(__FILE__) . '/../'));
+require_once ROOT_DIR . '/vendor/autoload.php';
 
-// load controller
-foreach($app->config('routes') as $class) {
-    $ref = new ReflectionClass($class);
-    if ($ref->implementsInterface('Dime\Server\Controller\SlimController')) {
-        /**
-         * @var Controller $controller
-         */
-        $controller = new $class();
-        $controller->enable($app);
-        $app->log->debug('Register and enable controller [' . $class . '].');
+use Jgut\Slim\Doctrine\EntityManagerBuilder;
+use Interop\Container\ContainerInterface;
+use Slim\App;
+
+$app = new App(require ROOT_DIR . '/app/config.php');
+
+$container = $app->getContainer();
+
+// Dependencies
+
+$container['entityManager'] = function (ContainerInterface $container) {
+    return EntityManagerBuilder::build($container->settings['doctrine']);
+};
+
+$container['serializer'] = function () {
+    return JMS\Serializer\SerializerBuilder::create()->build();
+};
+
+$container['hasher'] = function () {
+    return new Dime\Server\Hash\SymfonySecurityHasher();
+};
+
+// Middleware
+
+$container['Dime\Server\Middleware\Authorization'] = function (ContainerInterface $container) {
+    $config = $container->settings['auth'];
+
+    $repository = $container->entityManager->getRepository($config['access']);
+
+    $access = [];
+    $collection = $repository->findAll();
+    foreach ($collection as $entity) {
+        $user = $entity->getUser();
+        if (!isset($access[$user->getUsername()])) {
+            $access[$user->getUsername()] = [];
+        }
+
+        $access[$user->getUsername()][] = [
+            'client' => $entity->getClient(),
+            'token' => $entity->getToken(),
+            'expires' => $entity->getUpdatedAt()
+        ];
+    }
+
+    return new Dime\Server\Middleware\Authorization($config, $access);
+};
+
+$container['Dime\Server\Middleware\ContentNegotiation'] = function (ContainerInterface $container) {
+    return new Dime\Server\Middleware\ContentNegotiation(
+            $container->settings['api'], $container->serializer
+    );
+};
+
+$container['Dime\Server\Middleware\ResourceType'] = function (ContainerInterface $container) {
+    return new Dime\Server\Middleware\ResourceType(
+            $container->settings['api']
+    );
+};
+
+// Endpoints
+
+$container['Dime\Server\Endpoint\Authentication'] = function (ContainerInterface $container) {
+    return new Dime\Server\Endpoint\Authentication(
+            $container->settings['api'], 
+            $container->entityManager, 
+            $container->hasher
+    );
+};
+
+$container['Dime\Server\Endpoint\Resource'] = function (ContainerInterface $container) {
+    return new Dime\Server\Endpoint\Resource(
+            $container->settings['api'], 
+            $container->entityManager
+    );
+};
+
+// Bootstrap routes
+$routing = require_once ROOT_DIR . '/app/routing.php';
+foreach ($routing as $name => $config) {
+    $r = $app->map(
+            $config['map'], 
+            $config['route'], 
+            $config['controller']
+    );
+
+    if (isset($config['middleware'])) {
+        foreach ($config['middleware'] as $mw) {
+            $r = $r->add($mw);
+        }
     }
 }
 

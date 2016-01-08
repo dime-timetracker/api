@@ -2,8 +2,8 @@
 
 namespace Dime\Server\Middleware;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Slim\Middleware;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Authorization is a middleware and read the HTTP header Authorization or X-Authorization.
@@ -23,53 +23,39 @@ use Slim\Middleware;
  *
  * @author Danilo Kuehn <dk@nogo-software.de>
  */
-class Authorization extends Middleware
+class Authorization implements Middleware
 {
 
-    /**
-     * @var array
-     */
     protected $config;
+    protected $access;
 
     /**
-     * Constructor
-     *
-     * @param   string	$config
-     * @return  void
+     * Constructor.
+     * 
+     * @param array $config needs an array with [realm => '', expires  => 'Period (eg. 1 week)']
+     * @param array $access needs an array with [username => [[client => '', token => '', expires => 'parsable date'], ...]]
      */
-    public function __construct($config)
+    public function __construct(array $config, array $access)
     {
         $this->config = $config;
+        $this->access = $access;
     }
 
-    public function call()
+    public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
-        $next = false;
-        $authorization = $this->headerAuthorization();
-        if (!empty($authorization) && $authorization[0] === $this->config['realm']) {
-            try {
-                $accessClass = $this->config['access'];
-                $access = $accessClass::whereHas('user', function ($q) use ($authorization) {
-                            $q
-                            ->where('username', $authorization[1])
-                            ->where('enabled', true);
-                        })->whereClientAndToken($authorization[2], $authorization[3])->firstOrFail();
-                if (!$access->expired($this->config['expires'])) {
-                    $this->app->access = $access;
-                    $this->app->user = $access->user;
-                    $next = true;
-                } else {
-                    $access->delete();
-                }
-            } catch (ModelNotFoundException $ex) {
-                $this->app->log->error($ex);
-            }
+        $authorization = $this->readAuthorizationHeader($request);
+
+        if ($this->hasWrongRealm($authorization[0])) {
+            return $this->fail($response);
         }
 
-        if ($next) {
-            $this->next->call();
+        if ($this->hasAccess($authorization[1], $authorization[2], $authorization[3])) {
+            $request->withAttribute('username', $authorization[1]);
+            $request->withAttribute('client', $authorization[2]);
+            
+            return $next($request, $response);
         } else {
-            $this->fail();
+            return $this->fail($response);
         }
     }
 
@@ -78,20 +64,18 @@ class Authorization extends Middleware
      *
      * @return void
      */
-    protected function fail()
+    protected function fail($response)
     {
-        $this->app->response()->status(401);
-        $this->app->response()->body(json_encode(['error' => 'Authentication error']));
+        $response->withStatus(401);
+        $response->getBody()->write(json_encode(['error' => 'Authentication error']));
+
+        return $response;
     }
 
-    /**
-     * Read Authorization / X-Authorization header and split it into an array;
-     * @return mixed array or false
-     */
-    protected function headerAuthorization()
+    protected function readAuthorizationHeader($request)
     {
         $authorization = false;
-        $headers = $this->app->request()->headers();
+        $headers = $request->getHeaders();
         if (!isset($headers['Authorization']) && function_exists('apache_request_headers')) {
             $all = apache_request_headers();
             if (isset($all['Authorization'])) {
@@ -102,6 +86,35 @@ class Authorization extends Middleware
         }
 
         return (!empty($authorization)) ? preg_split('/[\s,]/', $authorization) : false;
+    }
+
+    protected function hasWrongRealm($realm)
+    {
+        return empty($realm) || $realm !== $this->config['realm'];
+    }
+
+    protected function hasAccess($username, $client, $token)
+    {
+        if (!isset($this->access[$username])) {
+            return false;
+        }
+
+        $user = $this->access[$username];
+
+        $authorized = false;
+        foreach ($user as $item) {
+            if ($item['client'] === $client && $item['token'] === $token) {
+                $authorized = $this->expired($item['expires']);
+                break;
+            }
+        }
+
+        return $authorized;
+    }
+
+    protected function expired($date)
+    {
+        return strtotime('-' . $this->config['expires']) >= strtotime($date);
     }
 
 }

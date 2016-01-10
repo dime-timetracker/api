@@ -70,7 +70,7 @@ class ContentNegotiation implements Middleware
     protected function installContentConverter(ServerRequestInterface $request)
     {
         $request->registerMediaTypeParser('application/json', function ($input) {
-            return $this->serializer->deserialize($input, $this->type, 'json');
+          return $this->serializer->deserialize($input, $this->type, 'json');
         });
         $request->registerMediaTypeParser('application/xml', function ($input) {
             return $this->serializer->deserialize($input, $this->type, 'xml');

@@ -13,7 +13,7 @@ return [
         'map' => ['POST']
     ],
     'parser_analyse' => [
-        'route' => '/analyse/{name}'
+        'route' => '/analyse/{name}',
         'controller' => 'Dime\Server\Endpoint\Parser:analyse',
         'map' => ['POST']
     ],
@@ -22,8 +22,8 @@ return [
         'controller' => 'Dime\Server\Endpoint\Resource:getAction',
         'map' => ['GET'],
         'middleware' => [
+            'Dime\Server\Middleware\ContentNegotiation:run',
             'Dime\Server\Middleware\ResourceType:run',
-            'Dime\Server\Middleware\ContentNegotiation:run'
         ]
     ],
     'resource_list' => [
@@ -31,8 +31,8 @@ return [
         'controller' => 'Dime\Server\Endpoint\Resource:listAction',
         'map' => ['GET'],
         'middleware' => [
+            'Dime\Server\Middleware\ContentNegotiation:run',
             'Dime\Server\Middleware\ResourceType:run',
-            'Dime\Server\Middleware\ContentNegotiation:run'
         ]
     ],
     'resource_post' => [
@@ -40,8 +40,8 @@ return [
         'controller' => 'Dime\Server\Endpoint\Resource:postAction',
         'map' => ['POST'],
         'middleware' => [
+            'Dime\Server\Middleware\ContentNegotiation:run',
             'Dime\Server\Middleware\ResourceType:run',
-            'Dime\Server\Middleware\ContentNegotiation:run'
         ]
     ],
     'resource_put' => [
@@ -49,8 +49,8 @@ return [
         'controller' => 'Dime\Server\Endpoint\Resource:putAction',
         'map' => ['PUT'],
         'middleware' => [
+            'Dime\Server\Middleware\ContentNegotiation:run',
             'Dime\Server\Middleware\ResourceType:run',
-            'Dime\Server\Middleware\ContentNegotiation:run'
         ]
     ],
     'resource_delete' => [
@@ -58,8 +58,8 @@ return [
         'controller' => 'Dime\Server\Endpoint\Resource:deleteAction',
         'map' => ['DELETE'],
         'middleware' => [
+            'Dime\Server\Middleware\ContentNegotiation:run',
             'Dime\Server\Middleware\ResourceType:run',
-            'Dime\Server\Middleware\ContentNegotiation:run'
         ]
     ]
 ];

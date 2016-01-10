@@ -5,6 +5,7 @@ namespace Dime\Server\Endpoint;
 use Doctrine\ORM\EntityManager;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Slim\Exception\NotFoundException;
 
 class Resource
 {
@@ -21,7 +22,14 @@ class Resource
 
     public function listAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-        $collection = $this->getRepository($args['resource'])->findAll();
+        $parameter = $request->getQueryParams();
+       
+        $repository = $this->getRepository($args['resource']);
+        if (isset($parameter['filter']) && $repository instanceof Filterable) {
+            $collection = $repository->filter($parameter['filter']);
+        } else {
+            $collection = $repository->findAll();
+        }
         // TODO Pager
         // TODO filter
         return $this->render($request, $collection, $response);
@@ -39,16 +47,16 @@ class Resource
 
     public function postAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-	      $entity = $request->getBodyParsed();
+	      $entity = $request->getParsedBody();
         
         if (empty($entity)) {
             throw new NotValidException('Request data are not valid');
         }
         
         // TODO createdAt / updatedAt
-        
-        $this->manager->persist($data);
-        $this->manager->flush();
+        var_dump($entity);
+       // $this->manager->persist($entity);
+       // $this->manager->flush();
 
         return $this->render($request, $entity, $response);
     }
@@ -56,6 +64,10 @@ class Resource
     public function putAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
         $entity = $this->getRepository($args['resource'])->find($args['id']);
+        if (emtpy($entity)) {
+            throw new NotFoundException('Resource not found'); 
+        }
+        
         // TODO merge with entity
 
         return $this->render($request, $entity, $response);
@@ -65,12 +77,12 @@ class Resource
     {
         $entity = $this->getRepository($args['resource'])->find($args['id']);
 
-        if (!emtpy($entity)) {
-            $this->manager->remove($entity);
-            $this->manager->flush();
-        } else {
-          throw new NotFoundException('Resource not found'); 
+        if (emtpy($entity)) {
+            throw new NotFoundException('Resource not found'); 
         }
+        
+        $this->manager->remove($entity);
+        $this->manager->flush();
 
         return $this->render($request, $entity, $response);
     }

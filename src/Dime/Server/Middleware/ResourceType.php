@@ -21,12 +21,11 @@ class ResourceType implements Middleware
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
         $resource = $request->getAttribute('route')->getArgument('resource');
-
         if (!isset($this->config['resources'][$resource])) {
             throw new NotFoundException($request, $response);
         }
 
-        $request = $request->withAttribute('resourceType', $this->config['resource'][$resource]);
+        $request = $request->withAttribute('resourceType', $this->config['resources'][$resource]);
         return $next($request, $response);
     }
 

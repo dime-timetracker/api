@@ -12,9 +12,7 @@
         "juliangut/slim-doctrine": "dev-master",
         "jms/serializer": "1.1.0"
     },
-    "repositories": [
-      { "type": "vcs", "url": "git@github.com:nogo/slim-doctrine.git" }
-    ],
+    "repositories": [],
     "require-dev": {
         "phpunit/phpunit": "~4.6"
     },

@@ -34,9 +34,7 @@ class ContentNegotiation implements Middleware
      * @var string
      */
     protected $type = 'array';
-    
     protected $accept = 'application/json';
-    
     protected $allowedAcceptHeaders = [
         'application/json',
         'application/xml',
@@ -58,39 +56,34 @@ class ContentNegotiation implements Middleware
             $this->type = $resourceType['entity'];
         }
         $this->matchAcceptHeader($request);
-        $this->installContentConverter($request);
+        $request = $this->parseBody($request);
         $request = $this->installSerializer($request);
 
         $response = $next($request, $response);
+
         $response = $this->installResponseHeader($response);
 
         return $response;
     }
 
-    protected function installContentConverter(ServerRequestInterface $request)
+    protected function parseBody(ServerRequestInterface $request)
     {
-        $request->registerMediaTypeParser('application/json', function ($input) {
-          return $this->serializer->deserialize($input, $this->type, 'json');
-        });
-        $request->registerMediaTypeParser('application/xml', function ($input) {
-            return $this->serializer->deserialize($input, $this->type, 'xml');
-        });
-        $request->registerMediaTypeParser('text/xml', function ($input) {
-            return $this->serializer->deserialize($input, $this->type, 'xml');
-        });
-        $request->registerMediaTypeParser('text/yml', function ($input) {
-            return $this->serializer->deserialize($input, $this->type, 'yml');
-        });
-        $request->registerMediaTypeParser('text/html', function ($input) {
-            return $this->serializer->deserialize($input, $this->type, 'json');
-        });
+        if ($request->getBody()->getSize() == null) {
+            return $request;
+        }
+        try {
+            $parsedBody = $this->serializer->deserialize($request->getBody(), $this->type, $this->serialierType());
+        } catch (Exception $ex) {
+            $parsedBody = $request->getBody();
+        }
         
-        return $request;
+        return $request->withParsedBody($parsedBody);
     }
+
     protected function matchAcceptHeader(ServerRequestInterface $request)
     {
         $acceptHeader = $request->getHeader('accept');
-        
+
         if (!empty($acceptHeader)) {
             $found = false;
             $acceptHeader = preg_split('/\s*[;,]\s*/', $acceptHeader[0]);
@@ -108,25 +101,15 @@ class ContentNegotiation implements Middleware
             }
         }
     }
-    
+
     protected function installSerializer(ServerRequestInterface $request)
     {
-        $type = 'json';
-        switch ($this->accept) {
-            case 'application/xml':
-                $type = 'xml';
-                break;
-            case 'text/xml':
-                $type = 'xml';
-                break;
-            case 'text/yml':
-                $type = 'yml';
-                break;
-        }
-        
-        return $request->withAttribute('serializer', function ($content) use ($type) {
-            return $this->serializer->serialize($content, $type);
-        });
+        $serializer = $this->serializer;
+        $type = $this->serialierType();        
+
+        return $request->withAttribute('serializer', function ($content) use ($serializer, $type) {
+                    return $serializer->serialize($content, $type);
+                });
     }
 
     protected function installResponseHeader(ResponseInterface $response)
@@ -140,6 +123,22 @@ class ContentNegotiation implements Middleware
             $response = $response->withHeader('Content-Type', 'text/html');
         }
         return $response;
+    }
+    
+    protected function serialierType() {
+        $type = 'json';
+        switch ($this->accept) {
+            case 'application/xml':
+                $type = 'xml';
+                break;
+            case 'text/xml':
+                $type = 'xml';
+                break;
+            case 'text/yml':
+                $type = 'yml';
+                break;
+        }
+        return $type;
     }
 
 }

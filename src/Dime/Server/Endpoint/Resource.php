@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\NotFoundException;
+use Dime\Server\Exception\NotValidException;
 
 class Resource
 {
@@ -39,7 +40,7 @@ class Resource
     {
         $entity = $this->getRepository($args['resource'])->find($args['id']);
         if (empty($entity)) {
-            throw new NotFoundException('Resource not found');
+            throw new NotFoundException($request, $response);
         }
 
         return $this->render($request, $entity, $response);
@@ -47,25 +48,25 @@ class Resource
 
     public function postAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-	      $entity = $request->getParsedBody();
+        $entity = $request->getParsedBody();
         
         if (empty($entity)) {
-            throw new NotValidException('Request data are not valid');
+            throw new NotValidException($request, $response);
         }
         
         // TODO createdAt / updatedAt
-        var_dump($entity);
        // $this->manager->persist($entity);
        // $this->manager->flush();
-
-        return $this->render($request, $entity, $response);
+        $response = $this->render($request, $entity, $response);
+        
+        return $response;
     }
 
     public function putAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
         $entity = $this->getRepository($args['resource'])->find($args['id']);
         if (emtpy($entity)) {
-            throw new NotFoundException('Resource not found'); 
+            throw new NotFoundException($request, $response); 
         }
         
         // TODO merge with entity
@@ -78,7 +79,7 @@ class Resource
         $entity = $this->getRepository($args['resource'])->find($args['id']);
 
         if (emtpy($entity)) {
-            throw new NotFoundException('Resource not found'); 
+            throw new NotFoundException($request, $response); 
         }
         
         $this->manager->remove($entity);

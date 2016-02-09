@@ -21,6 +21,12 @@ return [
                 'charset' => 'utf-8'
             ],
             'auto_generate_proxies' => true,
+            'annotation_files' => [
+                ROOT_DIR . '/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php'
+            ],
+            'annotation_namespaces' => [
+                'JMS\Serializer\Annotation' => ROOT_DIR . '/vendor/jms/serializer/src'  
+            ],
             'annotation_paths' => [
                 ROOT_DIR . '/src/Dime/Server/Model/'
             ],

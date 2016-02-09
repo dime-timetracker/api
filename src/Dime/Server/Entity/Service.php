@@ -4,10 +4,11 @@ namespace Dime\Server\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping AS ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
- * @ORM\Entity
  * @ORM\Table(name="services")
+ * @ORM\Entity
  */
 class Service {
 
@@ -15,42 +16,55 @@ class Service {
      * @ORM\Id 
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
+     * @JMS\Type("integer")
      * @var int
      */
     protected $id;
 
     /**
      * @ORM\Column(type="string")
+     * @JMS\Type("string")
      * @var string 
      */
     protected $name;
 
     /**
      * @ORM\Column(type="string")
+     * @JMS\Type("string")
      * @var string 
      */
     protected $alias;
 
     /**
      * @ORM\Column(type="decimal")
+     * @JMS\Type("double")
      * @var double
      */
     protected $rate;
 
     /**
      * @ORM\Column(type="boolean")
+     * @JMS\Type("boolean")
      * @var boolean
      */
     protected $enabled = true;
 
     /**
+     * @ORM\ManyToOne(targetEntity="User")
+     * @JMS\Exclude
+     */
+    protected $user;
+
+    /**
      * @ORM\Column(type="datetime")
+     * @JMS\Type("DateTime")
      * @var DateTime
      */
     protected $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
+     * @JMS\Type("DateTime")
      * @var DateTime
      */
     protected $updatedAt;

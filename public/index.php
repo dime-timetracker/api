@@ -26,7 +26,7 @@ $container['entityManager'] = function (ContainerInterface $container) {
     return EntityManagerBuilder::build($container->settings['doctrine']);
 };
 
-$container['serializer'] = function () {
+$container['serializer'] = function () {  
     return JMS\Serializer\SerializerBuilder::create()->build();
 };
 

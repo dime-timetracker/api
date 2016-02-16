@@ -8,7 +8,8 @@ use Doctrine\ORM\Mapping AS ORM;
  * @ORM\Entity
  * @ORM\Table(name="access")
  */
-class Access {
+class Access
+{
 
     /**
      * @ORM\Id
@@ -42,56 +43,67 @@ class Access {
      */
     protected $updatedAt;
 
-    public function __construct(User $user, $client) {
+    public function __construct(User $user, $client)
+    {
         $this->user = $user;
         $this->client = $client;
     }
 
-    public function getUser() {
+    public function getUser()
+    {
         return $this->user;
     }
 
-    public function setUser(User $user) {
+    public function setUser(User $user)
+    {
         $this->user = $user;
         return $this;
     }
 
-    public function getClient() {
+    public function getClient()
+    {
         return $this->client;
     }
 
-    public function setClient($client) {
+    public function setClient($client)
+    {
         $this->client = $client;
         return $this;
     }
 
-    public function getToken() {
+    public function getToken()
+    {
         return $this->token;
     }
 
-    public function setToken($token) {
+    public function setToken($token)
+    {
         $this->token = $token;
         return $this;
     }
 
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
-    public function setCreatedAt(DateTime $createdAt) {
+    public function setCreatedAt(DateTime $createdAt)
+    {
         $this->createdAt = $createdAt;
         return $this;
     }
 
-    public function setUpdatedAt(DateTime $updatedAt) {
+    public function setUpdatedAt(DateTime $updatedAt)
+    {
         $this->updatedAt = $updatedAt;
         return $this;
     }
-    
+
     /**
      * Return expire date
      * @param string $period

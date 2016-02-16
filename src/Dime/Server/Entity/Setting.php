@@ -2,7 +2,6 @@
 
 namespace Dime\Server\Entity;
 
-use DateTime;
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation AS JMS;
 
@@ -12,45 +11,44 @@ use JMS\Serializer\Annotation AS JMS;
  */
 class Setting
 {
-
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     */
-    protected $id;
+    
+    use IdentityEntityTrait;
+    use UserEntityTrait;
 
     /**
      * @ORM\Column(type="string")
+     * @JMS\Type("string")
      */
     protected $name;
 
     /**
      * @ORM\Column(type="string")
-     */
-    protected $namespace;
-
-    /**
-     * @ORM\Column(type="string")
+     * @JMS\Type("string")
      */
     protected $value;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="User")
-     * @JMS\Exclude
-     */
-    protected $user;
+    public function getName()
+    {
+        return $this->name;
+    }
 
-    /**
-     * @ORM\Column(type="datetime")
-     * @var DateTime
-     */
-    protected $createdAt;
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
 
-    /**
-     * @ORM\Column(type="datetime")
-     * @var DateTime
-     */
-    protected $updatedAt;
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function setValue($value)
+    {
+        $this->value = $value;
+        return $this;
+    }
+
+
 
 }

@@ -2,7 +2,6 @@
 
 namespace Dime\Server\Entity;
 
-use DateTime;
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -12,60 +11,108 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Activity
 {
+    use IdentityEntityTrait;
+    use UserEntityTrait;
 
     /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     */
-    protected $id;
-
-    /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
+     * @JMS\Type("string")
      */
     protected $description;
 
     /**
-     * @ORM\Column(type="decimal")
+     * @ORM\Column(type="decimal", nullable=true)
+     * @JMS\Type("double")
      */
     protected $rate;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
+     * @JMS\Type("string")
      */
     protected $rateReference;
-
+    
     /**
-     * @ORM\ManyToOne(targetEntity="Customer")
+     * @ORM\Column(type="integer", nullable=true)
+     * @JMS\Type("integer")
      */
-    protected $customer;
-
+    protected $customerId;
+    
     /**
-     * @ORM\ManyToOne(targetEntity="Project")
+     * @ORM\Column(type="integer", nullable=true)
+     * @JMS\Type("integer")
      */
-    protected $project;
-
+    protected $projectId;
+    
     /**
-     * @ORM\ManyToOne(targetEntity="Service")
+     * @ORM\Column(type="integer", nullable=true)
+     * @JMS\Type("integer")
      */
-    protected $service;
+    protected $serviceId;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="User")
-     * @JMS\Exclude
-     */
-    protected $user;
+    public function getDescription()
+    {
+        return $this->description;
+    }
 
-    /**
-     * @ORM\Column(type="datetime")
-     * @var DateTime
-     */
-    protected $createdAt;
+    public function setDescription($description)
+    {
+        $this->description = $description;
+        return $this;
+    }
 
-    /**
-     * @ORM\Column(type="datetime")
-     * @var DateTime
-     */
-    protected $updatedAt;
+    public function getRate()
+    {
+        return $this->rate;
+    }
 
+    public function setRate($rate)
+    {
+        $this->rate = $rate;
+        return $this;
+    }
+
+    public function getRateReference()
+    {
+        return $this->rateReference;
+    }
+
+    public function setRateReference($rateReference)
+    {
+        $this->rateReference = $rateReference;
+        return $this;
+    }
+
+    public function getCustomerId()
+    {
+        return $this->customerId;
+    }
+
+    public function setCustomerId($customerId)
+    {
+        $this->customerId = $customerId;
+        return $this;
+    }
+
+    public function getProjectId()
+    {
+        return $this->projectId;
+    }
+
+    public function setProjectId($projectId)
+    {
+        $this->projectId = $projectId;
+        return $this;
+    }
+
+    public function getServiceId()
+    {
+        return $this->serviceId;
+    }
+
+    public function setServiceId($serviceId)
+    {
+        $this->serviceId = $serviceId;
+        return $this;
+    }    
 }

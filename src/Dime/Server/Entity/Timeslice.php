@@ -13,51 +13,77 @@ use JMS\Serializer\Annotation AS JMS;
 class Timeslice
 {
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     */
-    protected $id;
+    use IdentityEntityTrait;
+    use UserEntityTrait;
 
     /**
      * @ORM\Column(type="integer")
+     * @JMS\Type("integer")
      */
     protected $duration;
 
     /**
      * @ORM\Column(type="datetime")
+     * @JMS\Type("DateTime<'Y-m-d H:i:s'>")
      * @var DateTime
      */
     protected $startedAt;
 
     /**
      * @ORM\Column(type="datetime")
+     * @JMS\Type("DateTime<'Y-m-d H:i:s'>")
      * @var DateTime
      */
     protected $stoppedAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Activity")
+     * @ORM\Column(type="integer")
+     * @JMS\Type("integer")
      */
-    protected $activity;
+    protected $activityId;
 
-    /**
-     * @ORM\ManytoOne(targetEntity="User")
-     * @JMS\Exclude
-     */
-    protected $user;
+    public function getDuration()
+    {
+        return $this->duration;
+    }
 
-    /**
-     * @ORM\Column(type="datetime")
-     * @var DateTime
-     */
-    protected $createdAt;
+    public function setDuration($duration)
+    {
+        $this->duration = $duration;
+        return $this;
+    }
 
-    /**
-     * @ORM\Column(type="datetime")
-     * @var DateTime
-     */
-    protected $updatedAt;
+    public function getStartedAt()
+    {
+        return $this->startedAt;
+    }
+
+    public function setStartedAt(DateTime $startedAt)
+    {
+        $this->startedAt = $startedAt;
+        return $this;
+    }
+
+    public function getStoppedAt()
+    {
+        return $this->stoppedAt;
+    }
+
+    public function setStoppedAt(DateTime $stoppedAt)
+    {
+        $this->stoppedAt = $stoppedAt;
+        return $this;
+    }
+
+    public function getActivityId()
+    {
+        return $this->activityId;
+    }
+
+    public function setActivityId($activityId)
+    {
+        $this->activityId = $activityId;
+        return $this;
+    }
 
 }

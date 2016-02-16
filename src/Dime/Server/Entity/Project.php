@@ -2,7 +2,6 @@
 
 namespace Dime\Server\Entity;
 
-use DateTime;
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation AS JMS;
 
@@ -12,75 +11,161 @@ use JMS\Serializer\Annotation AS JMS;
  */
 class Project
 {
-
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     */
-    protected $id;
+    
+    use IdentityEntityTrait;
+    use UserEntityTrait;
 
     /**
      * @ORM\Column(type="string")
+     * @JMS\Type("string")
      */
     protected $name;
 
     /**
      * @ORM\Column(type="string", unique=true)
+     * @JMS\Type("string")
      */
     protected $alias;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
+     * @JMS\Type("string")
      */
     protected $description;
 
     /**
-     * @ORM\Column(type="decimal")
+     * @ORM\Column(type="decimal", nullable=true)
+     * @JMS\Type("double")
      */
     protected $rate;
 
     /**
-     * @ORM\Column(type="decimal")
+     * @ORM\Column(type="decimal", nullable=true)
+     * @JMS\Type("double")
      */
     protected $budgetPrice;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
+     * @JMS\Type("integer")
      */
     protected $budgetTime;
 
     /**
      * @ORM\Column(type="boolean")
+     * @JMS\Type("boolean")
      */
     protected $isBudgetFixed = true;
 
     /**
      * @ORM\Column(type="boolean")
+     * @JMS\Type("boolean")
      */
     protected $enabled = true;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Customer")
+     * @ORM\Column(type="integer", nullable=true)
+     * @JMS\Type("integer")
      */
-    protected $customer;
+    protected $customerId;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="User")
-     * @JMS\Exclude
-     */
-    protected $user;
+    public function getName()
+    {
+        return $this->name;
+    }
 
-    /**
-     * @ORM\Column(type="datetime")
-     * @var DateTime
-     */
-    protected $createdAt;
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
 
-    /**
-     * @ORM\Column(type="datetime")
-     * @var DateTime
-     */
-    protected $updatedAt;
+    public function getAlias()
+    {
+        return $this->alias;
+    }
+
+    public function setAlias($alias)
+    {
+        $this->alias = $alias;
+        return $this;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    public function setDescription($description)
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function getRate()
+    {
+        return $this->rate;
+    }
+
+    public function setRate($rate)
+    {
+        $this->rate = $rate;
+        return $this;
+    }
+
+    public function getBudgetPrice()
+    {
+        return $this->budgetPrice;
+    }
+
+    public function setBudgetPrice($budgetPrice)
+    {
+        $this->budgetPrice = $budgetPrice;
+        return $this;
+    }
+
+    public function getBudgetTime()
+    {
+        return $this->budgetTime;
+    }
+
+    public function setBudgetTime($budgetTime)
+    {
+        $this->budgetTime = $budgetTime;
+        return $this;
+    }
+
+    public function getIsBudgetFixed()
+    {
+        return $this->isBudgetFixed;
+    }
+
+    public function setIsBudgetFixed($isBudgetFixed)
+    {
+        $this->isBudgetFixed = $isBudgetFixed;
+        return $this;
+    }
+
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+        return $this;
+    }
+
+    public function getCustomerId()
+    {
+        return $this->customerId;
+    }
+
+    public function setCustomerId($customerId)
+    {
+        $this->customerId = $customerId;
+        return $this;
+    }
 
 }

@@ -2,7 +2,6 @@
 
 namespace Dime\Server\Entity;
 
-use DateTime;
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation AS JMS;
 
@@ -12,40 +11,44 @@ use JMS\Serializer\Annotation AS JMS;
  */
 class Tag
 {
+    
+    use IdentityEntityTrait;
+    use UserEntityTrait;
 
     /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     */
-    protected $id;
-
-    /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", unique=true)
+     * @JMS\Type("string")
      */
     protected $name;
 
     /**
      * @ORM\Column(type="boolean")
+     * @JMS\Type("boolean")
      */
     protected $enabled = true;
+    
+    public function getName()
+    {
+        return $this->name;
+    }
 
-    /**
-     * @ORM\ManyToOne(targetEntity="User")
-     * @JMS\Exclude
-     */
-    protected $user;
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
 
-    /**
-     * @ORM\Column(type="datetime")
-     * @var DateTime
-     */
-    protected $createdAt;
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
 
-    /**
-     * @ORM\Column(type="datetime")
-     * @var DateTime
-     */
-    protected $updatedAt;
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+        return $this;
+    }
+
+
 
 }

@@ -4,7 +4,6 @@ namespace Dime\Server\Middleware;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use JMS\Serializer\SerializerInterface;
 
 /**
  * ContentNegotiation is a middleware to check to requirements.
@@ -12,8 +11,6 @@ use JMS\Serializer\SerializerInterface;
  * Tasks:
  * - MUST extract Accept header
  * - MUST check Accept header
- * - MUST deserialize on content-type
- * - MUST serialize on content-type
  * 
  * @author Danilo Kuehn <dk@nogo-software.de>
  */
@@ -26,14 +23,8 @@ class ContentNegotiation implements Middleware
     protected $config = [];
 
     /**
-     * @var SerializerInterface
-     */
-    protected $serializer;
-
-    /**
      * @var string
      */
-    protected $type = 'array';
     protected $accept = 'application/json';
     protected $allowedAcceptHeaders = [
         'application/json',
@@ -43,44 +34,12 @@ class ContentNegotiation implements Middleware
         'text/html'
     ];
 
-    public function __construct(array $config, SerializerInterface $serializer)
+    public function __construct(array $config)
     {
         $this->config = $config;
-        $this->serializer = $serializer;
     }
 
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next)
-    {
-        $resourceType = $request->getAttribute('resourceType');
-        if (!empty($resourceType)) {
-            $this->type = $resourceType['entity'];
-        }
-        $this->matchAcceptHeader($request);
-        $request = $this->parseBody($request);
-        $request = $this->installSerializer($request);
-
-        $response = $next($request, $response);
-
-        $response = $this->installResponseHeader($response);
-
-        return $response;
-    }
-
-    protected function parseBody(ServerRequestInterface $request)
-    {
-        if ($request->getBody()->getSize() == null) {
-            return $request;
-        }
-        try {
-            $parsedBody = $this->serializer->deserialize($request->getBody(), $this->type, $this->serialierType());
-        } catch (Exception $ex) {
-            $parsedBody = $request->getBody();
-        }
-        
-        return $request->withParsedBody($parsedBody);
-    }
-
-    protected function matchAcceptHeader(ServerRequestInterface $request)
     {
         $acceptHeader = $request->getHeader('accept');
 
@@ -100,16 +59,10 @@ class ContentNegotiation implements Middleware
                 }
             }
         }
-    }
 
-    protected function installSerializer(ServerRequestInterface $request)
-    {
-        $serializer = $this->serializer;
-        $type = $this->serialierType();        
-
-        return $request->withAttribute('serializer', function ($content) use ($serializer, $type) {
-                    return $serializer->serialize($content, $type);
-                });
+        return $this->installResponseHeader(
+            $next($request->withAttribute('acceptType', $this->accept), $response)
+        );
     }
 
     protected function installResponseHeader(ResponseInterface $response)
@@ -124,21 +77,4 @@ class ContentNegotiation implements Middleware
         }
         return $response;
     }
-    
-    protected function serialierType() {
-        $type = 'json';
-        switch ($this->accept) {
-            case 'application/xml':
-                $type = 'xml';
-                break;
-            case 'text/xml':
-                $type = 'xml';
-                break;
-            case 'text/yml':
-                $type = 'yml';
-                break;
-        }
-        return $type;
-    }
-
 }

@@ -4,6 +4,7 @@ namespace Dime\Server\Entity;
 
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="services")
@@ -25,6 +26,7 @@ class Service
     /**
      * @ORM\Column(type="string")
      * @JMS\Type("string")
+     * @Assert\NotBlank
      * @var string 
      */
     protected $alias;

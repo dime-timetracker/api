@@ -2,7 +2,7 @@
 
 namespace Dime\Server\Entity;
 
-use Dime\Behaviors\Filterable;
+use Dime\Server\Behaviors\Filterable;
 use Doctrine\ORM\EntityRepository;
 
 

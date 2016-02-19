@@ -22,6 +22,7 @@ return [
         'controller' => 'Dime\Server\Endpoint\Resource:getAction',
         'map' => ['GET'],
         'middleware' => [
+            'Dime\Server\Middleware\ContentTransformer:run',
             'Dime\Server\Middleware\ContentNegotiation:run',
             'Dime\Server\Middleware\ResourceType:run',
         ]
@@ -31,6 +32,7 @@ return [
         'controller' => 'Dime\Server\Endpoint\Resource:listAction',
         'map' => ['GET'],
         'middleware' => [
+            'Dime\Server\Middleware\ContentTransformer:run',
             'Dime\Server\Middleware\ContentNegotiation:run',
             'Dime\Server\Middleware\ResourceType:run',
         ]
@@ -40,6 +42,7 @@ return [
         'controller' => 'Dime\Server\Endpoint\Resource:postAction',
         'map' => ['POST'],
         'middleware' => [
+            'Dime\Server\Middleware\ContentTransformer:run',
             'Dime\Server\Middleware\ContentNegotiation:run',
             'Dime\Server\Middleware\ResourceType:run',
         ]
@@ -49,6 +52,7 @@ return [
         'controller' => 'Dime\Server\Endpoint\Resource:putAction',
         'map' => ['PUT'],
         'middleware' => [
+            'Dime\Server\Middleware\ContentTransformer:run',
             'Dime\Server\Middleware\ContentNegotiation:run',
             'Dime\Server\Middleware\ResourceType:run',
         ]
@@ -58,6 +62,7 @@ return [
         'controller' => 'Dime\Server\Endpoint\Resource:deleteAction',
         'map' => ['DELETE'],
         'middleware' => [
+            'Dime\Server\Middleware\ContentTransformer:run',
             'Dime\Server\Middleware\ContentNegotiation:run',
             'Dime\Server\Middleware\ResourceType:run',
         ]

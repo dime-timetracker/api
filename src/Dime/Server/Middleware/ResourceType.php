@@ -25,11 +25,10 @@ class ResourceType implements Middleware
             throw new NotFoundException($request, $response);
         }
 
-        $request = $request->withAttribute('resourceType', $this->config['resources'][$resource]);
-        
-        $response = $next($request, $response);
-        
-        return $response;
+        return $next(
+            $request->withAttribute('resourceType', $this->config['resources'][$resource]['entity']),
+            $response
+        );
     }
 
 }

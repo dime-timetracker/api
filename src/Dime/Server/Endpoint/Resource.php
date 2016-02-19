@@ -5,20 +5,24 @@ namespace Dime\Server\Endpoint;
 use Doctrine\ORM\EntityManager;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Slim\Http\Headers;
 use Slim\Exception\NotFoundException;
 use Dime\Server\Exception\NotValidException;
+use Dime\Server\Http\Response;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class Resource
 {
     protected $config;
     protected $manager;
+    protected $validator;
     protected $repository;
-    protected $serializer;
 
-    public function __construct(array $config, EntityManager $manager)
+    public function __construct(array $config, EntityManager $manager, ValidatorInterface $validator)
     {
         $this->config = $config;
         $this->manager = $manager;
+        $this->validator = $validator;
     }
 
     public function listAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
@@ -33,7 +37,8 @@ class Resource
         }
         // TODO Pager
         // TODO filter
-        return $this->render($request, $collection, $response);
+
+        return $this->createResponse($response, $collection);
     }
 
     public function getAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
@@ -43,7 +48,7 @@ class Resource
             throw new NotFoundException($request, $response);
         }
 
-        return $this->render($request, $entity, $response);
+        return $this->createResponse($response, $entity);
     }
 
     public function postAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
@@ -53,13 +58,18 @@ class Resource
         if (empty($entity)) {
             throw new NotValidException($request, $response);
         }
+
+        $violations = $this->validator->validate($entity);
+        if (!empty($violations)) {
+            throw new NotValidException($request, $response);    
+        }
+
+        // Add createdAt, updatedAt, user
+
+        $this->getManager()->persist($entity);
+        $this->getManager()->flush();
         
-        // TODO createdAt / updatedAt
-       // $this->manager->persist($entity);
-       // $this->manager->flush();
-        $response = $this->render($request, $entity, $response);
-        
-        return $response;
+        return $this->createResponse($response, $entity);
     }
 
     public function putAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
@@ -70,8 +80,9 @@ class Resource
         }
         
         // TODO merge with entity
+        // Update updatedAt, user
 
-        return $this->render($request, $entity, $response);
+        return $this->createResponse($response, $entity);
     }
 
     public function deleteAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
@@ -82,24 +93,28 @@ class Resource
             throw new NotFoundException($request, $response); 
         }
         
-        $this->manager->remove($entity);
-        $this->manager->flush();
+        $this->getManager()->remove($entity);
+        $this->getManager()->flush();
 
-        return $this->render($request, $entity, $response);
+        return $this->createResponse($response, $entity);
+    }
+
+    protected function getManager()
+    {
+        return $this->manager;
     }
 
     protected function getRepository($resource)
     {
         if ($this->repository == null) {
-            $this->repository = $this->manager->getRepository($this->config['resources'][$resource]['entity']);
+            $this->repository = $this->getManager()->getRepository($this->config['resources'][$resource]['entity']);
         }
         return $this->repository;
     }
-    
-    protected function render(ServerRequestInterface $request, $content, ResponseInterface $response)
-    {
-        $serializer = $request->getAttribute("serializer");
-        $response->getBody()->write($serializer($content));
-        return $response;
+
+    protected function createResponse(ResponseInterface $response, $data) {
+        $result = new Response($response->getStatusCode(), new Headers($response->getHeaders()));
+        $result->setData($data);
+        return $result;
     }
 }

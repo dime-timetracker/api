@@ -49,11 +49,13 @@ class Authorization implements Middleware
             return $this->fail($response);
         }
 
-        if ($this->hasAccess($authorization[1], $authorization[2], $authorization[3])) {
-            $request->withAttribute('username', $authorization[1]);
-            $request->withAttribute('client', $authorization[2]);
-            
-            return $next($request, $response);
+        if ($this->hasAccess($authorization[1], $authorization[2], $authorization[3])) {          
+            return $next(
+                $request
+                    ->withAttribute('username', $authorization[1])
+                    ->withAttribute('client', $authorization[2]),
+                $response
+            );
         } else {
             return $this->fail($response);
         }

@@ -10,7 +10,9 @@ if (PHP_SAPI == 'cli-server') {
 }
 
 define('ROOT_DIR', realpath(dirname(__FILE__) . '/../'));
-require_once ROOT_DIR . '/vendor/autoload.php';
+$loader = require_once ROOT_DIR . '/vendor/autoload.php';
+
+\Doctrine\Common\Annotations\AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 
 use Jgut\Slim\Doctrine\EntityManagerBuilder;
 use Interop\Container\ContainerInterface;
@@ -32,6 +34,12 @@ $container['serializer'] = function () {
 
 $container['hasher'] = function () {
     return new Dime\Server\Hash\SymfonySecurityHasher();
+};
+
+$container['validator'] = function () {
+    return Symfony\Component\Validator\Validation::createValidatorBuilder()
+        ->enableAnnotationMapping()
+        ->getValidator();
 };
 
 // Middleware
@@ -60,15 +68,15 @@ $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterfac
 };
 
 $container['Dime\Server\Middleware\ContentNegotiation'] = function (ContainerInterface $container) {
-    return new Dime\Server\Middleware\ContentNegotiation(
-            $container->settings['api'], $container->serializer
-    );
+    return new Dime\Server\Middleware\ContentNegotiation($container->settings['api']);
+};
+
+$container['Dime\Server\Middleware\ContentTransformer'] = function (ContainerInterface $container) {
+    return new Dime\Server\Middleware\ContentTransformer($container->serializer);
 };
 
 $container['Dime\Server\Middleware\ResourceType'] = function (ContainerInterface $container) {
-    return new Dime\Server\Middleware\ResourceType(
-            $container->settings['api']
-    );
+    return new Dime\Server\Middleware\ResourceType($container->settings['api']);
 };
 
 // Endpoints
@@ -84,7 +92,8 @@ $container['Dime\Server\Endpoint\Authentication'] = function (ContainerInterface
 $container['Dime\Server\Endpoint\Resource'] = function (ContainerInterface $container) {
     return new Dime\Server\Endpoint\Resource(
             $container->settings['api'], 
-            $container->entityManager
+            $container->entityManager,
+            $container->validator
     );
 };
 

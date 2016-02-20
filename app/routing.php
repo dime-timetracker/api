@@ -42,6 +42,7 @@ return [
         'controller' => 'Dime\Server\Endpoint\Resource:postAction',
         'map' => ['POST'],
         'middleware' => [
+            'Dime\Server\Middleware\Validation:run',
             'Dime\Server\Middleware\ContentTransformer:run',
             'Dime\Server\Middleware\ContentNegotiation:run',
             'Dime\Server\Middleware\ResourceType:run',
@@ -52,6 +53,7 @@ return [
         'controller' => 'Dime\Server\Endpoint\Resource:putAction',
         'map' => ['PUT'],
         'middleware' => [
+            'Dime\Server\Middleware\Validation:run',
             'Dime\Server\Middleware\ContentTransformer:run',
             'Dime\Server\Middleware\ContentNegotiation:run',
             'Dime\Server\Middleware\ResourceType:run',

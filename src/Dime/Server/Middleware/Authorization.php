@@ -68,10 +68,9 @@ class Authorization implements Middleware
      */
     protected function fail($response)
     {
-        $response->withStatus(401);
-        $response->getBody()->write(json_encode(['error' => 'Authentication error']));
-
-        return $response;
+        return $response
+                ->withStatus(401)
+                ->getBody()->write(json_encode(['error' => 'Authentication error']));
     }
 
     protected function readAuthorizationHeader($request)

@@ -67,6 +67,10 @@ $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterfac
     return new Dime\Server\Middleware\Authorization($config, $access);
 };
 
+$container['Dime\Server\Middleware\ResourceType'] = function (ContainerInterface $container) {
+    return new Dime\Server\Middleware\ResourceType($container->settings['api']);
+};
+
 $container['Dime\Server\Middleware\ContentNegotiation'] = function (ContainerInterface $container) {
     return new Dime\Server\Middleware\ContentNegotiation($container->settings['api']);
 };
@@ -75,8 +79,8 @@ $container['Dime\Server\Middleware\ContentTransformer'] = function (ContainerInt
     return new Dime\Server\Middleware\ContentTransformer($container->serializer);
 };
 
-$container['Dime\Server\Middleware\ResourceType'] = function (ContainerInterface $container) {
-    return new Dime\Server\Middleware\ResourceType($container->settings['api']);
+$container['Dime\Server\Middleware\Validation'] = function (ContainerInterface $container) {
+    return new Dime\Server\Middleware\Validation($container->validator);
 };
 
 // Endpoints

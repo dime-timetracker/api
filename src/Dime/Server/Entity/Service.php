@@ -36,7 +36,7 @@ class Service
      * @JMS\Type("double")
      * @var double
      */
-    protected $rate;
+    protected $rate = 0;
 
     /**
      * @ORM\Column(type="boolean")

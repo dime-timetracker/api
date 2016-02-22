@@ -22,7 +22,8 @@ return [
             ],
             'auto_generate_proxies' => true,
             'annotation_paths' => [
-                ROOT_DIR . '/src/Dime/Server/Model/'
+                ROOT_DIR . '/src/Dime/Server/Model/',
+                ROOT_DIR . '/src/Dime/Api/Model/'
             ],
         ],
         

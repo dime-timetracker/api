@@ -1,44 +1,32 @@
 <?php
 
-namespace Dime\Server\Entity;
+namespace Dime\Api\Entity;
 
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation AS JMS;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="customers")
+ * @ORM\Table(name="tags")
  */
-class Customer
+class Tag
 {
     
     use IdentityEntityTrait;
     use UserEntityTrait;
 
     /**
-     * @ORM\Column(type="string")
-     * @JMS\Type("string")
-     */
-    protected $name;
-
-    /**
      * @ORM\Column(type="string", unique=true)
      * @JMS\Type("string")
      */
-    protected $alias;
-
-    /**
-     * @ORM\Column(type="decimal", nullable=true)
-     * @JMS\Type("double")
-     */
-    protected $rate;
+    protected $name;
 
     /**
      * @ORM\Column(type="boolean")
      * @JMS\Type("boolean")
      */
     protected $enabled = true;
-
+    
     public function getName()
     {
         return $this->name;
@@ -47,28 +35,6 @@ class Customer
     public function setName($name)
     {
         $this->name = $name;
-        return $this;
-    }
-
-    public function getAlias()
-    {
-        return $this->alias;
-    }
-
-    public function setAlias($alias)
-    {
-        $this->alias = $alias;
-        return $this;
-    }
-
-    public function getRate()
-    {
-        return $this->rate;
-    }
-
-    public function setRate($rate)
-    {
-        $this->rate = $rate;
         return $this;
     }
 
@@ -82,5 +48,7 @@ class Customer
         $this->enabled = $enabled;
         return $this;
     }
+
+
 
 }

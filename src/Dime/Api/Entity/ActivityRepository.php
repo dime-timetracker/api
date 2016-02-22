@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Entity;
+namespace Dime\Api\Entity;
 
 class ActivityRepository extends BaseRepository
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Entity;
+namespace Dime\Api\Entity;
 
 use Dime\Server\Behaviors\Filterable;
 use Doctrine\ORM\EntityRepository;

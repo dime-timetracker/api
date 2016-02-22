@@ -42,9 +42,7 @@ class Authentication
             throw new NotAuthenticatedException();
         }
         
-        $user = $this->manager
-                    ->getRepository('Dime\Server\Entity\User')
-                    ->findOneBy(['username' => $input['username']]);
+        $user = $this->getUserRepository()->findOneBy(['username' => $input['username']]);
         if (!$this->authenticate($user, $input['password'])) {
             throw new NotAuthenticatedException();
         }
@@ -71,12 +69,10 @@ class Authentication
             throw new NotFoundException();
         }
         
-        $user = $this->manager->getRepository('Dime\Server\Entity\User')
-                    ->findOneBy(['username' => $username]);
+        $user = $this->getUserRepository()->findOneBy(['username' => $username]);
         
         if ($user != null) {
-            $access = $this->manager
-                    ->getRepository('Dime\Server\Entity\Access')
+            $access = $this->getAccessRepository()
                     ->findOneBy([
                         'user' => $user,
                         'client' => $client
@@ -103,5 +99,15 @@ class Authentication
                     $user->password, 
                     ['salt' => $user->salt]
             );
+    }
+
+    protected function getAccessRepository()
+    {
+        return $this->manager->getRepository($this->config['access']);
+    }
+
+    protected function getUserRepository()
+    {
+        return $this->manager->getRepository($this->config['user']);
     }
 }

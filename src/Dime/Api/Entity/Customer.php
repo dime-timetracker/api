@@ -1,47 +1,41 @@
 <?php
 
-namespace Dime\Server\Entity;
+namespace Dime\Api\Entity;
 
 use Doctrine\ORM\Mapping AS ORM;
-use JMS\Serializer\Annotation as JMS;
-use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation AS JMS;
 
 /**
- * @ORM\Table(name="services")
  * @ORM\Entity
+ * @ORM\Table(name="customers")
  */
-class Service
+class Customer
 {
-
+    
     use IdentityEntityTrait;
     use UserEntityTrait;
 
     /**
      * @ORM\Column(type="string")
      * @JMS\Type("string")
-     * @var string 
      */
     protected $name;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", unique=true)
      * @JMS\Type("string")
-     * @Assert\NotBlank
-     * @var string 
      */
     protected $alias;
 
     /**
      * @ORM\Column(type="decimal", nullable=true)
      * @JMS\Type("double")
-     * @var double
      */
-    protected $rate = 0;
+    protected $rate;
 
     /**
      * @ORM\Column(type="boolean")
      * @JMS\Type("boolean")
-     * @var boolean
      */
     protected $enabled = true;
 

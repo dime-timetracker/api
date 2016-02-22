@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Endpoint;
+namespace Dime\Parser\Endpoint;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;

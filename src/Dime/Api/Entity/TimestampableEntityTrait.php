@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Entity;
+namespace Dime\Api\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping AS ORM;

@@ -37,25 +37,25 @@ return [
             ],
             'resources' => [
                 'activity' => [
-                    'entity' => 'Dime\Server\Entity\Activity'
+                    'entity' => 'Dime\Api\Entity\Activity'
                 ],
                 'customer' => [
-                    'entity' => 'Dime\Server\Entity\Customer'
+                    'entity' => 'Dime\Api\Entity\Customer'
                 ],
                 'project' => [
-                    'entity' => 'Dime\Server\Entity\Project'
+                    'entity' => 'Dime\Api\Entity\Project'
                 ],
                 'service' => [
-                    'entity' => 'Dime\Server\Entity\Service'
+                    'entity' => 'Dime\Api\Entity\Service'
                 ],
                 'setting' => [
-                    'entity' => 'Dime\Server\Entity\Setting'
+                    'entity' => 'Dime\Api\Entity\Setting'
                 ],
                 'tag' => [
-                    'entity' => 'Dime\Server\Entity\Tag'
+                    'entity' => 'Dime\Api\Entity\Tag'
                 ],
                 'timeslice' => [
-                    'entity' => 'Dime\Server\Entity\Timeslice'
+                    'entity' => 'Dime\Api\Entity\Timeslice'
                 ],
             ]
         ]

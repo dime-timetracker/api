@@ -52,8 +52,7 @@ class Authorization implements Middleware
         if ($this->hasAccess($authorization[1], $authorization[2], $authorization[3])) {          
             return $next(
                 $request
-                    ->withAttribute('username', $authorization[1])
-                    ->withAttribute('client', $authorization[2]),
+                    ->withAttribute('userId', $this->getUserId($authorization[1])),
                 $response
             );
         } else {
@@ -61,11 +60,6 @@ class Authorization implements Middleware
         }
     }
 
-    /**
-     * Require Authentication from HTTP Client
-     *
-     * @return void
-     */
     protected function fail($response)
     {
         return $response
@@ -116,6 +110,15 @@ class Authorization implements Middleware
     protected function expired($date)
     {
         return strtotime('-' . $this->config['expires']) >= strtotime($date);
+    }
+
+    protected function getUserId($username)
+    {
+        if (!isset($this->access[$username])) {
+            return false;
+        }
+
+        return $this->access[$username]['id'];
     }
 
 }

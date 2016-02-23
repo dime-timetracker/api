@@ -30,6 +30,7 @@ class Resource
         } else {
             $collection = $repository->findAll();
         }
+        // TODO only user entities
         // TODO Pager
         // TODO filter
 
@@ -39,6 +40,8 @@ class Resource
     public function getAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
         $entity = $this->getRepository($args['resource'])->find($args['id']);
+
+        // TODO only user entities
         
         if (empty($entity)) {
             throw new NotFoundException($request, $response);
@@ -50,8 +53,17 @@ class Resource
     public function postAction(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
         $entity = $request->getParsedBody();
+
+        if ($entity instanceof \Dime\Server\Behaviors\Assignable) {
+            $entity->setUserId(1);
+//        $entity->setUserId($request->getAttribute("userId"));
+        }
+
+        if ($entity instanceof \Dime\Server\Behaviors\Timestampable) {
+            $entity->setCreatedAt(new \DateTime());
+            $entity->setUpdatedAt(new \DateTime());
+        }
         
-        // Add createdAt, updatedAt, user
         $this->getManager()->persist($entity);
         $this->getManager()->flush();
 
@@ -62,13 +74,25 @@ class Resource
     {
         $entity = $this->getRepository($args['resource'])->find($args['id']);
 
-        if (emtpy($entity)) {
+        if (empty($entity)) {
             throw new NotFoundException($request, $response); 
         }
-        
-        // TODO merge with entity
-        // Update updatedAt, user
 
+        $updateEntity = $request->getParsedBody();
+
+        $updateEntity->setId($entity->getId());
+        if ($updateEntity instanceof \Dime\Server\Behaviors\Assignable) {
+            $updateEntity->setUserId(1);
+//        $entity->setUserId($request->getAttribute("userId"));
+        }
+
+        if ($updateEntity instanceof \Dime\Server\Behaviors\Timestampable) {
+            $updateEntity->setUpdatedAt(new \DateTime());
+        }
+
+        $this->getManager()->persist($entity);
+        $this->getManager()->flush();
+        
         return $this->createResponse($response, $entity);
     }
 
@@ -76,7 +100,9 @@ class Resource
     {
         $entity = $this->getRepository($args['resource'])->find($args['id']);
 
-        if (emtpy($entity)) {
+        // TODO only user entities
+
+        if (empty($entity)) {
             throw new NotFoundException($request, $response); 
         }
         

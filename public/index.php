@@ -17,6 +17,7 @@ $loader = require_once ROOT_DIR . '/vendor/autoload.php';
 use Jgut\Slim\Doctrine\EntityManagerBuilder;
 use Interop\Container\ContainerInterface;
 use Slim\App;
+use Dime\Server\Serializer\Construction\DoctrineObjectConstructor;
 
 $app = new App(require ROOT_DIR . '/app/config.php');
 
@@ -28,8 +29,13 @@ $container['entityManager'] = function (ContainerInterface $container) {
     return EntityManagerBuilder::build($container->settings['doctrine']);
 };
 
-$container['serializer'] = function () {  
-    return JMS\Serializer\SerializerBuilder::create()->build();
+$container['serializer'] = function (ContainerInterface $container) {
+    $serializer = JMS\Serializer\SerializerBuilder::create();
+
+    $serializer->setDebug($container->settings['displayErrorDetails']);
+    $serializer->setObjectConstructor(new DoctrineObjectConstructor($container->entityManager, new JMS\Serializer\Construction\UnserializeObjectConstructor()));
+
+    return $serializer->build();
 };
 
 $container['hasher'] = function () {
@@ -58,6 +64,7 @@ $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterfac
         }
 
         $access[$user->getUsername()][] = [
+            'id' => $user->getId(),
             'client' => $entity->getClient(),
             'token' => $entity->getToken(),
             'expires' => $entity->getUpdatedAt()

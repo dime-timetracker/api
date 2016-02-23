@@ -1,8 +1,7 @@
 <?php
 
-namespace Dime\Api\Entity;
+namespace Dime\Server\Entity;
 
-use DateTime;
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation as JMS;
 

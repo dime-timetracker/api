@@ -4,16 +4,17 @@ namespace Dime\Api\Entity;
 
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation AS JMS;
+use Dime\Server\Behaviors\Assignable;
+use Dime\Server\Behaviors\Timestampable;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="customers")
  */
-class Customer
+class Customer implements Assignable, Timestampable
 {
-    
-    use IdentityEntityTrait;
-    use UserEntityTrait;
+    use \Dime\Server\Entity\IdentityEntityTrait;
+    use \Dime\Server\Entity\UserEntityTrait;
 
     /**
      * @ORM\Column(type="string")

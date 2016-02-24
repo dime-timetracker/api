@@ -6,17 +6,17 @@ use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 use Dime\Server\Behaviors\Assignable;
-use Dime\Server\Behaviors\Timestampable;
 
 /**
+ * @ORM\Entity(repositoryClass="Dime\Api\Entity\ServiceRepository")
  * @ORM\Table(name="services")
- * @ORM\Entity
  */
-class Service implements Assignable, Timestampable
+class Service implements Assignable
 {
 
     use \Dime\Server\Entity\IdentityEntityTrait;
     use \Dime\Server\Entity\UserEntityTrait;
+    use \Dime\Server\Entity\TimestampableEntityTrait;
 
     /**
      * @ORM\Column(type="string")

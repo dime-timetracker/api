@@ -5,10 +5,11 @@ namespace Dime\Server\Entity;
 use Doctrine\ORM\Mapping AS ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Dime\Server\Entity\UserRepository")
  * @ORM\Table(name="users")
  */
-class User {
+class User
+{
 
     /**
      * @ORM\Id 
@@ -65,83 +66,101 @@ class User {
      */
     private $access;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getUsername() {
+    public function getUsername()
+    {
         return $this->username;
     }
 
-    public function getPassword() {
+    public function getPassword()
+    {
         return $this->password;
     }
 
-    public function getSalt() {
+    public function getSalt()
+    {
         return $this->salt;
     }
 
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
 
-    public function getFirstname() {
+    public function getFirstname()
+    {
         return $this->firstname;
     }
 
-    public function getLastname() {
+    public function getLastname()
+    {
         return $this->lastname;
     }
 
-    public function getEnabled() {
+    public function getEnabled()
+    {
         return $this->enabled;
     }
 
-    public function getAccess() {
+    public function getAccess()
+    {
         return $this->access;
     }
 
-    public function setId($id) {
+    public function setId($id)
+    {
         $this->id = $id;
         return $this;
     }
 
-    public function setUsername($username) {
+    public function setUsername($username)
+    {
         $this->username = $username;
         return $this;
     }
 
-    public function setPassword($password) {
+    public function setPassword($password)
+    {
         $this->password = $password;
         return $this;
     }
 
-    public function setSalt($salt) {
+    public function setSalt($salt)
+    {
         $this->salt = $salt;
         return $this;
     }
 
-    public function setEmail($email) {
+    public function setEmail($email)
+    {
         $this->email = $email;
         return $this;
     }
 
-    public function setFirstname($firstname) {
+    public function setFirstname($firstname)
+    {
         $this->firstname = $firstname;
         return $this;
     }
 
-    public function setLastname($lastname) {
+    public function setLastname($lastname)
+    {
         $this->lastname = $lastname;
         return $this;
     }
 
-    public function setEnabled($enabled) {
+    public function setEnabled($enabled)
+    {
         $this->enabled = $enabled;
         return $this;
     }
 
-    public function setAccess($access) {
+    public function setAccess($access)
+    {
         $this->access = $access;
         return $this;
     }

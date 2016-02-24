@@ -28,7 +28,7 @@ return [
     ],
     'resource_get' => [
         'route' => '/api/{resource}/{id:\d+}',
-        'controller' => 'Dime\Server\Endpoint\Resource:getAction',
+        'controller' => 'Dime\Server\Endpoint\ResourceGet',
         'map' => ['GET'],
         'middleware' => [
             'Dime\Server\Middleware\ContentTransformer:run',
@@ -38,7 +38,7 @@ return [
     ],
     'resource_list' => [
         'route' => '/api/{resource}',
-        'controller' => 'Dime\Server\Endpoint\Resource:listAction',
+        'controller' => 'Dime\Server\Endpoint\ResourceList',
         'map' => ['GET'],
         'middleware' => [
             'Dime\Server\Middleware\ContentTransformer:run',
@@ -48,7 +48,7 @@ return [
     ],
     'resource_post' => [
         'route' => '/api/{resource}',
-        'controller' => 'Dime\Server\Endpoint\Resource:postAction',
+        'controller' => 'Dime\Server\Endpoint\ResourcePost',
         'map' => ['POST'],
         'middleware' => [
             'Dime\Server\Middleware\Validation:run',
@@ -59,7 +59,7 @@ return [
     ],
     'resource_put' => [
         'route' => '/api/{resource}/{id:\d+}',
-        'controller' => 'Dime\Server\Endpoint\Resource:putAction',
+        'controller' => 'Dime\Server\Endpoint\ResourcePut',
         'map' => ['PUT'],
         'middleware' => [
             'Dime\Server\Middleware\Validation:run',
@@ -70,7 +70,7 @@ return [
     ],
     'resource_delete' => [
         'route' => '/api/{resource}/{id:\d+}',
-        'controller' => 'Dime\Server\Endpoint\Resource:deleteAction',
+        'controller' => 'Dime\Server\Endpoint\ResourceDelete',
         'map' => ['DELETE'],
         'middleware' => [
             'Dime\Server\Middleware\ContentTransformer:run',

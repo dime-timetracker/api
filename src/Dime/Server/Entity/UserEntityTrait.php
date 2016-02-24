@@ -6,9 +6,7 @@ use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation as JMS;
 
 trait UserEntityTrait
-{
-    use TimestampableEntityTrait;
-    
+{    
     /**
      * @ORM\Column(type="integer")
      * @JMS\Type("integer")

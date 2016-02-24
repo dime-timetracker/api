@@ -11,7 +11,8 @@
         "slim/slim": "3.x-dev",
         "juliangut/slim-doctrine": "dev-master",
         "jms/serializer": "1.1.0",
-        "symfony/validator": "v3.0.2"
+        "symfony/validator": "v3.0.2",
+        "gedmo/doctrine-extensions": "dev-master"
     },
     "repositories": [],
     "require-dev": {

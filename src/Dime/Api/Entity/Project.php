@@ -5,16 +5,16 @@ namespace Dime\Api\Entity;
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation AS JMS;
 use Dime\Server\Behaviors\Assignable;
-use Dime\Server\Behaviors\Timestampable;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Dime\Api\Entity\ProjectRepository")
  * @ORM\Table(name="projects")
  */
-class Project implements Assignable, Timestampable
+class Project implements Assignable
 {
     use \Dime\Server\Entity\IdentityEntityTrait;
     use \Dime\Server\Entity\UserEntityTrait;
+    use \Dime\Server\Entity\TimestampableEntityTrait;
 
     /**
      * @ORM\Column(type="string")

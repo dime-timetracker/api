@@ -37,7 +37,8 @@ return [
             ],
             'resources' => [
                 'activity' => [
-                    'entity' => 'Dime\Api\Entity\Activity'
+                    'entity' => 'Dime\Api\Entity\Activity',
+                    'pageSize' => 100
                 ],
                 'customer' => [
                     'entity' => 'Dime\Api\Entity\Customer'
@@ -55,7 +56,8 @@ return [
                     'entity' => 'Dime\Api\Entity\Tag'
                 ],
                 'timeslice' => [
-                    'entity' => 'Dime\Api\Entity\Timeslice'
+                    'entity' => 'Dime\Api\Entity\Timeslice',
+                    'pageSize' => 100
                 ],
             ]
         ]

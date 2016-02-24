@@ -5,12 +5,14 @@ namespace Dime\Server\Entity;
 use Doctrine\ORM\Mapping AS ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Dime\Server\Entity\AccessRepository")
  * @ORM\Table(name="access")
  */
 class Access
 {
 
+    use \Dime\Server\Entity\TimestampableEntityTrait;
+    
     /**
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="User")
@@ -30,18 +32,6 @@ class Access
      * @var string 
      */
     protected $token;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @var DateTime
-     */
-    protected $createdAt;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @var DateTime
-     */
-    protected $updatedAt;
 
     public function __construct(User $user, $client)
     {
@@ -79,28 +69,6 @@ class Access
     public function setToken($token)
     {
         $this->token = $token;
-        return $this;
-    }
-
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt;
-    }
-
-    public function setCreatedAt(DateTime $createdAt)
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    public function setUpdatedAt(DateTime $updatedAt)
-    {
-        $this->updatedAt = $updatedAt;
         return $this;
     }
 

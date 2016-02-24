@@ -48,6 +48,10 @@ $container['validator'] = function () {
         ->getValidator();
 };
 
+$container['uriHelper'] = function (ContainerInterface $container) {
+    return new Dime\Server\Helper\UriHelper($container->router, $container->environment);
+};
+
 // Middleware
 
 $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterface $container) {
@@ -100,11 +104,39 @@ $container['Dime\Server\Endpoint\Authentication'] = function (ContainerInterface
     );
 };
 
-$container['Dime\Server\Endpoint\Resource'] = function (ContainerInterface $container) {
-    return new Dime\Server\Endpoint\Resource(
+$container['Dime\Server\Endpoint\ResourceGet'] = function (ContainerInterface $container) {
+    return new Dime\Server\Endpoint\ResourceGet(
             $container->settings['api'], 
+            $container->entityManager
+    );
+};
+
+$container['Dime\Server\Endpoint\ResourceList'] = function (ContainerInterface $container) {
+    return new Dime\Server\Endpoint\ResourceList(
+            $container->settings['api'],
             $container->entityManager,
-            $container->validator
+            $container->uriHelper
+    );
+};
+
+$container['Dime\Server\Endpoint\ResourcePost'] = function (ContainerInterface $container) {
+    return new Dime\Server\Endpoint\ResourcePost(
+            $container->settings['api'],
+            $container->entityManager
+    );
+};
+
+$container['Dime\Server\Endpoint\ResourcePut'] = function (ContainerInterface $container) {
+    return new Dime\Server\Endpoint\ResourcePut(
+            $container->settings['api'],
+            $container->entityManager
+    );
+};
+
+$container['Dime\Server\Endpoint\ResourceDelete'] = function (ContainerInterface $container) {
+    return new Dime\Server\Endpoint\ResourceDelete(
+            $container->settings['api'],
+            $container->entityManager
     );
 };
 
@@ -116,6 +148,7 @@ foreach ($routing as $name => $config) {
             $config['route'], 
             $config['controller']
     );
+    $r->setName($name);
 
     if (isset($config['middleware'])) {
         foreach ($config['middleware'] as $mw) {

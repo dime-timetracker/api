@@ -2,7 +2,7 @@
 
 namespace Dime\Server\Hash;
 
-class SymfonySecurityHasher
+class SymfonySecurityHasher implements Hasher
 {
 
     protected $algorithm = 'sha512';

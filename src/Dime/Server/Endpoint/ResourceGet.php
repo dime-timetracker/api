@@ -15,7 +15,7 @@ class ResourceGet
     {
         try {
             $entity = $this->getRepository($args['resource'])
-                ->scopeByField('userId', 1)
+                ->scopeByField('userId', 1) // $request->getAttribute("userId");
                 ->scopeByField('id', $args['id'])
                 ->getQueryBuilder()
                 ->getQuery()->getSingleResult();

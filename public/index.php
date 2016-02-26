@@ -78,6 +78,11 @@ $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterfac
     return new Dime\Server\Middleware\Authorization($config, $access);
 };
 
+$container['Dime\Server\Middleware\AuthorizeType'] = function (ContainerInterface $container) {
+    return new Dime\Server\Middleware\AuthorizeType($container->settings['auth']);
+};
+
+
 $container['Dime\Server\Middleware\ResourceType'] = function (ContainerInterface $container) {
     return new Dime\Server\Middleware\ResourceType($container->settings['api']);
 };
@@ -98,7 +103,7 @@ $container['Dime\Server\Middleware\Validation'] = function (ContainerInterface $
 
 $container['Dime\Server\Endpoint\Authentication'] = function (ContainerInterface $container) {
     return new Dime\Server\Endpoint\Authentication(
-            $container->settings['api'], 
+            $container->settings['auth'],
             $container->entityManager, 
             $container->hasher
     );

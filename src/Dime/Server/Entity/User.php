@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping AS ORM;
  * @ORM\Entity(repositoryClass="Dime\Server\Entity\UserRepository")
  * @ORM\Table(name="users")
  */
-class User
+class User implements UserInterface
 {
 
     /**
@@ -71,50 +71,15 @@ class User
         return $this->id;
     }
 
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    public function getSalt()
-    {
-        return $this->salt;
-    }
-
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    public function getFirstname()
-    {
-        return $this->firstname;
-    }
-
-    public function getLastname()
-    {
-        return $this->lastname;
-    }
-
-    public function getEnabled()
-    {
-        return $this->enabled;
-    }
-
-    public function getAccess()
-    {
-        return $this->access;
-    }
-
     public function setId($id)
     {
         $this->id = $id;
         return $this;
+    }
+
+    public function getUsername()
+    {
+        return $this->username;
     }
 
     public function setUsername($username)
@@ -123,10 +88,20 @@ class User
         return $this;
     }
 
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
     public function setPassword($password)
     {
         $this->password = $password;
         return $this;
+    }
+
+    public function getSalt()
+    {
+        return $this->salt;
     }
 
     public function setSalt($salt)
@@ -135,10 +110,20 @@ class User
         return $this;
     }
 
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
     public function setEmail($email)
     {
         $this->email = $email;
         return $this;
+    }
+
+    public function getFirstname()
+    {
+        return $this->firstname;
     }
 
     public function setFirstname($firstname)
@@ -147,16 +132,31 @@ class User
         return $this;
     }
 
+    public function getLastname()
+    {
+        return $this->lastname;
+    }
+
     public function setLastname($lastname)
     {
         $this->lastname = $lastname;
         return $this;
     }
 
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
+
     public function setEnabled($enabled)
     {
         $this->enabled = $enabled;
         return $this;
+    }
+
+    public function getAccess()
+    {
+        return $this->access;
     }
 
     public function setAccess($access)

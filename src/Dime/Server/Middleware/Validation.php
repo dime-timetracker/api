@@ -5,6 +5,7 @@ namespace Dime\Server\Middleware;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Slim\Exception\NotFoundException;
 
 class Validation implements Middleware
 {
@@ -24,6 +25,10 @@ class Validation implements Middleware
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
         $entity = $request->getParsedBody();
+
+        if (empty($entity)) {
+            return $this->createResponse($response, ['message' => 'Bad request'], 400);
+        }
 
         $errors = $this->checkErrors($this->validator->validate($entity));
         if (!empty($errors)) {

@@ -22,9 +22,10 @@ class ResourcePut
         $updateEntity = $request->getParsedBody();
         $updateEntity->setId($entity->getId());
         if ($updateEntity instanceof \Dime\Server\Behaviors\Assignable) {
-            $updateEntity->setUserId(1);
-//        $entity->setUserId($request->getAttribute("userId"));
+            $updateEntity->setUserId(1); // $request->getAttribute("userId");
         }
+
+        var_dump($updateEntity);
 
         $this->getManager()->persist($updateEntity);
         $this->getManager()->flush();

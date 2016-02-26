@@ -7,8 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\NotFoundException;
 use Dime\Server\Entity\Access;
-use Dime\Server\Entity\User;
-use Dime\Server\Exception\NotAuthenticatedException;
+use Dime\Server\Entity\UserInterface;
 use Dime\Server\Hash\Hasher;
 
 /**
@@ -17,9 +16,10 @@ use Dime\Server\Hash\Hasher;
  */
 class Authentication
 {
+    use \Dime\Server\Traits\DimeResponseTrait;
+
     protected $config;
     protected $manager;
-    protected $repository;
     protected $hasher;
 
     public function __construct(array $config, EntityManager $manager, Hasher $hasher)
@@ -31,33 +31,30 @@ class Authentication
 
     public function login(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-        // FIXME
-        $input = filter_var_array($request->getBody(), [
-            'username' => FILTER_SANITIZE_STRING,
-            'client' => FILTER_SANITIZE_STRING,
-            'password' => FILTER_SANITIZE_STRING
-        ]);
+        $login = $request->getParsedBody();
 
-        if (empty($input['username']) || empty($input['client']) || empty($input['password'])) {
-            throw new NotAuthenticatedException();
+        $user = $this->getUserRepository()->findOneBy(['username' => $login->getUser()]);
+        if (!$this->authenticate($user, $login->getPassword())) {
+            return $this->createResponse($response, ['message' => 'Bad password.'], 401);
         }
-        
-        $user = $this->getUserRepository()->findOneBy(['username' => $input['username']]);
-        if (!$this->authenticate($user, $input['password'])) {
-            throw new NotAuthenticatedException();
+
+        $access = $this->getAccessRepository()->findOneBy([
+            'userId' => $user->getId(),
+            'client' => $login->getClient()
+        ]);
+        if (empty($access)) {
+            $access = new Access($user->getId(), $login->getClient());
         }
+
+        $access->setToken($this->hasher->make(uniqid($login->getUser() . $login->getClient() . microtime(), true)));
+        $this->getManager()->persist($access);
+        $this->getManager()->flush();
+        $this->getManager()->refresh($access);
         
-        $access = new Access($user, $input['client']);
-        $access->setToken($this->hasher->make(uniqid($input['username'] . $input['client'] . microtime(), true)));
-        $this->manager->persist($access);
-        $this->manager->flush();
-        $response->withStatus(200);
-        $response->content = [
+        return $this->createResponse($response, [
             'token' => $access->getToken(),
             'expires' => $access->expires($this->config['expires'])
-        ];
-        
-        return $response;
+        ]);
     }
     
     public function logout(ServerRequestInterface $request, ResponseInterface $response, array $args)
@@ -88,26 +85,31 @@ class Authentication
     /**
      * Authenticate user with password.
      * 
-     * @param User $user
+     * @param UserInterface $user
      * @param string $password
      * @return boolean
      */
-    protected function authenticate(User $user, $password) {
+    protected function authenticate(UserInterface $user, $password) {
         return !empty($user)
             && $this->hasher->check(
                     $password, 
-                    $user->password, 
-                    ['salt' => $user->salt]
+                    $user->getPassword(),
+                    ['salt' => $user->getSalt()]
             );
+    }
+
+    protected function getManager()
+    {
+        return $this->manager;
     }
 
     protected function getAccessRepository()
     {
-        return $this->manager->getRepository($this->config['access']);
+        return $this->getManager()->getRepository($this->config['access']);
     }
 
     protected function getUserRepository()
     {
-        return $this->manager->getRepository($this->config['user']);
+        return $this->getManager()->getRepository($this->config['user']);
     }
 }

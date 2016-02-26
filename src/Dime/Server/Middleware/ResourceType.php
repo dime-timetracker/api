@@ -26,7 +26,7 @@ class ResourceType implements Middleware
         }
 
         return $next(
-            $request->withAttribute('resourceType', $this->config['resources'][$resource]['entity']),
+            $request->withAttribute('type', $this->config['resources'][$resource]['entity']),
             $response
         );
     }

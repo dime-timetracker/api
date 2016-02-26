@@ -5,12 +5,21 @@ return [
     'login' => [
         'route' => '/login',
         'controller' => 'Dime\Server\Endpoint\Authentication:login',
-        'map' => ['POST']
+        'map' => ['POST'],
+        'middleware' => [
+            'Dime\Server\Middleware\Validation:run',
+            'Dime\Server\Middleware\ContentTransformer:run',
+            'Dime\Server\Middleware\ContentNegotiation:run',
+            'Dime\Server\Middleware\AuthorizeType:run',
+        ]
     ],
     'logout' => [
         'route' => '/logout',
         'controller' => 'Dime\Server\Endpoint\Authentication:logout',
-        'map' => ['POST']
+        'map' => ['POST'],
+        'middleware' => [
+            'Dime\Server\Middleware\Authorization:run'
+        ]
     ],
     'parser_analyse' => [
         'route' => '/analyse/{name}',
@@ -34,6 +43,7 @@ return [
             'Dime\Server\Middleware\ContentTransformer:run',
             'Dime\Server\Middleware\ContentNegotiation:run',
             'Dime\Server\Middleware\ResourceType:run',
+            'Dime\Server\Middleware\Authorization:run'
         ]
     ],
     'resource_list' => [

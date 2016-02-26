@@ -65,6 +65,11 @@ class DoctrineObjectConstructor implements ObjectConstructorInterface
             return $this->fallbackConstructor->construct($visitor, $metadata, $data, $type, $context);
         }
 
+        if (!$classMetadataFactory->hasMetadataFor($metadata->name)) {
+            // No ClassMetadata found, proceed with normal deserialization
+            return $this->fallbackConstructor->construct($visitor, $metadata, $data, $type, $context);
+        }
+
         // Managed entity, check for proxy load
         if ( ! is_array($data)) {
             // Single identifier, load proxy

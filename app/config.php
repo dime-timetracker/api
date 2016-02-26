@@ -6,7 +6,8 @@ return [
             'realm'   => 'DimeTimetracker',
             'user'    => 'Dime\Server\Entity\User',
             'access'  => 'Dime\Server\Entity\Access',
-            'expires' => '1 hour'
+            'expires' => '1 hour',
+            'authorizeType' => 'Dime\Server\Entity\Login',
         ],
         
         'displayErrorDetails' => true,

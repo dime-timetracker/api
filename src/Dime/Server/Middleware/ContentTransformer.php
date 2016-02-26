@@ -37,7 +37,7 @@ class ContentTransformer implements Middleware
         try {
             $parsedBody = $this->serializer->deserialize(
                 $request->getBody(),
-                $request->getAttribute('resourceType', 'array'),
+                $request->getAttribute('type', 'array'),
                 $this->getFormat($request->getHeader('content-type'))
             );
         } catch (Exception $ex) {

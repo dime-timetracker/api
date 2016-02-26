@@ -5,7 +5,6 @@ namespace Dime\Server\Endpoint;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Dime\Server\Traits\ResourceTrait;
-use Slim\Exception\NotFoundException;
 
 class ResourcePost
 {
@@ -16,8 +15,7 @@ class ResourcePost
         $entity = $request->getParsedBody();
 
         if ($entity instanceof \Dime\Server\Behaviors\Assignable) {
-            $entity->setUserId(1);
-//        $entity->setUserId($request->getAttribute("userId"));
+            $entity->setUserId(1); // $request->getAttribute("userId");
         }
 
         $this->getManager()->persist($entity);

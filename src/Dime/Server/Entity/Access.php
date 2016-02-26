@@ -3,6 +3,7 @@
 namespace Dime\Server\Entity;
 
 use Doctrine\ORM\Mapping AS ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="Dime\Server\Entity\AccessRepository")
@@ -10,43 +11,45 @@ use Doctrine\ORM\Mapping AS ORM;
  */
 class Access
 {
-
     use \Dime\Server\Entity\TimestampableEntityTrait;
     
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\Column(type="integer")
+     * @Assert\NotBlank
      * @var User
      */
-    protected $user;
+    protected $userId;
 
     /**
      * @ORM\Id
      * @ORM\Column(type="string")
+     * @Assert\NotBlank
      * @var string 
      */
     protected $client;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank
      * @var string 
      */
     protected $token;
 
-    public function __construct(User $user, $client)
+    public function __construct($userId, $client)
     {
-        $this->user = $user;
+        $this->userId = $userId;
         $this->client = $client;
     }
 
-    public function getUser()
+    public function getUserId()
     {
-        return $this->user;
+        return $this->userId;
     }
 
-    public function setUser(User $user)
+    public function setUserId($userId)
     {
-        $this->user = $user;
+        $this->userId = $userId;
         return $this;
     }
 
@@ -79,7 +82,7 @@ class Access
      */
     public function expires($period)
     {
-        return date('Y-m-d H:i:s', strtotime($period, strtotime($this->getUpdatedAt())));
+        return date('Y-m-d H:i:s', strtotime($period, $this->getUpdatedAt()->getTimestamp()));
     }
 
 }

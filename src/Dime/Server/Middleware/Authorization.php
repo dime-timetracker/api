@@ -31,7 +31,7 @@ class Authorization implements Middleware
 
     /**
      * Constructor.
-     * 
+     *
      * @param array $config needs an array with [realm => '', expires  => 'Period (eg. 1 week)']
      * @param array $access needs an array with [username => [[client => '', token => '', expires => 'parsable date'], ...]]
      */
@@ -49,25 +49,24 @@ class Authorization implements Middleware
             return $this->fail($response);
         }
 
-        if ($this->hasAccess($authorization[1], $authorization[2], $authorization[3])) {          
-            return $next(
-                $request
-                    ->withAttribute('userId', $this->getUserId($authorization[1])),
-                $response
-            );
-        } else {
+        if (!$this->hasAccess($authorization[1], $authorization[2], $authorization[3])) {
             return $this->fail($response);
         }
+        
+        return $next(
+            $request->withAttribute('userId', $this->getUserId($authorization[1])),
+            $response
+        );
     }
 
-    protected function fail($response)
+    protected function fail(ResponseInterface $response)
     {
         return $response
                 ->withStatus(401)
-                ->getBody()->write(json_encode(['error' => 'Authentication error']));
+                ->write(json_encode(['error' => 'Authentication error']));
     }
 
-    protected function readAuthorizationHeader($request)
+    protected function readAuthorizationHeader(ServerRequestInterface $request)
     {
         $authorization = false;
         $headers = $request->getHeaders();

@@ -14,7 +14,7 @@ return [
         
         'doctrine' => [
             'connection' => [
-                'dbname' => 'Dime',
+                'dbname' => 'dime_dev',
                 'user' => 'root',
                 'password' => '',
                 'host' => 'localhost',

@@ -2,7 +2,6 @@
 
 namespace Dime\Server\Helper;
 
-use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\RouterInterface;
 use Slim\Http\Environment;
 

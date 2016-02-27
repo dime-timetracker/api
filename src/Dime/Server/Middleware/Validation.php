@@ -5,11 +5,10 @@ namespace Dime\Server\Middleware;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Slim\Exception\NotFoundException;
 
 class Validation implements Middleware
 {
-    use \Dime\Server\Traits\DimeResponseTrait;
+    use \Dime\Server\Traits\ResponseTrait;
 
     /**
      * @var ValidatorInterface

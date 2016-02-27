@@ -5,6 +5,7 @@ namespace Dime\Api\Entity;
 use DateTime;
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation AS JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 use Dime\Server\Behaviors\Assignable;
 
 /**
@@ -41,6 +42,7 @@ class Timeslice implements Assignable
     /**
      * @ORM\Column(type="integer")
      * @JMS\Type("integer")
+     * @Assert\NotBlank
      */
     protected $activityId;
 

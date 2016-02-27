@@ -10,6 +10,7 @@ use Dime\Server\Behaviors\Assignable;
 /**
  * @ORM\Entity(repositoryClass="Dime\Api\Entity\ServiceRepository")
  * @ORM\Table(name="services")
+ * @Assert\UniqueEntity({"alias", "userId"})
  */
 class Service implements Assignable
 {
@@ -38,7 +39,7 @@ class Service implements Assignable
      * @JMS\Type("double")
      * @var double
      */
-    protected $rate = 0;
+    protected $rate = 0.0;
 
     /**
      * @ORM\Column(type="boolean")

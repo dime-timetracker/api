@@ -16,16 +16,16 @@ use Dime\Server\Hash\Hasher;
  */
 class Authentication
 {
-    use \Dime\Server\Traits\DimeResponseTrait;
+    use \Dime\Server\Traits\ConfigurationTrait;
+    use \Dime\Server\Traits\DoctrineTrait;
+    use \Dime\Server\Traits\ResponseTrait;
 
-    protected $config;
-    protected $manager;
     protected $hasher;
 
     public function __construct(array $config, EntityManager $manager, Hasher $hasher)
     {
-        $this->config = $config;
-        $this->manager = $manager;
+        $this->setConfig($config);
+        $this->setManager($manager);
         $this->hasher = $hasher;
     }
 
@@ -46,14 +46,12 @@ class Authentication
             $access = new Access($user->getId(), $login->getClient());
         }
 
-        $access->setToken($this->hasher->make(uniqid($login->getUser() . $login->getClient() . microtime(), true)));
-        $this->getManager()->persist($access);
-        $this->getManager()->flush();
-        $this->getManager()->refresh($access);
+        $access->setToken($access->generateToken($this->hasher));
+        $this->save($access);
         
         return $this->createResponse($response, [
             'token' => $access->getToken(),
-            'expires' => $access->expires($this->config['expires'])
+            'expires' => $access->expires($this->getConfigValue(['expires']))
         ]);
     }
     
@@ -71,7 +69,7 @@ class Authentication
         if ($user != null) {
             $access = $this->getAccessRepository()
                     ->findOneBy([
-                        'user' => $user,
+                        'userId' => $user->getId(),
                         'client' => $client
                     ]);
             if ($access != null) {
@@ -98,18 +96,13 @@ class Authentication
             );
     }
 
-    protected function getManager()
-    {
-        return $this->manager;
-    }
-
     protected function getAccessRepository()
     {
-        return $this->getManager()->getRepository($this->config['access']);
+        return $this->getRepository($this->getConfigValue(['access']));
     }
 
     protected function getUserRepository()
     {
-        return $this->getManager()->getRepository($this->config['user']);
+        return $this->getRepository($this->getConfigValue(['user']));
     }
 }

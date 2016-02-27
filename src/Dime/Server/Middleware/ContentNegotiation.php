@@ -16,11 +16,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ContentNegotiation implements Middleware
 {
-
-    /**
-     * @var array
-     */
-    protected $config = [];
+    use \Dime\Server\Traits\ConfigurationTrait;
 
     /**
      * @var string
@@ -36,7 +32,7 @@ class ContentNegotiation implements Middleware
 
     public function __construct(array $config)
     {
-        $this->config = $config;
+        $this->setConfig($config);
     }
 
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next)
@@ -67,8 +63,9 @@ class ContentNegotiation implements Middleware
 
     protected function installResponseHeader(ResponseInterface $response)
     {
-        if (isset($this->config['headers']) && !empty($this->config['headers'])) {
-            foreach ($this->config['headers'] as $name => $value) {
+        $headers = $this->getConfigValue(['headers']);
+        if (!empty($headers)) {
+            foreach ($headers as $name => $value) {
                 $response = $response->withHeader($name, $value);
             }
             $response = $response->withHeader('Content-Type', $this->accept);

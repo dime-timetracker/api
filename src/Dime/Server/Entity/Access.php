@@ -4,6 +4,7 @@ namespace Dime\Server\Entity;
 
 use Doctrine\ORM\Mapping AS ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Dime\Server\Hash\Hasher;
 
 /**
  * @ORM\Entity(repositoryClass="Dime\Server\Entity\AccessRepository")
@@ -17,7 +18,7 @@ class Access
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @Assert\NotBlank
-     * @var User
+     * @var int
      */
     protected $userId;
 
@@ -83,6 +84,11 @@ class Access
     public function expires($period)
     {
         return date('Y-m-d H:i:s', strtotime($period, $this->getUpdatedAt()->getTimestamp()));
+    }
+
+    public function generateToken(Hasher $hasher)
+    {
+        return $hasher->make(uniqid($this->getUserId() . $this->getClient() . microtime(), true));
     }
 
 }

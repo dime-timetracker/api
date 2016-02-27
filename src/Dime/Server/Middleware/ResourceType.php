@@ -8,27 +8,23 @@ use Slim\Exception\NotFoundException;
 
 class ResourceType implements Middleware
 {
-    /**
-     * @var array
-     */
-    protected $config = [];
+    use \Dime\Server\Traits\ConfigurationTrait;
  
     public function __construct(array $config)
     {
-        $this->config = $config;
+        $this->setConfig($config);
     }
     
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
         $resource = $request->getAttribute('route')->getArgument('resource');
-        if (!isset($this->config['resources'][$resource])) {
+        $type = $this->getConfigValue(['resources', $resource, 'entity']);
+
+        if (empty($type)) {
             throw new NotFoundException($request, $response);
         }
 
-        return $next(
-            $request->withAttribute('type', $this->config['resources'][$resource]['entity']),
-            $response
-        );
+        return $next($request->withAttribute('type', $type), $response);
     }
 
 }

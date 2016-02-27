@@ -6,11 +6,14 @@ use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Headers;
 use Dime\Server\Http\Response;
 
-trait DimeResponseTrait
+trait ResponseTrait
 {
-    protected function createResponse(ResponseInterface $response, $data, $status = 200) {
+
+    public function createResponse(ResponseInterface $response, $data, $status = 200)
+    {
         $result = new Response($status, new Headers($response->getHeaders()));
         $result->setData($data);
         return $result;
     }
+
 }

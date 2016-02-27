@@ -4,6 +4,7 @@ namespace Dime\Api\Entity;
 
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation AS JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 use Dime\Server\Behaviors\Assignable;
 
 /**
@@ -20,11 +21,12 @@ class Setting implements Assignable
     /**
      * @ORM\Column(type="string")
      * @JMS\Type("string")
+     * @Assert\NotBlank
      */
     protected $name;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      * @JMS\Type("string")
      */
     protected $value;
@@ -50,7 +52,5 @@ class Setting implements Assignable
         $this->value = $value;
         return $this;
     }
-
-
 
 }

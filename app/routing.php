@@ -18,7 +18,7 @@ return [
         'controller' => 'Dime\Server\Endpoint\Authentication:logout',
         'map' => ['POST'],
         'middleware' => [
-            'Dime\Server\Middleware\Authorization:run'
+            'Dime\Server\Middleware\Authorization:run',
         ]
     ],
     'parser_analyse' => [
@@ -43,7 +43,7 @@ return [
             'Dime\Server\Middleware\ContentTransformer:run',
             'Dime\Server\Middleware\ContentNegotiation:run',
             'Dime\Server\Middleware\ResourceType:run',
-            'Dime\Server\Middleware\Authorization:run'
+//            'Dime\Server\Middleware\Authorization:run',
         ]
     ],
     'resource_list' => [

@@ -6,33 +6,40 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Dime\Server\Traits\ResourceTrait;
+use Dime\Server\Behaviors\Filterable;
 use Dime\Server\Helper\UriHelper;
 
 class ResourceList
 {
-    use ResourceTrait;
-    
+    use \Dime\Server\Traits\ConfigurationTrait;
+    use \Dime\Server\Traits\RequestTrait;
+    use \Dime\Server\Traits\DoctrineTrait;
+    use \Dime\Server\Traits\ResponseTrait;
+
     protected $uriHelper;
 
     public function __construct(array $config, EntityManager $manager, UriHelper $uriHelper)
     {
-        $this->config = $config;
-        $this->manager = $manager;
+        $this->setConfig($config);
+        $this->setManager($manager);
         $this->uriHelper = $uriHelper;
     }
     
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-        $repository = $this->getRepository($args['resource']);
-        $repository->scopeByField('userId', 1); // $request->getAttribute("userId");
-
-        if ($this->hasQueryParam($request, 'filter')) {
-            $repository->filter($this->getQueryParam($request, 'filter'));
-        }
-
+        $repositoryName = $this->getConfigValue(['resources', $args['resource'], 'entity']);
+        $pageSize = $this->getConfigValue(['resources', $args['resource'], 'pageSize'], -1);
+        $userId = $request->getAttribute('id', 1);
         $page = $this->getQueryParam($request, 'page', 1);
-        $with =  $this->getQueryParam($request, 'with', $this->getResourceConfig($args['resource'], 'pageSize', -1));
+        $with = $this->getQueryParam($request, 'with', $pageSize);
+
+        $repository = $this
+                ->getRepository($repositoryName)
+                ->scopeByField('userId', $userId);
+        if ($this->hasQueryParam($request, 'filter') && $repository instanceof Filterable) {
+            $repository
+                ->filter($this->getQueryParam($request, 'filter'));
+        }
 
         $queryBuilder = $repository->getQueryBuilder();
         $queryBuilder->setFirstResult($with * ($page - 1));

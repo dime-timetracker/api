@@ -4,11 +4,13 @@ namespace Dime\Api\Entity;
 
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation AS JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 use Dime\Server\Behaviors\Assignable;
 
 /**
  * @ORM\Entity(repositoryClass="Dime\Api\Entity\ProjectRepository")
  * @ORM\Table(name="projects")
+ * @Assert\UniqueEntity({"alias", "userId"})
  */
 class Project implements Assignable
 {
@@ -23,8 +25,9 @@ class Project implements Assignable
     protected $name;
 
     /**
-     * @ORM\Column(type="string", unique=true)
+     * @ORM\Column(type="string")
      * @JMS\Type("string")
+     * @Assert\NotBlank
      */
     protected $alias;
 

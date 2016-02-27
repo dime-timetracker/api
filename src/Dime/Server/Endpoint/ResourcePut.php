@@ -2,35 +2,40 @@
 
 namespace Dime\Server\Endpoint;
 
+use Doctrine\ORM\EntityManager;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Dime\Server\Traits\ResourceTrait;
 use Slim\Exception\NotFoundException;
+use Dime\Server\Behaviors\Assignable;
 
 class ResourcePut
 {
-    use ResourceTrait;
+    use \Dime\Server\Traits\ConfigurationTrait;
+    use \Dime\Server\Traits\DoctrineTrait;
+    use \Dime\Server\Traits\ResponseTrait;
+
+    public function __construct(array $config, EntityManager $manager)
+    {
+        $this->setConfig($config);
+        $this->setManager($manager);
+    }
     
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-        $entity = $this->getRepository($args['resource'])->find($args['id']);
+        $repositoryName = $this->getConfigValue(['resources', $args['resource'], 'entity']);
+
+        $entity = $this->getRepository($repositoryName)->find($args['id']);
 
         if (empty($entity)) {
             throw new NotFoundException($request, $response);
         }
 
+        // TODO check update Id with args[id]
         $updateEntity = $request->getParsedBody();
-        $updateEntity->setId($entity->getId());
-        if ($updateEntity instanceof \Dime\Server\Behaviors\Assignable) {
-            $updateEntity->setUserId(1); // $request->getAttribute("userId");
+        if ($updateEntity instanceof Assignable) {
+            $updateEntity->setUserId($request->getAttribute('userId', 1));
         }
 
-        var_dump($updateEntity);
-
-        $this->getManager()->persist($updateEntity);
-        $this->getManager()->flush();
-        $this->getManager()->refresh($entity);
-
-        return $this->createResponse($response, $entity);
+        return $this->createResponse($response, $this->save($updateEntity));
     }
 }

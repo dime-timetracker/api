@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Entity;
+namespace Dime\Security\Entity;
 
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation as JMS;

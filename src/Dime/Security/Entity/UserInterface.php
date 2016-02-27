@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Entity;
+namespace Dime\Security\Entity;
 
 interface UserInterface
 {

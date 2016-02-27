@@ -1,14 +1,14 @@
 <?php
 
-namespace Dime\Server\Endpoint;
+namespace Dime\Security\Endpoint;
 
 use Doctrine\ORM\EntityManager;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\NotFoundException;
-use Dime\Server\Entity\Access;
-use Dime\Server\Entity\UserInterface;
-use Dime\Server\Hash\Hasher;
+use Dime\Security\Entity\Access;
+use Dime\Security\Entity\UserInterface;
+use Dime\Security\Hash\Hasher;
 
 /**
  * Authentication is a endpoint with to functions. It will login and logout a 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Hash;
+namespace Dime\Security\Hash;
 
 class SymfonySecurityHasher implements Hasher
 {

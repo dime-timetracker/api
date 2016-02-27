@@ -1,11 +1,11 @@
 <?php
 
-namespace Dime\Server\Entity;
+namespace Dime\Security\Entity;
 
 use Doctrine\ORM\Mapping AS ORM;
 
 /**
- * @ORM\Entity(repositoryClass="Dime\Server\Entity\UserRepository")
+ * @ORM\Entity(repositoryClass="Dime\Security\Entity\UserRepository")
  * @ORM\Table(name="users")
  */
 class User implements UserInterface

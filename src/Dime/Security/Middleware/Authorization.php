@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Middleware;
+namespace Dime\Security\Middleware;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;

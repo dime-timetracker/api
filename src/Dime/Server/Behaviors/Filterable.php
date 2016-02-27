@@ -1,6 +1,7 @@
 <?php
 
 namespace Dime\Server\Behaviors;
+
 use Doctrine\ORM\QueryBuilder;
 
 interface Filterable

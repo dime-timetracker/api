@@ -1,13 +1,13 @@
 <?php
 
-namespace Dime\Server\Entity;
+namespace Dime\Security\Entity;
 
 use Doctrine\ORM\Mapping AS ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Dime\Server\Hash\Hasher;
+use Dime\Security\Hash\Hasher;
 
 /**
- * @ORM\Entity(repositoryClass="Dime\Server\Entity\AccessRepository")
+ * @ORM\Entity(repositoryClass="Dime\Security\Entity\AccessRepository")
  * @ORM\Table(name="access")
  */
 class Access

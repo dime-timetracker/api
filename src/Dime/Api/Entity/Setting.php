@@ -15,7 +15,7 @@ class Setting implements Assignable
 {
     
     use \Dime\Server\Entity\IdentityEntityTrait;
-    use \Dime\Server\Entity\UserEntityTrait;
+    use \Dime\Security\Entity\UserEntityTrait;
     use \Dime\Server\Entity\TimestampableEntityTrait;
 
     /**

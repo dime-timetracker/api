@@ -15,7 +15,7 @@ use Dime\Server\Behaviors\Assignable;
 class Project implements Assignable
 {
     use \Dime\Server\Entity\IdentityEntityTrait;
-    use \Dime\Server\Entity\UserEntityTrait;
+    use \Dime\Security\Entity\UserEntityTrait;
     use \Dime\Server\Entity\TimestampableEntityTrait;
 
     /**

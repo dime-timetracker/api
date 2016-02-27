@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Exception;
+namespace Dime\Security\Exception;
 
 use Slim\Exception\SlimException;
 

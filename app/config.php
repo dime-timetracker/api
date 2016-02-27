@@ -21,11 +21,16 @@ return [
                 'driver' => 'mysqli',
                 'charset' => 'utf-8'
             ],
-            'auto_generate_proxies' => true,
             'annotation_paths' => [
-                ROOT_DIR . '/src/Dime/Server/Model/',
-                ROOT_DIR . '/src/Dime/Api/Model/'
+                ROOT_DIR . '/src/Dime/Server/Entity/',
+                ROOT_DIR . '/src/Dime/Security/Entity/',
+                ROOT_DIR . '/src/Dime/Api/Entity/'
             ],
+        ],
+
+        'migrations' => [
+            'table_name' => 'migration_versions',
+            'migrations_directory' => ROOT_DIR . '/app/DoctrineMigrations',
         ],
         
         'api' => [

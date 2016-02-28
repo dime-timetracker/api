@@ -15,12 +15,11 @@ class ServiceRepository extends BaseRepository
 
     public function filter(array $parameter, QueryBuilder $queryBuilder = null)
     {
-        $qb = $this->getQueryBuilder($queryBuilder);
-
         if (empty($parameter)) {
-            return $qb;
+            return $this;
         }
         
+        $qb = $this->getQueryBuilder($queryBuilder);
         foreach ($parameter as $name => $value) {
             switch ($name) {
                 case 'search':

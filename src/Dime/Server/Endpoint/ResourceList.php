@@ -59,9 +59,12 @@ class ResourceList
 
     protected function buildLink(ServerRequestInterface $request, $resource, $page, $with, $total)
     {
-        $lastPage = ceil($total / $with);
+        $lastPage = 1;
         $queryParameter = $request->getQueryParams();
-        $queryParameter['with'] = $with;
+        if ($with > 1) {
+            $lastPage = ceil($total / $with);
+            $queryParameter['with'] = $with;
+        }
         $result = [];
         if ($page + 1 <= $lastPage) {
             $queryParameter['page'] =  $page + 1;

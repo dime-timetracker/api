@@ -8,8 +8,9 @@ $config = require_once ROOT_DIR . '/app/config.php';
 $cli = new \Symfony\Component\Console\Application('Dime Timetracker');
 $cli->setCatchExceptions(true);
 
-$cli->addCommands(array(
-    new \Doctrine\DBAL\Migrations\Tools\Console\Command\MigrateCommand()
-));
+$cli->addCommands([
+    new Dime\Server\Command\InstallCommand(),
+    new Dime\Server\Command\UpgradeCommand(),
+]);
 
 $cli->run();

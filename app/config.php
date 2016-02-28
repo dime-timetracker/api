@@ -14,7 +14,7 @@ return [
         
         'doctrine' => [
             'connection' => [
-                'dbname' => 'dime_dev',
+                'dbname' => 'dime_symfony',
                 'user' => 'root',
                 'password' => '',
                 'host' => 'localhost',

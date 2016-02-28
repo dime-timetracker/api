@@ -2,11 +2,11 @@
 
 namespace Dime\Parser\Middleware;
 
-use Dime\Server\Middleware\Middleware;
+use Dime\Server\Middleware\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class ActivityDescription implements Middleware
+class ActivityDescription implements MiddlewareInterface
 {
     protected $regex = '/([@:\/])(\w+)/';
     protected $matches = array();

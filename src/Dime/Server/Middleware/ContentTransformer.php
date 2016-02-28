@@ -8,7 +8,7 @@ use JMS\Serializer\SerializerInterface;
 
 use Dime\Server\Http\Response;
 
-class ContentTransformer implements Middleware
+class ContentTransformer implements MiddlewareInterface
 {
     /**
      * @var SerializerInterface

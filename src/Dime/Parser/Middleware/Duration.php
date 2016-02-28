@@ -2,7 +2,7 @@
 
 namespace Dime\Parser\Middleware;
 
-use Dime\Server\Middleware\Middleware;
+use Dime\Server\Middleware\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
  * [+-]2,5h        => [sign: [+-], number: 9000]
  * [+-]2.5h        => [sign: [+-], number: 9000]
  */
-class Duration implements Middleware
+class Duration implements MiddlewareInterface
 {
     protected $regex = '/(?P<sign>[+-])?(?P<duration>(\d+((:\d+)?(:\d+)?)?[hms]?([,\.]\d+[h])?(\s+)?(\d+[ms])?(\s+)?(\d+[s])?)?)/';
     protected $matches = array();

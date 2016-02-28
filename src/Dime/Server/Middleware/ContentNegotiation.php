@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
  * 
  * @author Danilo Kuehn <dk@nogo-software.de>
  */
-class ContentNegotiation implements Middleware
+class ContentNegotiation implements MiddlewareInterface
 {
     use \Dime\Server\Traits\ConfigurationTrait;
 

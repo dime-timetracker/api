@@ -6,7 +6,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\NotFoundException;
 
-class ResourceType implements Middleware
+class ResourceType implements MiddlewareInterface
 {
     use \Dime\Server\Traits\ConfigurationTrait;
  

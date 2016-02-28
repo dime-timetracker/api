@@ -5,7 +5,6 @@ namespace Dime\Server\Endpoint;
 use Doctrine\ORM\EntityManager;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Dime\Server\Behaviors\Assignable;
 
 class ResourcePost
 {
@@ -20,12 +19,9 @@ class ResourcePost
     
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-        $entity = $request->getParsedBody();
-
-        if ($entity instanceof Assignable) {
-            $entity->setUserId($request->getAttribute('userId', 1));
-        }
-
-        return $this->createResponse($response, $this->save($entity));
+        return $this->createResponse(
+            $response,
+            $this->save($request->getParsedBody())
+        );
     }
 }

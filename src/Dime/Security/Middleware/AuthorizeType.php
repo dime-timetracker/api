@@ -5,7 +5,7 @@ namespace Dime\Server\Middleware;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class AuthorizeType implements Middleware
+class AuthorizeType implements MiddlewareInterface
 {
     use \Dime\Server\Traits\ConfigurationTrait;
 

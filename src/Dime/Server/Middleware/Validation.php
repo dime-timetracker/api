@@ -6,7 +6,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class Validation implements Middleware
+class Validation implements MiddlewareInterface
 {
     use \Dime\Server\Traits\ResponseTrait;
 

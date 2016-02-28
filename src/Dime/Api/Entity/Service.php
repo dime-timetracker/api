@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 use Dime\Server\Validator\UniqueEntity;
-use Dime\Server\Behaviors\Assignable;
+use Dime\Api\Behaviors\Assignable;
 
 /**
  * @ORM\Entity(repositoryClass="Dime\Api\Entity\ServiceRepository")

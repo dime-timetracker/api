@@ -2,7 +2,7 @@
 
 namespace Dime\Parser\Middleware;
 
-use Dime\Server\Middleware\Middleware;
+use Dime\Server\Middleware\MiddlewareInterface;
 use Moment\Moment;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
  * 10:00-      => [start: "10:00", stop: ""]
  * -12:00      => [start: "", stop: "12:00"]
  */
-class Datetime implements Middleware
+class Datetime implements MiddlewareInterface
 {
     protected $regex = array(
         '/(?P<start>\d+(?::\d+)?)\s*-\s*(?P<stop>\d+(?::\d+)?)/',

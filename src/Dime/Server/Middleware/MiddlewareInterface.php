@@ -5,7 +5,7 @@ namespace Dime\Server\Middleware;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-interface Middleware
+interface MiddlewareInterface
 {
     /**
      * Run middleware

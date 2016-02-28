@@ -6,7 +6,6 @@ use Doctrine\ORM\EntityManager;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\NotFoundException;
-use Dime\Server\Behaviors\Assignable;
 
 class ResourcePut
 {
@@ -30,11 +29,8 @@ class ResourcePut
             throw new NotFoundException($request, $response);
         }
 
-        // TODO check update Id with args[id]
         $updateEntity = $request->getParsedBody();
-        if ($updateEntity instanceof Assignable) {
-            $updateEntity->setUserId($request->getAttribute('userId', 1));
-        }
+        // TODO check update Id with args[id]
 
         return $this->createResponse($response, $this->save($updateEntity));
     }

@@ -23,7 +23,7 @@ use Psr\Http\Message\ResponseInterface;
  *
  * @author Danilo Kuehn <dk@nogo-software.de>
  */
-class Authorization implements Middleware
+class Authorization implements MiddlewareInterface
 {
 
     protected $config;

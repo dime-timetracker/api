@@ -4,7 +4,7 @@ namespace Dime\Api\Entity;
 
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation as JMS;
-use Dime\Server\Behaviors\Assignable;
+use Dime\Api\Behaviors\Assignable;
 
 /**
  * @ORM\Entity(repositoryClass="Dime\Api\Entity\ActivityRepository")

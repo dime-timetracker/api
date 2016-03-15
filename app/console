@@ -11,7 +11,6 @@ use Jgut\Slim\Doctrine\EntityManagerBuilder;
 
 $em = EntityManagerBuilder::build($config['settings']['doctrine']);
 
-
 $configuration = new \Doctrine\DBAL\Migrations\Configuration\Configuration($em->getConnection());
 $configuration->setMigrationsNamespace($config['settings']['migrations']['namespace']);
 $configuration->setMigrationsDirectory($config['settings']['migrations']['directory']);
@@ -31,6 +30,7 @@ $cli->addCommands([
     new Dime\Server\Command\InstallCommand(),
     new Dime\Server\Command\UpgradeCommand(),
     new \Doctrine\ORM\Tools\Console\Command\InfoCommand(),
+    new \Doctrine\DBAL\Migrations\Tools\Console\Command\GenerateCommand(),
     new \Doctrine\DBAL\Migrations\Tools\Console\Command\MigrateCommand(),
     new \Doctrine\DBAL\Migrations\Tools\Console\Command\StatusCommand(),
 ]);

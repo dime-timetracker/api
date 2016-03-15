@@ -42,12 +42,12 @@ class Service implements Assignable
      */
     protected $rate = 0.0;
 
-//    /**
-//     * @ORM\Column(type="boolean")
-//     * @JMS\Type("boolean")
-//     * @var boolean
-//     */
-//    protected $enabled = true;
+    /**
+     * @ORM\Column(type="boolean")
+     * @JMS\Type("boolean")
+     * @var boolean
+     */
+    protected $enabled = true;
 
     public function getName()
     {

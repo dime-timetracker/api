@@ -47,8 +47,6 @@ class Version20121012091006 extends AbstractMigration
         
         $settings->setPrimaryKey(array('id'));
         $settings->addForeignKeyConstraint($users, ['user_id'], ['id'], ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'], 'FK_E545A0C5A76ED395');
-        
-        $this->addSql($schema->toSql($this->connection->getDatabasePlatform()));
     }
 
     public function down(Schema $schema)
@@ -61,7 +59,5 @@ class Version20121012091006 extends AbstractMigration
         $users->dropIndex('UNIQ_1483A5E992FC23A8');
         $users->dropIndex('UNIQ_1483A5E9A0D96FBF');
         $schema->dropTable('users');
-                
-        $this->addSql($schema->toDropSql($this->connection->getDatabasePlatform()));
     }
 }

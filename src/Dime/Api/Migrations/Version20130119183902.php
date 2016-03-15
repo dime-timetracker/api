@@ -45,8 +45,6 @@ class Version20130119183902 extends AbstractMigration
         $timeslices->setPrimaryKey(array('id'));
         $timeslices->addForeignKeyConstraint($activities, ['activity_id'], ['id'], ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'], 'FK_72C53BF481C06096');
         $timeslices->addForeignKeyConstraint($users, ['user_id'], ['id'], ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'], 'FK_72C53BF4A76ED395');
-        
-        $this->addSql($schema->toSql($this->connection->getDatabasePlatform()));
     }
 
     public function down(Schema $schema)
@@ -62,7 +60,5 @@ class Version20130119183902 extends AbstractMigration
         $activities->removeForeignKey('FK_B5F1AFE5ED5CA9E6');
         $activities->removeForeignKey('FK_B5F1AFE5A76ED395');
         $schema->dropTable('activities');
-        
-        $this->addSql($schema->toDropSql($this->connection->getDatabasePlatform()));
     }
 }

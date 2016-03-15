@@ -34,32 +34,30 @@ class Version20130226113834 extends AbstractMigration
         $customerTags = $schema->createTable('customer_tags');
         $customerTags->addColumn('customer_id', 'integer');
         $customerTags->addColumn('tag_id', 'integer');
-        $customerTags->setPrimaryKey(array('activity_id', 'tag_id'));
+        $customerTags->setPrimaryKey(array('customer_id', 'tag_id'));
         $customerTags->addForeignKeyConstraint($schema->getTable('customers'), ['customer_id'], ['id'], ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'], 'FK_3B2D30519395C3F3');
         $customerTags->addForeignKeyConstraint($tags, ['tag_id'], ['id'], ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'], 'FK_3B2D3051BAD26311');
         
         $projectTags = $schema->createTable('project_tags');
         $projectTags->addColumn('project_id', 'integer');
         $projectTags->addColumn('tag_id', 'integer');
-        $projectTags->setPrimaryKey(array('activity_id', 'tag_id'));
+        $projectTags->setPrimaryKey(array('project_id', 'tag_id'));
         $projectTags->addForeignKeyConstraint($schema->getTable('projects'), ['project_id'], ['id'], ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'], 'FK_562D5C3E166D1F9C');
         $projectTags->addForeignKeyConstraint($tags, ['tag_id'], ['id'], ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'], 'FK_562D5C3EBAD26311');
         
         $serviceTags = $schema->createTable('service_tags');
         $serviceTags->addColumn('service_id', 'integer');
         $serviceTags->addColumn('tag_id', 'integer');
-        $serviceTags->setPrimaryKey(array('activity_id', 'tag_id'));
+        $serviceTags->setPrimaryKey(array('service_id', 'tag_id'));
         $serviceTags->addForeignKeyConstraint($schema->getTable('services'), ['service_id'], ['id'], ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'], 'FK_A1FF20CAED5CA9E6');
         $serviceTags->addForeignKeyConstraint($tags, ['tag_id'], ['id'], ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'], 'FK_A1FF20CABAD26311');
         
         $timesliceTags = $schema->createTable('timeslice_tags');
         $timesliceTags->addColumn('timeslice_id', 'integer');
         $timesliceTags->addColumn('tag_id', 'integer');
-        $timesliceTags->setPrimaryKey(array('activity_id', 'tag_id'));
+        $timesliceTags->setPrimaryKey(array('timeslice_id', 'tag_id'));
         $timesliceTags->addForeignKeyConstraint($schema->getTable('timeslices'), ['timeslice_id'], ['id'], ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'], 'FK_4231EEB94FB5678C');
         $timesliceTags->addForeignKeyConstraint($tags, ['tag_id'], ['id'], ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'], 'FK_4231EEB9BAD26311');
-                
-        $this->addSql($schema->toSql($this->connection->getDatabasePlatform()));
     }
 
     public function down(Schema $schema)
@@ -94,6 +92,5 @@ class Version20130226113834 extends AbstractMigration
         $tags->removeForeignKey('FK_6FBC9426A76ED395');
         $schema->dropTable('tags');
         
-        $this->addSql($schema->toDropSql($this->connection->getDatabasePlatform()));
     }
 }

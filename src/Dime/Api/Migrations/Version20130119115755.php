@@ -33,9 +33,6 @@ class Version20130119115755 extends AbstractMigration
         $projects->addUniqueIndex(array('alias', 'user_id'), 'unique_project_alias_user');
         $projects->addForeignKeyConstraint($customers, ['customer_id'], ['id'], ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'], 'FK_5C93B3A49395C3F3');
         $projects->addForeignKeyConstraint($users, ['user_id'], ['id'], ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'], 'FK_5C93B3A4A76ED395');
-        
-        
-        $this->addSql($schema->toSql($this->connection->getDatabasePlatform()));
     }
 
     public function down(Schema $schema)
@@ -45,7 +42,5 @@ class Version20130119115755 extends AbstractMigration
         $projects->removeForeignKey('FK_5C93B3A49395C3F3');
         $projects->removeForeignKey('FK_5C93B3A4A76ED395');
         $schema->dropTable('projects');
-        
-        $this->addSql($schema->toDropSql($this->connection->getDatabasePlatform()));
     }
 }

@@ -29,8 +29,9 @@ return [
         ],
 
         'migrations' => [
+            'namespace' => 'Dime\Api\Migrations',
+            'directory' => ROOT_DIR . '/src/Dime/Api/Migrations',
             'table_name' => 'migration_versions',
-            'migrations_directory' => ROOT_DIR . '/app/DoctrineMigrations',
         ],
         
         'api' => [

@@ -19,6 +19,8 @@ class InstallCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+//        $this->getApplication()->find('doctrine:')
+        
         parent::execute($input, $output);
         // TODO run install schema
         // Add user and activate it

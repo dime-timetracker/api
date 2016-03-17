@@ -3,6 +3,7 @@
 namespace Dime\Api\Entity;
 
 use Doctrine\ORM\Mapping AS ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation as JMS;
 use Dime\Api\Behaviors\Assignable;
 
@@ -51,6 +52,21 @@ class Activity implements Assignable
      * @JMS\Type("integer")
      */
     protected $serviceId;
+    
+    /**
+     * @ORM\ManyToMany(targetEntity="Tag")
+     * @ORM\JoinTable(
+     *      name="activity_tags",
+     *      joinColumns={@ORM\JoinColumn(name="activity_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="tag_id", referencedColumnName="id")}
+     * )
+     * @JMS\Type("ArrayCollection<Dime\Api\Entity\Tag>")
+     */
+    protected $tags;
+    
+    public function __construct() {
+        $this->tags = new ArrayCollection();
+    }
 
     public function getDescription()
     {
@@ -116,5 +132,26 @@ class Activity implements Assignable
     {
         $this->serviceId = $serviceId;
         return $this;
-    }    
+    }
+    
+    public function getTags()
+    {
+        return $this->tags;
+    }
+    
+    public function setTags(ArrayCollection $tags)
+    {
+        $this->tags = $tags;
+        return $this;
+    }
+    
+    public function addTag(Tag $tag)
+    {
+        $this->tags->add($tag);
+    }
+    
+    public function removeTag(Tag $tag)
+    {
+        $this->tags->removeElement($tag);
+    }
 }

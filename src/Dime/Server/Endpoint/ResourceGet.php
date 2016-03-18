@@ -10,7 +10,7 @@ use Slim\Exception\NotFoundException;
 class ResourceGet
 {
     use \Dime\Server\Traits\ConfigurationTrait;
-    use \Dime\Server\Traits\DoctrineTrait;
+    use \Dime\Server\Traits\ManagerTrait;
     use \Dime\Server\Traits\ResponseTrait;
 
     public function __construct(array $config, EntityManager $manager)

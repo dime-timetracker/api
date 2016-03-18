@@ -17,7 +17,7 @@ use Dime\Security\Hash\Hasher;
 class Authentication
 {
     use \Dime\Server\Traits\ConfigurationTrait;
-    use \Dime\Server\Traits\DoctrineTrait;
+    use \Dime\Server\Traits\ManagerTrait;
     use \Dime\Server\Traits\ResponseTrait;
 
     protected $hasher;

@@ -5,7 +5,7 @@ namespace Dime\Server\Traits;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 
-trait DoctrineTrait
+trait ManagerTrait
 {
     /**
      * @var EntityManager

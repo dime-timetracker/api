@@ -13,7 +13,7 @@ class ResourceList
 {
     use \Dime\Server\Traits\ConfigurationTrait;
     use \Dime\Server\Traits\RequestTrait;
-    use \Dime\Server\Traits\DoctrineTrait;
+    use \Dime\Server\Traits\ManagerTrait;
     use \Dime\Server\Traits\ResponseTrait;
 
     protected $uriHelper;

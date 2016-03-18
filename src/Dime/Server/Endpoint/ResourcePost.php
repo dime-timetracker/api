@@ -8,7 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class ResourcePost
 {
-    use \Dime\Server\Traits\DoctrineTrait;
+    use \Dime\Server\Traits\ManagerTrait;
     use \Dime\Server\Traits\ResponseTrait;
 
     public function __construct(array $config, EntityManager $manager)

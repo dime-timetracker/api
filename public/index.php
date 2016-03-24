@@ -62,6 +62,10 @@ $container['uriHelper'] = function (ContainerInterface $container) {
     return new Dime\Server\Helper\UriHelper($container->router, $container->environment);
 };
 
+$container['doctrine.orm.validator.unique'] = function (ContainerInterface $container) {
+    return new \Dime\Server\Validator\UniqueEntityValidator($container->entityManager);
+}
+
 // Middleware
 
 $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterface $container) {

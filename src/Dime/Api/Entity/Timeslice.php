@@ -19,21 +19,21 @@ class Timeslice implements Assignable
     use \Dime\Security\Entity\UserEntityTrait;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer")
      * @JMS\Type("integer")
      */
-    protected $duration;
+    protected $duration = 0;
 
     /**
      * @ORM\Column(type="datetime")
-     * @JMS\Type("DateTime<'c'>")
+     * @JMS\Type("DateTime<'U'>")
      * @var DateTime
      */
     protected $startedAt;
 
     /**
      * @ORM\Column(type="datetime")
-     * @JMS\Type("DateTime<'c'>")
+     * @JMS\Type("DateTime<'U'>")
      * @var DateTime
      */
     protected $stoppedAt;

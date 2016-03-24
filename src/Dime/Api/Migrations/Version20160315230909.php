@@ -32,6 +32,10 @@ class Version20160315230909 extends AbstractMigration
         $tags->dropColumn('system');
         $tags->addColumn('enabled', 'boolean', [ 'default' => true ]);
 
+        $timeslices = $schema->getTable('timeslices');
+        $timeslices->dropColumn('createdAt');
+        $timeslices->dropColumn('updatedAt');
+
         if ($schema->hasTable('customer_tags')) {
             $schema->dropTable('customer_tags');
         }

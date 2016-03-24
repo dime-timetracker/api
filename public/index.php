@@ -64,7 +64,7 @@ $container['uriHelper'] = function (ContainerInterface $container) {
 
 $container['doctrine.orm.validator.unique'] = function (ContainerInterface $container) {
     return new \Dime\Server\Validator\UniqueEntityValidator($container->entityManager);
-}
+};
 
 // Middleware
 

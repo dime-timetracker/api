@@ -11,9 +11,8 @@ class ResourcePost
     use \Dime\Server\Traits\ManagerTrait;
     use \Dime\Server\Traits\ResponseTrait;
 
-    public function __construct(array $config, EntityManager $manager)
+    public function __construct(EntityManager $manager)
     {
-        $this->setConfig($config);
         $this->setManager($manager);
     }
     

@@ -2,8 +2,6 @@
 
 namespace Dime\Api;
 
-
-
 return [
     'api' => [
         'resources' => [

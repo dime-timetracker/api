@@ -43,7 +43,6 @@ return [
                 'Dime\Server\Middleware\ContentTransformer:run',
                 'Dime\Server\Middleware\ContentNegotiation:run',
                 'Dime\Server\Middleware\ResourceType:run',
-//            'Dime\Server\Middleware\Authorization:run',
             ]
         ],
         'resource_list' => [

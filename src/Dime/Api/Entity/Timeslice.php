@@ -17,24 +17,23 @@ class Timeslice implements Assignable
 
     use \Dime\Server\Entity\IdentityEntityTrait;
     use \Dime\Security\Entity\UserEntityTrait;
-    use \Dime\Server\Entity\TimestampableEntityTrait;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @JMS\Type("integer")
      */
     protected $duration;
 
     /**
      * @ORM\Column(type="datetime")
-     * @JMS\Type("DateTime<'Y-m-d H:i:s'>")
+     * @JMS\Type("DateTime<'c'>")
      * @var DateTime
      */
     protected $startedAt;
 
     /**
      * @ORM\Column(type="datetime")
-     * @JMS\Type("DateTime<'Y-m-d H:i:s'>")
+     * @JMS\Type("DateTime<'c'>")
      * @var DateTime
      */
     protected $stoppedAt;

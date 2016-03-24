@@ -136,7 +136,6 @@ $container['Dime\Server\Endpoint\ResourceList'] = function (ContainerInterface $
 
 $container['Dime\Server\Endpoint\ResourcePost'] = function (ContainerInterface $container) {
     return new Dime\Server\Endpoint\ResourcePost(
-            $container->settings['api'],
             $container->entityManager
     );
 };

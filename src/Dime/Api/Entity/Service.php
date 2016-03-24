@@ -5,13 +5,13 @@ namespace Dime\Api\Entity;
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
-use Dime\Server\Validator\UniqueEntity;
-use Dime\Api\Behaviors\Assignable;
+//use Dime\Server\Validator\UniqueEntity;
+use Dime\Security\Behaviors\Assignable;
 
 /**
  * @ORM\Entity(repositoryClass="Dime\Api\Entity\ServiceRepository")
  * @ORM\Table(name="services")
- * @UniqueEntity({"alias", "userId"})
+ * UniqueEntity({"alias", "userId"})
  */
 class Service implements Assignable
 {

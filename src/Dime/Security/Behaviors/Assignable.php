@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Api\Behaviors;
+namespace Dime\Security\Behaviors;
 
 interface Assignable
 {

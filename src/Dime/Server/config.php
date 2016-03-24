@@ -61,7 +61,7 @@ return [
             'map' => ['POST'],
             'middleware' => [
                 'Dime\Server\Middleware\Validation:run',
-                'Dime\Api\Middleware\Assign:run',
+                'Dime\Security\Middleware\Assign:run',
                 'Dime\Server\Middleware\ContentTransformer:run',
                 'Dime\Server\Middleware\ContentNegotiation:run',
                 'Dime\Server\Middleware\ResourceType:run',
@@ -73,7 +73,7 @@ return [
             'map' => ['PUT'],
             'middleware' => [
                 'Dime\Server\Middleware\Validation:run',
-                'Dime\Api\Middleware\Assign:run',
+                'Dime\Security\Middleware\Assign:run',
                 'Dime\Server\Middleware\ContentTransformer:run',
                 'Dime\Server\Middleware\ContentNegotiation:run',
                 'Dime\Server\Middleware\ResourceType:run',

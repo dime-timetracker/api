@@ -1,8 +1,8 @@
 <?php
 
-namespace Dime\Api\Middleware;
+namespace Dime\Security\Middleware;
 
-use Dime\Api\Behaviors\Assignable;
+use Dime\Security\Behaviors\Assignable;
 use Dime\Server\Middleware\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;

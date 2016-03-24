@@ -2,13 +2,13 @@
 
 namespace Dime\Server\Traits;
 
-class ConfigurationTest extends \PHPUnit_Framework_TestCase
+class ConfigurationTraitTest extends \PHPUnit_Framework_TestCase
 {
     private $traitObject;
 
     public function setUp()
     {
-        $this->traitObject = $this->getObjectForTrait(__NAMESPACE__ . '\Configuration');
+        $this->traitObject = $this->getObjectForTrait(__NAMESPACE__ . '\ConfigurationTrait');
         $this->traitObject->setConfig([
             'test' => [
                 '1' => [

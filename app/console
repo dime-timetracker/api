@@ -28,11 +28,7 @@ $cli->setCatchExceptions(true);
 $cli->setHelperSet($helpers);
 $cli->addCommands([
     new Dime\Server\Command\InstallCommand(),
-    new Dime\Server\Command\UpgradeCommand(),
-    new \Doctrine\ORM\Tools\Console\Command\InfoCommand(),
-    new \Doctrine\DBAL\Migrations\Tools\Console\Command\GenerateCommand(),
-    new \Doctrine\DBAL\Migrations\Tools\Console\Command\MigrateCommand(),
-    new \Doctrine\DBAL\Migrations\Tools\Console\Command\StatusCommand(),
+    new Dime\Server\Command\UpgradeCommand()
 ]);
 
 $cli->run();

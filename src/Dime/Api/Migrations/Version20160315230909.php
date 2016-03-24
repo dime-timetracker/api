@@ -31,10 +31,16 @@ class Version20160315230909 extends AbstractMigration
         $tags = $schema->getTable('tags');
         $tags->dropColumn('system');
         $tags->addColumn('enabled', 'boolean', [ 'default' => true ]);
-        
-        $schema->dropTable('customer_tags');
-        $schema->dropTable('service_tags');
-        $schema->dropTable('service_tags');
+
+        if ($schema->hasTable('customer_tags')) {
+            $schema->dropTable('customer_tags');
+        }
+        if ($schema->hasTable('service_tags')) {
+            $schema->dropTable('service_tags');
+        }
+        if ($schema->hasTable('service_tags')) {
+            $schema->dropTable('service_tags');
+        }
     }
 
     public function down(Schema $schema)

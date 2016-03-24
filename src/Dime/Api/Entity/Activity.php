@@ -61,9 +61,10 @@ class Activity implements Assignable
      *      inverseJoinColumns={@ORM\JoinColumn(name="tag_id", referencedColumnName="id")}
      * )
      * @JMS\Type("ArrayCollection<Dime\Api\Entity\Tag>")
+     * @var ArrayCollection
      */
     protected $tags;
-    
+
     public function __construct() {
         $this->tags = new ArrayCollection();
     }
@@ -143,15 +144,5 @@ class Activity implements Assignable
     {
         $this->tags = $tags;
         return $this;
-    }
-    
-    public function addTag(Tag $tag)
-    {
-        $this->tags->add($tag);
-    }
-    
-    public function removeTag(Tag $tag)
-    {
-        $this->tags->removeElement($tag);
     }
 }

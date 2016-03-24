@@ -151,7 +151,7 @@ foreach ($routing as $name => $config) {
     $r = $app->map(
             $config['map'], 
             $config['route'], 
-            $config['controller']
+            $config['endpoint']
     );
     $r->setName($name);
 

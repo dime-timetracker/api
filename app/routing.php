@@ -4,7 +4,7 @@
 return [
     'login' => [
         'route' => '/login',
-        'controller' => 'Dime\Server\Endpoint\Authentication:login',
+        'endpoint' => 'Dime\Server\Endpoint\Authentication:login',
         'map' => ['POST'],
         'middleware' => [
             'Dime\Server\Middleware\Validation:run',
@@ -15,7 +15,7 @@ return [
     ],
     'logout' => [
         'route' => '/logout',
-        'controller' => 'Dime\Server\Endpoint\Authentication:logout',
+        'endpoint' => 'Dime\Server\Endpoint\Authentication:logout',
         'map' => ['POST'],
         'middleware' => [
             'Dime\Server\Middleware\Authorization:run',
@@ -23,7 +23,7 @@ return [
     ],
     'parser_analyse' => [
         'route' => '/analyse/{name}',
-        'controller' => 'Dime\Parser\Endpoint\Parser:analyse',
+        'endpoint' => 'Dime\Parser\Endpoint\Parser:analyse',
         'map' => ['POST'],
         'middleware' => [
             'Dime\Parser\Middleware\ActivityDescription:run',
@@ -37,7 +37,7 @@ return [
     ],
     'resource_get' => [
         'route' => '/api/{resource}/{id:\d+}',
-        'controller' => 'Dime\Server\Endpoint\ResourceGet',
+        'endpoint' => 'Dime\Server\Endpoint\ResourceGet',
         'map' => ['GET'],
         'middleware' => [
             'Dime\Server\Middleware\ContentTransformer:run',
@@ -48,7 +48,7 @@ return [
     ],
     'resource_list' => [
         'route' => '/api/{resource}',
-        'controller' => 'Dime\Server\Endpoint\ResourceList',
+        'endpoint' => 'Dime\Server\Endpoint\ResourceList',
         'map' => ['GET'],
         'middleware' => [
             'Dime\Server\Middleware\ContentTransformer:run',
@@ -58,7 +58,7 @@ return [
     ],
     'resource_post' => [
         'route' => '/api/{resource}',
-        'controller' => 'Dime\Server\Endpoint\ResourcePost',
+        'endpoint' => 'Dime\Server\Endpoint\ResourcePost',
         'map' => ['POST'],
         'middleware' => [
             'Dime\Server\Middleware\Validation:run',
@@ -70,7 +70,7 @@ return [
     ],
     'resource_put' => [
         'route' => '/api/{resource}/{id:\d+}',
-        'controller' => 'Dime\Server\Endpoint\ResourcePut',
+        'endpoint' => 'Dime\Server\Endpoint\ResourcePut',
         'map' => ['PUT'],
         'middleware' => [
             'Dime\Server\Middleware\Validation:run',
@@ -82,7 +82,7 @@ return [
     ],
     'resource_delete' => [
         'route' => '/api/{resource}/{id:\d+}',
-        'controller' => 'Dime\Server\Endpoint\ResourceDelete',
+        'endpoint' => 'Dime\Server\Endpoint\ResourceDelete',
         'map' => ['DELETE'],
         'middleware' => [
             'Dime\Server\Middleware\ContentTransformer:run',

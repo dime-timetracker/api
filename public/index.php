@@ -19,11 +19,21 @@ use Interop\Container\ContainerInterface;
 use Slim\App;
 use Dime\Server\Serializer\Construction\DoctrineObjectConstructor;
 
-$app = new App(require ROOT_DIR . '/app/config.php');
+// Settings
+$configuration = [];
+if (file_exists(ROOT_DIR . '/app/parameters.php')) {
+    $configuration = require_once ROOT_DIR . '/app/parameters.php';
+}
 
-$container = $app->getContainer();
+$settings = array_replace_recursive(
+    require_once ROOT_DIR . '/src/Dime/Server/config.php',
+    require_once ROOT_DIR . '/src/Dime/Security/config.php',
+    require_once ROOT_DIR . '/src/Dime/Api/config.php',
+    $configuration
+);
 
 // Dependencies
+$container = new \Slim\Container(['settings' => $settings]);
 
 $container['entityManager'] = function (ContainerInterface $container) {
     return EntityManagerBuilder::build($container->settings['doctrine']);
@@ -146,11 +156,11 @@ $container['Dime\Server\Endpoint\ResourceDelete'] = function (ContainerInterface
 };
 
 // Bootstrap routes
-$routing = require_once ROOT_DIR . '/app/routing.php';
-foreach ($routing as $name => $config) {
+$app = new App($container);
+foreach ($container['settings']['routes'] as $name => $config) {
     $r = $app->map(
-            $config['map'], 
-            $config['route'], 
+            $config['map'],
+            $config['route'],
             $config['endpoint']
     );
     $r->setName($name);
@@ -161,5 +171,4 @@ foreach ($routing as $name => $config) {
         }
     }
 }
-
 $app->run();

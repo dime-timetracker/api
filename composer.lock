@@ -1392,12 +1392,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/slimphp/Slim.git",
-                "reference": "88bc70973d6dde7620f1287b4d7681923e0e616a"
+                "reference": "e08856b997891e9303c72120d766434b13874b71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slimphp/Slim/zipball/88bc70973d6dde7620f1287b4d7681923e0e616a",
-                "reference": "88bc70973d6dde7620f1287b4d7681923e0e616a",
+                "url": "https://api.github.com/repos/slimphp/Slim/zipball/e08856b997891e9303c72120d766434b13874b71",
+                "reference": "e08856b997891e9303c72120d766434b13874b71",
                 "shasum": ""
             },
             "require": {
@@ -1451,7 +1451,7 @@
                 "micro",
                 "router"
             ],
-            "time": "2016-03-12 22:48:16"
+            "time": "2016-03-23 16:54:43"
         },
         {
             "name": "symfony/console",

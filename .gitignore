@@ -1,4 +1,4 @@
-/app/parameters.yml
+/app/parameters.php
 /data
 /vendor
 composer.phar

@@ -1,0 +1,15 @@
+<?php
+
+return [
+    'doctrine' => [
+        'connection' => [
+            'dbname' => 'dime',
+            'user' => 'root',
+            'password' => '',
+            'host' => 'localhost',
+            'driver' => 'mysqli',
+            'charset' => 'utf-8'
+        ]
+    ],
+];
+

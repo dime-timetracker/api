@@ -23,6 +23,7 @@ return [
             'driver' => 'mysqli',
             'charset' => 'utf-8'
         ],
+        'auto_generate_proxies' => 2,
         'annotation_paths' => [
             ROOT_DIR . '/src/Dime/Server/Entity/',
             ROOT_DIR . '/src/Dime/Security/Entity/',

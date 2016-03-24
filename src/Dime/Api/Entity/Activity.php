@@ -52,6 +52,13 @@ class Activity implements Assignable
      * @JMS\Type("integer")
      */
     protected $serviceId;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Timeslice", mappedBy="activity")
+     * @JMS\Type("ArrayCollection<Dime\Api\Entity\Timeslice>")
+     * @var ArrayCollection
+     */
+    protected $timeslices;
     
     /**
      * @ORM\ManyToMany(targetEntity="Tag")
@@ -67,6 +74,7 @@ class Activity implements Assignable
 
     public function __construct() {
         $this->tags = new ArrayCollection();
+        $this->timeslices = new ArrayCollection();
     }
 
     public function getDescription()
@@ -143,6 +151,17 @@ class Activity implements Assignable
     public function setTags(ArrayCollection $tags)
     {
         $this->tags = $tags;
+        return $this;
+    }
+
+    public function getTimeslices()
+    {
+        return $this->timeslices;
+    }
+
+    public function setTimeslices(ArrayCollection $timeslices)
+    {
+        $this->timeslices = $timeslices;
         return $this;
     }
 }

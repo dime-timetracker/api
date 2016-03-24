@@ -54,7 +54,8 @@ class ContentTransformer implements MiddlewareInterface
                 $response->write(
                     $this->serializer->serialize(
                         $response->getData(),
-                        $this->getFormat($this->accept)
+                        $this->getFormat($this->accept),
+                        \JMS\Serializer\SerializationContext::create()->enableMaxDepthChecks()
                     ),
                     true
                 );

@@ -6,7 +6,7 @@ use DateTime;
 use Doctrine\ORM\Mapping AS ORM;
 use JMS\Serializer\Annotation AS JMS;
 use Symfony\Component\Validator\Constraints as Assert;
-use Dime\Api\Behaviors\Assignable;
+use Dime\Security\Behaviors\Assignable;
 
 /**
  * @ORM\Entity(repositoryClass="Dime\Api\Entity\TimesliceRepository")
@@ -21,6 +21,7 @@ class Timeslice implements Assignable
     /**
      * @ORM\Column(type="integer")
      * @JMS\Type("integer")
+     * @JMS\ReadOnly
      */
     protected $duration = 0;
 
@@ -37,13 +38,25 @@ class Timeslice implements Assignable
      * @var DateTime
      */
     protected $stoppedAt;
-
+    
     /**
      * @ORM\Column(type="integer")
      * @JMS\Type("integer")
-     * @Assert\NotBlank
      */
     protected $activityId;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Activity", inversedBy="timeslices")
+     * @ORM\JoinColumn(name="activity_id", referencedColumnName="id")
+     * @JMS\Exclude
+     * @var Activity
+     */
+    protected $activity;
+
+    public function __construct()
+    {
+        $this->startedAt = new DateTime();
+    }
 
     public function getDuration()
     {
@@ -89,4 +102,24 @@ class Timeslice implements Assignable
         return $this;
     }
 
+    public function getActivity()
+    {
+        return $this->activity;
+    }
+
+    public function setActivity(Activity $activity)
+    {
+        $this->activity = $activity;
+        return $this;
+    }
+
+    public function calculateDuration()
+    {
+        $end = $this->getStoppedAt();
+        if ($end == null) {
+            $end = new DateTime();
+        }
+
+        return $end->getTimestamp() - $this->getStartedAt()->getTimestamp();
+    }
 }

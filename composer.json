@@ -22,6 +22,9 @@
     "autoload": {
         "psr-0": {
             "": "src/"
-        }
+        },
+        "files": [
+            "src/Dime/Server/Functional/AcceptHeader.php"
+        ]
     }
 }

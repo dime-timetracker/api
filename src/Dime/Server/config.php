@@ -40,55 +40,31 @@ return [
             'route' => '/api/{resource}/{id:\d+}',
             'endpoint' => 'Dime\Server\Endpoint\ResourceGet',
             'map' => ['GET'],
-            'middleware' => [
-                'Dime\Server\Middleware\ContentTransformer:run',
-                'Dime\Server\Middleware\ContentNegotiation:run',
-                'Dime\Server\Middleware\ResourceType:run',
-            ]
+            'middleware' => []
         ],
         'resource_list' => [
             'route' => '/api/{resource}',
             'endpoint' => 'Dime\Server\Endpoint\ResourceList',
             'map' => ['GET'],
-            'middleware' => [
-                'Dime\Server\Middleware\ContentTransformer:run',
-                'Dime\Server\Middleware\ContentNegotiation:run',
-                'Dime\Server\Middleware\ResourceType:run',
-            ]
+            'middleware' => []
         ],
         'resource_post' => [
             'route' => '/api/{resource}',
             'endpoint' => 'Dime\Server\Endpoint\ResourcePost',
             'map' => ['POST'],
-            'middleware' => [
-                'Dime\Server\Middleware\Validation:run',
-                'Dime\Security\Middleware\Assign:run',
-                'Dime\Server\Middleware\ContentTransformer:run',
-                'Dime\Server\Middleware\ContentNegotiation:run',
-                'Dime\Server\Middleware\ResourceType:run',
-            ]
+            'middleware' => []
         ],
         'resource_put' => [
             'route' => '/api/{resource}/{id:\d+}',
             'endpoint' => 'Dime\Server\Endpoint\ResourcePut',
             'map' => ['PUT'],
-            'middleware' => [
-                'Dime\Server\Middleware\Validation:run',
-                'Dime\Security\Middleware\Assign:run',
-                'Dime\Server\Middleware\ContentTransformer:run',
-                'Dime\Server\Middleware\ContentNegotiation:run',
-                'Dime\Server\Middleware\ResourceType:run',
-            ]
+            'middleware' => []
         ],
         'resource_delete' => [
             'route' => '/api/{resource}/{id:\d+}',
             'endpoint' => 'Dime\Server\Endpoint\ResourceDelete',
             'map' => ['DELETE'],
-            'middleware' => [
-                'Dime\Server\Middleware\ContentTransformer:run',
-                'Dime\Server\Middleware\ContentNegotiation:run',
-                'Dime\Server\Middleware\ResourceType:run',
-            ]
+            'middleware' => []
         ]
     ]
 ];

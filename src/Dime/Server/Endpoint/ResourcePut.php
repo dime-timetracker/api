@@ -30,13 +30,14 @@ class ResourcePut
         }
 
         $updateEntity = $request->getParsedBody();
+        var_dump($entity, $updateEntity); die();
+
         if ($updateEntity->getId() !== $entity->getId()) {
             throw new NotFoundException($request, $response);
         }
 
         if ($updateEntity instanceof \Dime\Api\Entity\Timeslice) {
             $updateEntity->setActivity($entity->getActivity());
-
         }
 
         return $this->createResponse($response, $this->save($updateEntity));

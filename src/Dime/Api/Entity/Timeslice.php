@@ -38,12 +38,6 @@ class Timeslice implements Assignable
      * @var DateTime
      */
     protected $stoppedAt;
-    
-    /**
-     * @ORM\Column(type="integer")
-     * @JMS\Type("integer")
-     */
-    protected $activityId;
 
     /**
      * @ORM\ManyToOne(targetEntity="Activity", inversedBy="timeslices")
@@ -52,6 +46,12 @@ class Timeslice implements Assignable
      * @var Activity
      */
     protected $activity;
+    
+    /**
+     * @ORM\Column(type="integer")
+     * @JMS\Type("integer")
+     */
+    protected $activityId;
 
     public function __construct()
     {

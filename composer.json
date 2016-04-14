@@ -1,30 +1,24 @@
 {
-    "name": "nogo/server",
-    "description": "Description of project server.",
+    "name": "dime/server",
+    "description": "API provider for Dime Timetracker written in php.",
+    "licence": "MIT",
     "authors": [
         {
             "name": "Danilo Kühn",
             "email": "dk@nogo-software.de"
         }
     ],
-    "require": {
-        "slim/slim": "3.x-dev",
-        "juliangut/slim-doctrine": "dev-master",
-        "jms/serializer": "1.1.0",
-        "symfony/validator": "v3.0.2",
-        "gedmo/doctrine-extensions": "dev-master",
-        "doctrine/migrations": "v1.4.0"
-    },
-    "repositories": [],
-    "require-dev": {
-        "phpunit/phpunit": "~4.6"
-    },
     "autoload": {
         "psr-0": {
             "": "src/"
-        },
-        "files": [
-            "src/Dime/Server/Functional/AcceptHeader.php"
-        ]
+        }
+    },
+    "require": {
+        "php": ">=5.6",
+        "slim/slim": "^3.3",
+        "doctrine/dbal": "^2.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.6"
     }
 }

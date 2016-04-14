@@ -1,5 +1,7 @@
 # Dime Timetracker
 
+
+
 API provider written php.
 
 ## API call
@@ -18,7 +20,7 @@ Response
 Request   Tranformation    Validation     Token-Generation
  >o-------------o--------------o--------------->|
                 |              |                |
-                | Errpr        | Error          o---> Database
+                | Error        | Error          o---> Database
                 V              V                |
  <o-------------o--------------o---------------<|
 Response

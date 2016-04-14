@@ -2,44 +2,42 @@
 
 namespace Dime\Server\Endpoint;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Connection;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\NotFoundException;
 
 class ResourceGet
 {
-    use \Dime\Server\Traits\ConfigurationTrait;
-    use \Dime\Server\Traits\ManagerTrait;
-    use \Dime\Server\Traits\ResponseTrait;
 
-    public function __construct(array $config, EntityManager $manager)
+    private $connection;
+
+    public function __construct(Connection $connection)
     {
-        $this->setConfig($config);
-        $this->setManager($manager);
+        $this->connection = $connection;
     }
-
+    
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-        $repositoryName = $this->getConfigValue(['resources', $args['resource'], 'entity']);
-        $userId = $request->getAttribute('userId', 1);
-        $id = $args['id'];
-
-        try {
-            $entity = $this->getRepository($repositoryName)
-                ->scopeByField('userId', $userId)
-                ->scopeByField('id', $id)
-                ->getQueryBuilder()
-                ->getQuery()->getSingleResult();
-        } catch (\Doctrine\ORM\NoResultException $ex) {
-            $entity = null;
-        }
-
-        if (empty($entity)) {
+        $resource = filter_var($args['resource'], FILTER_SANITIZE_STRING);
+        $id = filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
+        
+        // Query
+        $qb = $this->connection->createQueryBuilder()->select("*")->from($resource);
+        $qb->where($qb->expr()->eq('id', ':id'))->setParameter('id', $id);
+        $result = $qb->execute()->fetch();
+                
+        if ($result === FALSE) {
             throw new NotFoundException($request, $response);
         }
-
-        return $this->createResponse($response, $entity);
+                
+        $response->getBody()->write(
+            json_encode(
+                $result, 
+                JSON_NUMERIC_CHECK | JSON_UNESCAPED_UNICODE
+            )
+        );
+        
+        return $response;
     }
-
 }

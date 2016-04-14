@@ -5,51 +5,71 @@ namespace Dime\Server\Stream;
 class Stream
 {
     private $data;
+    private $traversable = false;
 
     public function __construct($data)
     {
         $this->data = $data;
+        $this->traversable = is_array($this->data) || ($this->data instanceof \Traversable);
     }
 
     public static function of($data) {
-        return new Streams($data);
+        return new self($data);
     }
 
-    public function map(callable $function)
+    public function collect()
     {
-        $result = [];
-        foreach ($this->value as $key => $value) {
-            $result[$key] = call_user_func($function, $value);
+        return $this->data;
+    }
+
+    public function execute($function)
+    {
+        if ($this->traversable) {
+            foreach ($this->data as $key => $value) {
+                call_user_func($function, $value, $key);
+            }
         }
 
-        return self::of($result);
+        return $this;
     }
 
-    public function filter(callable $function)
+    public function filter($function)
     {
         $result = [];
-        foreach ($this->value as $key => $value) {
-            if (call_user_func($function, $value)) {
-                $result[$key] = $value;
+        if ($this->traversable) {
+            foreach ($this->data as $key => $value) {
+                if (call_user_func($function, $value, $key)) {
+                    $result[$key] = $value;
+                }
             }
         }
         return self::of($result);
     }
 
-    public function fold(callable $function, $accumulator = null)
+    public function fold($function, $accumulator = null)
     {
-        foreach ($this->value as $key => $value) {
-            if (empty($accumulator)) {
-                $accumulator = $value;
-            } else {
-                $accumulator = call_user_func($function, $accumulator, $item);
+        if ($this->traversable) {
+            foreach ($this->data as $key => $value) {
+                if (empty($accumulator)) {
+                    $accumulator = $value;
+                } else {
+                    $accumulator = call_user_func($function, $accumulator, $value, $key);
+                }
             }
         }
         return $accumulator;
     }
 
-    function collect()
+    public function map($function)
     {
-        return $this->array;
+        $result = [];
+
+        if ($this->traversable) {
+            foreach ($this->data as $key => $value) {
+                $result[$key] = call_user_func($function, $value, $key);
+            }
+        }
+
+        return self::of($result);
     }
 }

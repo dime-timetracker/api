@@ -1,177 +1,126 @@
 <?php
 
-if (PHP_SAPI == 'cli-server') {
-    // To help the built-in PHP dev server, check if the request was actually for
-    // something which should probably be served as a static file
-    $file = __DIR__ . $_SERVER['REQUEST_URI'];
-    if (is_file($file)) {
-        return false;
-    }
-}
-
 define('ROOT_DIR', realpath(dirname(__FILE__) . '/../'));
+
+// Composer autoloading
+
+if (!file_exists(ROOT_DIR . '/vendor/autoload.php')) {
+    die('Please do \'composer install\'!');
+}
 $loader = require_once ROOT_DIR . '/vendor/autoload.php';
 
-\Doctrine\Common\Annotations\AnnotationRegistry::registerLoader([$loader, 'loadClass']);
-
-use Jgut\Slim\Doctrine\EntityManagerBuilder;
 use Interop\Container\ContainerInterface;
-use Slim\App;
-use Dime\Server\Serializer\Construction\DoctrineObjectConstructor;
 
-// Settings
-$configuration = [];
-if (file_exists(ROOT_DIR . '/app/parameters.php')) {
-    $configuration = require_once ROOT_DIR . '/app/parameters.php';
-}
+// Configuration
+$settings = [
+    'displayErrorDetails' => true,
+    'routes' => [
+        'resource_get' => [
+            'route' => '/api/{resource}/{id:\d+}',
+            'endpoint' => 'Dime\Server\Endpoint\ResourceGet',
+            'map' => ['GET'],
+            'middleware' => [
+                'Dime\Server\Middleware\ResourceType'
+            ]
+        ],
+        'resource_list' => [
+            'route' => '/api/{resource}',
+            'endpoint' => 'Dime\Server\Endpoint\ResourceList',
+            'map' => ['GET'],
+            'middleware' => [
+                'Dime\Server\Middleware\ResourceType'
+            ]
+        ],
+        'resource_post' => [
+            'route' => '/api/{resource}',
+            'endpoint' => 'Dime\Server\Endpoint\ResourcePost',
+            'map' => ['POST'],
+            'middleware' => [
+                'Dime\Server\Middleware\ResourceType'
+            ]
+        ],
+        'resource_put' => [
+            'route' => '/api/{resource}/{id:\d+}',
+            'endpoint' => 'Dime\Server\Endpoint\ResourcePut',
+            'map' => ['PUT'],
+            'middleware' => [
+                'Dime\Server\Middleware\ResourceType'
+            ]
+        ],
+        'resource_delete' => [
+            'route' => '/api/{resource}/{id:\d+}',
+            'endpoint' => 'Dime\Server\Endpoint\ResourceDelete',
+            'map' => ['DELETE'],
+            'middleware' => [
+                'Dime\Server\Middleware\ResourceType'
+            ]
+        ]
+    ]
+];
 
-$settings = array_replace_recursive(
-    require_once ROOT_DIR . '/src/Dime/Server/config.php',
-    require_once ROOT_DIR . '/src/Dime/Security/config.php',
-    require_once ROOT_DIR . '/src/Dime/Api/config.php',
-    $configuration
-);
-
-// Dependencies
 $container = new \Slim\Container(['settings' => $settings]);
 
-$container['entityManager'] = function (ContainerInterface $container) {
-    return EntityManagerBuilder::build($container->settings['doctrine']);
+$container['connection'] = function (ContainerInterface $container) {
+    return \Doctrine\DBAL\DriverManager::getConnection([
+        'dbname' => 'Dime',
+        'user' => 'root',
+        'password' => '',
+        'host' => 'localhost',
+        'driver' => 'pdo_mysql'
+    ], new \Doctrine\DBAL\Configuration());
+    
+// $platform = $connection->getDatabasePlatform();
+// $platform->registerDoctrineTypeMapping('enum', 'string');
 };
 
-$container['serializer'] = function (ContainerInterface $container) {
-    $serializer = JMS\Serializer\SerializerBuilder::create();
-
-    $serializer->setDebug($container->settings['displayErrorDetails']);
-    $serializer->setObjectConstructor(new DoctrineObjectConstructor($container->entityManager, new JMS\Serializer\Construction\UnserializeObjectConstructor()));
-
-    return $serializer->build();
+$container['metadata'] = function (ContainerInterface $container) {
+    return Dime\Server\Metadata\Metadata::with($container->get('connection')->getSchemaManager());
 };
 
-$container['hasher'] = function () {
-    return new Dime\Server\Hash\SymfonySecurityHasher();
-};
-
-$container['validator'] = function () {
-    return Symfony\Component\Validator\Validation::createValidatorBuilder()
-        ->enableAnnotationMapping()
-        ->getValidator();
-};
-
-$container['uriHelper'] = function (ContainerInterface $container) {
-    return new Dime\Server\Helper\UriHelper($container->router, $container->environment);
-};
-
-$container['doctrine.orm.validator.unique'] = function (ContainerInterface $container) {
-    return new \Dime\Server\Validator\UniqueEntityValidator($container->entityManager);
-};
-
-// Middleware
-
-$container['Dime\Server\Middleware\Authorization'] = function (ContainerInterface $container) {
-    $config = $container->settings['auth'];
-
-    $repository = $container->entityManager->getRepository($config['access']);
-
-    $access = [];
-    $collection = $repository->findAll();
-    foreach ($collection as $entity) {
-        $user = $entity->getUser();
-        if (!isset($access[$user->getUsername()])) {
-            $access[$user->getUsername()] = [];
-        }
-
-        $access[$user->getUsername()][] = [
-            'id' => $user->getId(),
-            'client' => $entity->getClient(),
-            'token' => $entity->getToken(),
-            'expires' => $entity->getUpdatedAt()
-        ];
-    }
-
-    return new Dime\Server\Middleware\Authorization($config, $access);
-};
-
-$container['Dime\Server\Middleware\AuthorizeType'] = function (ContainerInterface $container) {
-    return new Dime\Server\Middleware\AuthorizeType($container->settings['auth']);
-};
-
+// Middlware
 
 $container['Dime\Server\Middleware\ResourceType'] = function (ContainerInterface $container) {
-    return new Dime\Server\Middleware\ResourceType($container->settings['api']);
+    return new Dime\Server\Middleware\ResourceType($container->get('metadata')->resources());
 };
 
-$container['Dime\Server\Middleware\ContentNegotiation'] = function (ContainerInterface $container) {
-    return new Dime\Server\Middleware\ContentNegotiation($container->settings['api']);
-};
-
-$container['Dime\Server\Middleware\ContentTransformer'] = function (ContainerInterface $container) {
-    return new Dime\Server\Middleware\ContentTransformer($container->serializer);
-};
-
-$container['Dime\Server\Middleware\Validation'] = function (ContainerInterface $container) {
-    return new Dime\Server\Middleware\Validation($container->validator);
-};
-
-// Endpoints
-
-$container['Dime\Server\Endpoint\Authentication'] = function (ContainerInterface $container) {
-    return new Dime\Server\Endpoint\Authentication(
-            $container->settings['auth'],
-            $container->entityManager, 
-            $container->hasher
-    );
-};
+// Endpoint
 
 $container['Dime\Server\Endpoint\ResourceGet'] = function (ContainerInterface $container) {
-    return new Dime\Server\Endpoint\ResourceGet(
-            $container->settings['api'], 
-            $container->entityManager
-    );
+    return new Dime\Server\Endpoint\ResourceGet($container->get('connection'));
 };
 
 $container['Dime\Server\Endpoint\ResourceList'] = function (ContainerInterface $container) {
-    return new Dime\Server\Endpoint\ResourceList(
-            $container->settings['api'],
-            $container->entityManager,
-            $container->uriHelper
-    );
+    return new Dime\Server\Endpoint\ResourceList($container->get('connection'));
 };
 
 $container['Dime\Server\Endpoint\ResourcePost'] = function (ContainerInterface $container) {
-    return new Dime\Server\Endpoint\ResourcePost(
-            $container->entityManager
-    );
+    return new Dime\Server\Endpoint\ResourcePost($container->get('connection'));
 };
 
 $container['Dime\Server\Endpoint\ResourcePut'] = function (ContainerInterface $container) {
-    return new Dime\Server\Endpoint\ResourcePut(
-            $container->settings['api'],
-            $container->entityManager
-    );
+    return new Dime\Server\Endpoint\ResourcePut($container->get('connection'));
 };
 
 $container['Dime\Server\Endpoint\ResourceDelete'] = function (ContainerInterface $container) {
-    return new Dime\Server\Endpoint\ResourceDelete(
-            $container->settings['api'],
-            $container->entityManager
-    );
+    return new Dime\Server\Endpoint\ResourceDelete($container->get('connection'));
 };
 
 // Bootstrap routes
-$app = new App($container);
-foreach ($container['settings']['routes'] as $name => $config) {
+$app = new Slim\App($container);
+Dime\Server\Stream\Stream::of($container['settings']['routes'])->execute(function($config, $name) use ($app) {
+    
     $r = $app->map(
-            $config['map'],
-            $config['route'],
-            $config['endpoint']
+        $config['map'],
+        $config['route'],
+        $config['endpoint']
     );
     $r->setName($name);
-
+    
+    
     if (isset($config['middleware'])) {
         foreach ($config['middleware'] as $mw) {
             $r = $r->add($mw);
         }
     }
-}
+});
 $app->run();

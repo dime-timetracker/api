@@ -2,40 +2,46 @@
 
 namespace Dime\Server\Endpoint;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Connection;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class ResourceDelete
 {
-    use \Dime\Server\Traits\ConfigurationTrait;
-    use \Dime\Server\Traits\ManagerTrait;
-    use \Dime\Server\Traits\ResponseTrait;
+    private $connection;
 
-    public function __construct(array $config, EntityManager $manager)
+    public function __construct(Connection $connection)
     {
-        $this->setConfig($config);
-        $this->setManager($manager);
+        $this->connection = $connection;
     }
     
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-        $repositoryName = $this->getConfigValue(['resources', $args['resource'], 'entity']);
+        $resource = filter_var($args['resource'], FILTER_SANITIZE_STRING);
+        $id = filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
         
-        $entity = $this->getRepository($repositoryName)
-                ->findOneBy([
-                    'userId' => $request->getAttribute('userId', 1),
-                    'id' => $args['id']
-                ]);
-
-        if (empty($entity)) {
+        // Select
+        $qb = $this->connection->createQueryBuilder()->select("*")->from($resource);
+        $qb->where($qb->expr()->eq('id', ':id'))->setParameter('id', $id);
+        $result = $qb->execute()->fetch();
+        
+        if ($result === FALSE) {
             throw new NotFoundException($request, $response);
         }
-
-        $this->getManager()->remove($entity);
-        $this->getManager()->flush();
-
-        return $this->createResponse($response, $entity);
+        
+        // Delete
+        $qb = $this->connection->createQueryBuilder()->delete($resource);
+        $qb->where($qb->expr()->eq('id', ':id'))->setParameter('id', $id);
+        $qb->execute();        
+        
+        $response->getBody()->write(
+            json_encode(
+                $result, 
+                JSON_NUMERIC_CHECK | JSON_UNESCAPED_UNICODE
+            )
+        );
+        
+        return $response;
     }
 
 }

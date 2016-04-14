@@ -1,4 +1,0 @@
-Usage
-=====
-
-(to be documented)

@@ -2,44 +2,44 @@
 
 namespace Dime\Server\Endpoint;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Connection;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\NotFoundException;
 
 class ResourcePut
 {
-    use \Dime\Server\Traits\ConfigurationTrait;
-    use \Dime\Server\Traits\ManagerTrait;
-    use \Dime\Server\Traits\ResponseTrait;
 
-    public function __construct(array $config, EntityManager $manager)
+    private $connection;
+
+    public function __construct(Connection $connection)
     {
-        $this->setConfig($config);
-        $this->setManager($manager);
+        $this->connection = $connection;
     }
     
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-        $repositoryName = $this->getConfigValue(['resources', $args['resource'], 'entity']);
-
-        $entity = $this->getRepository($repositoryName)->find($args['id']);
-
-        if (empty($entity)) {
+        $resource = filter_var($args['resource'], FILTER_SANITIZE_STRING);
+        $id = filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
+        
+        // Query
+        $qb = $this->connection->createQueryBuilder()->select("*")->from($resource);
+        $qb->where($qb->expr()->eq('id', ':id'))->setParameter('id', $id);
+        $result = $qb->execute()->fetch();
+                
+        if ($result === FALSE) {
             throw new NotFoundException($request, $response);
         }
-
-        $updateEntity = $request->getParsedBody();
-        var_dump($entity, $updateEntity); die();
-
-        if ($updateEntity->getId() !== $entity->getId()) {
-            throw new NotFoundException($request, $response);
-        }
-
-        if ($updateEntity instanceof \Dime\Api\Entity\Timeslice) {
-            $updateEntity->setActivity($entity->getActivity());
-        }
-
-        return $this->createResponse($response, $this->save($updateEntity));
+        
+        $updateData = $request->getParsedBody();
+                
+        $response->getBody()->write(
+            json_encode(
+                $result, 
+                JSON_NUMERIC_CHECK | JSON_UNESCAPED_UNICODE
+            )
+        );
+        
+        return $response;
     }
 }

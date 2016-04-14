@@ -6,25 +6,25 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\NotFoundException;
 
-class ResourceType implements MiddlewareInterface
+class ResourceType
 {
-    use \Dime\Server\Traits\ConfigurationTrait;
- 
-    public function __construct(array $config)
+
+    private $resources;
+
+    public function __construct(array $resources)
     {
-        $this->setConfig($config);
+        $this->resources = $resources;
     }
-    
-    public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next)
+
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
         $resource = $request->getAttribute('route')->getArgument('resource');
-        $type = $this->getConfigValue(['resources', $resource, 'entity']);
 
-        if (empty($type)) {
+        if (!in_array($resource, $this->resources, true)) {
             throw new NotFoundException($request, $response);
         }
 
-        return $next($request->withAttribute('type', $type), $response);
+        return $next($request, $response);
     }
 
 }

@@ -1,4 +1,0 @@
-Development
-===========
-
-(to be documented)

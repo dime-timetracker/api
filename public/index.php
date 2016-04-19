@@ -61,20 +61,26 @@ $settings = [
 $container = new \Slim\Container(['settings' => $settings]);
 
 $container['connection'] = function (ContainerInterface $container) {
-    return \Doctrine\DBAL\DriverManager::getConnection([
+    $connection = \Doctrine\DBAL\DriverManager::getConnection([
         'dbname' => 'Dime',
         'user' => 'root',
         'password' => '',
         'host' => 'localhost',
+        'charset' => 'utf8',
         'driver' => 'pdo_mysql'
     ], new \Doctrine\DBAL\Configuration());
-    
-// $platform = $connection->getDatabasePlatform();
-// $platform->registerDoctrineTypeMapping('enum', 'string');
+
+    $platform = $connection->getDatabasePlatform();
+    $platform->registerDoctrineTypeMapping('enum', 'string');
+    return $connection;
 };
 
 $container['metadata'] = function (ContainerInterface $container) {
     return Dime\Server\Metadata\Metadata::with($container->get('connection')->getSchemaManager());
+};
+
+$container['repository'] = function (ContainerInterface $container) {
+    return new Dime\Server\Entity\ResourceRepository($container->get('connection'));
 };
 
 // Middlware
@@ -94,11 +100,11 @@ $container['Dime\Server\Endpoint\ResourceList'] = function (ContainerInterface $
 };
 
 $container['Dime\Server\Endpoint\ResourcePost'] = function (ContainerInterface $container) {
-    return new Dime\Server\Endpoint\ResourcePost($container->get('connection'));
+    return new Dime\Server\Endpoint\ResourcePost($container->get('repository'));
 };
 
 $container['Dime\Server\Endpoint\ResourcePut'] = function (ContainerInterface $container) {
-    return new Dime\Server\Endpoint\ResourcePut($container->get('connection'));
+    return new Dime\Server\Endpoint\ResourcePut($container->get('repository'));
 };
 
 $container['Dime\Server\Endpoint\ResourceDelete'] = function (ContainerInterface $container) {
@@ -107,16 +113,14 @@ $container['Dime\Server\Endpoint\ResourceDelete'] = function (ContainerInterface
 
 // Bootstrap routes
 $app = new Slim\App($container);
-Dime\Server\Stream\Stream::of($container['settings']['routes'])->execute(function($config, $name) use ($app) {
-    
+Dime\Server\Stream\Stream::of($container['settings']['routes'])->each(function($config, $name) use ($app) {
+
     $r = $app->map(
-        $config['map'],
-        $config['route'],
-        $config['endpoint']
+            $config['map'], $config['route'], $config['endpoint']
     );
     $r->setName($name);
-    
-    
+
+
     if (isset($config['middleware'])) {
         foreach ($config['middleware'] as $mw) {
             $r = $r->add($mw);

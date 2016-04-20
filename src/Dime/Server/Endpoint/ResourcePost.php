@@ -8,6 +8,8 @@ use Psr\Http\Message\ResponseInterface;
 
 class ResourcePost
 {
+    
+    use \Dime\Server\Traits\EndpointTrait;
 
     /**
      * @var ResourceRepository
@@ -50,20 +52,5 @@ class ResourcePost
         }
         
         return $this->respond($response, $this->repository->find(['id' => $id]));
-    }
-    
-    protected function respond(ResponseInterface $response, array $data, $status = 200)
-    {
-        if ($status !== 200) {
-            $response = $response->withStatus($status);
-        }
-        
-        $response->getBody()->write(
-            json_encode(
-                $data, 
-                JSON_NUMERIC_CHECK | JSON_UNESCAPED_UNICODE
-            )
-        );
-        return $response;
     }
 }

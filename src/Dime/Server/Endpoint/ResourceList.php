@@ -2,37 +2,33 @@
 
 namespace Dime\Server\Endpoint;
 
-use Doctrine\DBAL\Connection;
+use Dime\Server\Entity\ResourceRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-//use Dime\Server\Behaviors\Filterable;
 //use Dime\Server\Helper\UriHelper;
 
 class ResourceList
 {
-    private $connection;
-
-    public function __construct(Connection $connection)
+    use \Dime\Server\Traits\EndpointTrait;
+    
+    /**
+     * @var ResourceRepository
+     */
+    private $repository;
+    
+    public function __construct(ResourceRepository $repository)
     {
-        $this->connection = $connection;
+        $this->repository = $repository;
     }
     
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-        $resource = filter_var($args['resource'], FILTER_SANITIZE_STRING);
+        $this->repository->setName(filter_var($args['resource'], FILTER_SANITIZE_STRING));
         
-        $qb = $this->connection->createQueryBuilder();
-        $sql = $qb->select("*")->from($resource)->getSQL();
+        $result = $this->repository->findAll();
         
-        $response->getBody()->write(
-            json_encode(
-                $this->connection->executeQuery($sql)->fetchAll(), 
-                JSON_NUMERIC_CHECK | JSON_UNESCAPED_UNICODE
-            )
-        );
-        
-        return $response;
+        return $this->respond($response, $result);
         
 //        $repositoryName = $this->getConfigValue(['resources', $args['resource'], 'entity']);
 //        $pageSize = $this->getConfigValue(['resources', $args['resource'], 'pageSize'], -1);

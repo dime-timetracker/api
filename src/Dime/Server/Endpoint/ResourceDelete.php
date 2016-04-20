@@ -2,46 +2,39 @@
 
 namespace Dime\Server\Endpoint;
 
-use Doctrine\DBAL\Connection;
+use Dime\Server\Entity\ResourceRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class ResourceDelete
 {
-    private $connection;
-
-    public function __construct(Connection $connection)
+    use \Dime\Server\Traits\EndpointTrait;
+    
+    /**
+     * @var ResourceRepository
+     */
+    private $repository;
+    
+    public function __construct(ResourceRepository $repository)
     {
-        $this->connection = $connection;
+        $this->repository = $repository;
     }
     
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-        $resource = filter_var($args['resource'], FILTER_SANITIZE_STRING);
-        $id = filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
+        $this->repository->setName(filter_var($args['resource'], FILTER_SANITIZE_STRING));
+        $identifier = ['id' => filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT)];
         
         // Select
-        $qb = $this->connection->createQueryBuilder()->select("*")->from($resource);
-        $qb->where($qb->expr()->eq('id', ':id'))->setParameter('id', $id);
-        $result = $qb->execute()->fetch();
-        
+        $result = $this->repository->find($identifier);
         if ($result === FALSE) {
             throw new NotFoundException($request, $response);
         }
         
         // Delete
-        $qb = $this->connection->createQueryBuilder()->delete($resource);
-        $qb->where($qb->expr()->eq('id', ':id'))->setParameter('id', $id);
-        $qb->execute();        
+        $this->repository->delete($identifier);
         
-        $response->getBody()->write(
-            json_encode(
-                $result, 
-                JSON_NUMERIC_CHECK | JSON_UNESCAPED_UNICODE
-            )
-        );
-        
-        return $response;
+        return $this->respond($response, $result);
     }
 
 }

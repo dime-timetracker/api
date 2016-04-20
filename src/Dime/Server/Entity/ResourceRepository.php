@@ -12,6 +12,11 @@ class ResourceRepository
     private $metadata;
     private $name;
 
+    /**
+     * Constructor.
+     * @param Connection $connection Database connection
+     * @param string $name Resource name.
+     */
     public function __construct(Connection $connection, $name = null)
     {
         $this->connection = $connection;
@@ -25,33 +30,64 @@ class ResourceRepository
         }
     }
 
+    /**
+     * The database connection.
+     * @return Connection
+     */
     public function getConnection()
     {
         return $this->connection;
     }
 
+    /**
+     * Get table metadata.
+     * @return Metadata
+     */
     public function getMetadata()
     {
         return $this->metadata;
     }
 
+    /**
+     * @return string name of resource
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * Resource name.
+     * @param string $name
+     */
     public function setName($name)
     {
         $this->name = $name;
     }
 
-    public function find($identifier)
+    /**
+     * Find one entity.
+     * @param array $identifier
+     * @return array
+     */
+    public function find(array $identifier)
     {
         $qb = $this->getConnection()->createQueryBuilder()->select("*")->from($this->getName());
-        $qb->where($qb->expr()->eq('id', ':id'))->setParameter('id', $identifier['id']);
+        
+        foreach ($identifier as $key => $value) {
+            $qb->where($qb->expr()->eq($key, ':' . $key))->setParameter($key, $value);
+        }
+        
         return $qb->execute()->fetch();
     }
 
+    /**
+     * Find all entities.
+     * @param array $filter array with callables getting QueryBuilder as parameter.
+     * @param int $page page number (default: 1)
+     * @param int $with amount of entity (default: 0)
+     * @return array
+     */
     public function findAll(array $filter = [], $page = 1, $with = 0)
     {
         $qb = $this->getConnection()->createQueryBuilder()->select("*")->from($this->getName());
@@ -70,6 +106,11 @@ class ResourceRepository
         return $qb->execute()->fetchAll();
     }
 
+    /**
+     * Insert entity.
+     * @param array $data
+     * @return int id of the last inserted.
+     */
     public function insert(array $data)
     {
         $this->getConnection()->insert(
@@ -80,6 +121,12 @@ class ResourceRepository
         return $this->getConnection()->lastInsertId();
     }
 
+    /**
+     * Update entity.
+     * @param array $data
+     * @param array $identifier
+     * @return int amount of affected rows
+     */
     public function update(array $data, array $identifier)
     {
         return $this->getConnection()->update(
@@ -89,6 +136,11 @@ class ResourceRepository
         );
     }
 
+    /**
+     * Delete entity.
+     * @param array $identifier
+     * @return int amount of affected rows
+     */
     public function delete(array $identifier)
     {
         return $this->connection->delete($this->getName(), $identifier);

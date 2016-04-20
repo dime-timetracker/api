@@ -41,6 +41,10 @@ $container['Dime\Server\Middleware\ResourceType'] = function (ContainerInterface
 
 // Endpoint
 
+$container['Dime\Server\Endpoint\Apidoc'] = function (ContainerInterface $container) {
+    return new Dime\Server\Endpoint\Apidoc($container->get('metadata'));
+};
+
 $container['Dime\Server\Endpoint\ResourceGet'] = function (ContainerInterface $container) {
     return new Dime\Server\Endpoint\ResourceGet($container->get('repository'));
 };
@@ -60,3 +64,5 @@ $container['Dime\Server\Endpoint\ResourcePut'] = function (ContainerInterface $c
 $container['Dime\Server\Endpoint\ResourceDelete'] = function (ContainerInterface $container) {
     return new Dime\Server\Endpoint\ResourceDelete($container->get('repository'));
 };
+
+return $container;

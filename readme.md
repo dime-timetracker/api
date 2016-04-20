@@ -1,27 +1,37 @@
 # Dime Timetracker
 
-
-
 API provider written php.
 
 ## API call
 ```
-Request   Authorization   Tranformation    Validation     Database
- >o-------------o--------------o---------------o------------>|
-                |              |               |             |
-                | Error        | Error         | Error       o
-                V              V               V             |
- <o-------------o--------------o---------------o------------<|
+Request   Authorization   ResourceType    
+ >o-------------o--------------o------------>|
+                |              |             |
+                | Error        | Error       o Endpoint < -- > Repository
+                V              V             |
+ <o-------------o--------------o------------<|
 Response
 ```
 
 ## Authentication call - Login
 ```
-Request   Tranformation    Validation     Token-Generation
- >o-------------o--------------o--------------->|
-                |              |                |
-                | Error        | Error          o---> Database
-                V              V                |
- <o-------------o--------------o---------------<|
+Request
+ >o------------>|
+                |
+                o Endpoint < -- > Repository
+                |
+ <o------------<|
+Response
+```
+```
+
+## Authentication call - Logout
+```
+Request   Authorization
+ >o-------------o------------>|
+                |             |
+                | Error       o Endpoint < -- > Repository
+                V             |
+ <o-------------o------------<|
 Response
 ```

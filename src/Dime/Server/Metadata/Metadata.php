@@ -25,6 +25,11 @@ class Metadata
         return $this->schemaManager->listTableNames();
     }
     
+    public function resource($name)
+    {
+        return $this->schemaManager->listTableDetails($name);
+    }
+
     public function hasResource($name)
     {
         return $this->schemaManager->tablesExist($name);

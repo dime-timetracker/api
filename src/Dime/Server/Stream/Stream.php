@@ -99,7 +99,7 @@ class Stream
         $result = [];
 
         foreach ($this->data as $key => $value) {
-            $result[] = call_user_func($function, $value, $key);
+            $result[$key] = call_user_func($function, $value, $key);
         }
 
         return self::of($result);

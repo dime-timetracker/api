@@ -3,6 +3,11 @@
 return [
     'displayErrorDetails' => true,
     'routes' => [
+        'apidoc' => [
+            'route' => '/apidoc[/{resource}]',
+            'endpoint' => 'Dime\Server\Endpoint\Apidoc',
+            'map' => ['GET']
+        ],
         'resource_get' => [
             'route' => '/api/{resource}/{id:\d+}',
             'endpoint' => 'Dime\Server\Endpoint\ResourceGet',

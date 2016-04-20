@@ -11,7 +11,7 @@ $loader = require_once ROOT_DIR . '/vendor/autoload.php';
 
 // DI Container
 
-$container = require_once ROOT_DIR . '/src/Dime/Server/boostrap.php';
+$container = require_once ROOT_DIR . '/src/Dime/Server/bootstrap.php';
 
 // Bootstrap routes
 

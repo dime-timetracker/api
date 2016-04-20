@@ -2,6 +2,8 @@
 
 namespace Dime\Server\Traits;
 
+use Psr\Http\Message\ResponseInterface;
+
 trait EndpointTrait
 {
     

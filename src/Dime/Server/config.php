@@ -8,6 +8,16 @@ return [
             'endpoint' => 'Dime\Server\Endpoint\Apidoc',
             'map' => ['GET']
         ],
+        'login' => [
+            'route' => '/login',
+            'endpoint' => 'Dime\Server\Endpoint\Authentication:login',
+            'map' => ['POST']
+        ],
+        'logout' => [
+            'route' => '/logout',
+            'endpoint' => 'Dime\Server\Endpoint\Authentication:logout',
+            'map' => ['POST']
+        ],
         'resource_get' => [
             'route' => '/api/{resource}/{id:\d+}',
             'endpoint' => 'Dime\Server\Endpoint\ResourceGet',

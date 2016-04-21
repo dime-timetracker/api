@@ -32,6 +32,8 @@ class ResourceGet
             throw new NotFoundException($request, $response);
         }
         
-        return $this->respond($response, $data);
+        // TODO Filter and extend data
+        
+        return $this->respond($response, $result);
     }
 }

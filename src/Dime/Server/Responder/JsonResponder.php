@@ -1,21 +1,19 @@
 <?php
 
-namespace Dime\Server\Traits;
+namespace Dime\Server\Responder;
 
 use Psr\Http\Message\ResponseInterface;
 
-trait EndpointTrait
+class JsonResponder implements ResponderInterface
 {
-    
-    protected function respond(ResponseInterface $response, array $data, $status = 200)
-    {
+    public function respond(ResponseInterface $response, array $data, $status = 200) {
         if ($status !== 200) {
             $response = $response->withStatus($status);
         }
-        
+
         $response->getBody()->write(
             json_encode(
-                $data, 
+                $data,
                 JSON_NUMERIC_CHECK | JSON_UNESCAPED_UNICODE
             )
         );

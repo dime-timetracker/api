@@ -1,11 +1,11 @@
 <?php
 
-namespace Dime\Server\Entity;
+namespace Dime\Server\Repository;
 
-use Dime\Server\Metadata\Metadata;
+use Dime\Server\Metadata;
 use Doctrine\DBAL\Connection;
 
-class ResourceRepository
+class ResourceRepository implements RepositoryInterface
 {
 
     private $connection;

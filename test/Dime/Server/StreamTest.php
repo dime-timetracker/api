@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Stream;
+namespace Dime\Server;
     
 class StreamTest extends \PHPUnit_Framework_TestCase
 {

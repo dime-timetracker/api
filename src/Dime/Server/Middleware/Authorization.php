@@ -29,22 +29,24 @@ class Authorization implements MiddlewareInterface
     private $realm = 'Dime Timetracker';
     private $expires = '1 week';
     private $access;
+    private $responder;
 
     /**
      * Constructor.
      *
      * @param array $access needs an array with [username => [[client => '', token => '', expires => 'parsable date'], ...]]
-     * @param string $realm
-     * @param string $expires
+     * @param string $realm name of domain (default: 'Dime Timetracker')
+     * @param string $expires parsable period (default: '1 week')
      */
-    public function __construct(array $access, $realm = 'Dime Timetracker', $expires = '1 week')
+    public function __construct(ResponderInterface $responder, array $access, $realm = 'Dime Timetracker', $expires = '1 week')
     {
+        $this->responder = $responder;
         $this->access = $access;
         $this->realm = $realm;
         $this->expires = $expires;
     }
 
-    public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next)
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
         $authorization = $this->readAuthorizationHeader($request);
 
@@ -56,17 +58,12 @@ class Authorization implements MiddlewareInterface
             return $this->fail($response);
         }
         
-        return $next(
-            $request->withAttribute('userId', $this->getUserId($authorization[1])),
-            $response
-        );
+        return $next($request, $response);
     }
 
     protected function fail(ResponseInterface $response)
     {
-        return $response
-                ->withStatus(401)
-                ->write(json_encode(['error' => 'Authentication error']));
+        return $this->responder($response, ['error' => 'Authentication error'], 401);
     }
 
     protected function readAuthorizationHeader(ServerRequestInterface $request)

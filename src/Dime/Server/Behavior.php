@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Behavior;
+namespace Dime\Server;
 
 class Behavior
 {

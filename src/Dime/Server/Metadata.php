@@ -1,8 +1,8 @@
 <?php
 
-namespace Dime\Server\Metadata;
+namespace Dime\Server;
 
-use Dime\Server\Stream\Stream;
+use Dime\Server\Stream;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 
 class Metadata

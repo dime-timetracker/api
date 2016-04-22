@@ -2,18 +2,20 @@
 
 namespace Dime\Server\Behavior;
 
+use Dime\Server\Mediator;
+
 class Assignable
 {
-    private $userId = 'user_id';
-
-    public function __construct($userId = 'user_id')
+    private $userId;
+    
+    public function __construct($userId)
     {
-        $this->userId = $userId;
+        $this->userId = intval($userId);
     }
 
-    public function __invoke(array $data)
+    public function __invoke(array $data = [])
     {        
-        $data[$this->userId] = 1; // FIXME
+        $data['user_id'] = $this->userId;
         return $data;
     }
 }

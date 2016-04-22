@@ -2,6 +2,8 @@
 
 namespace Dime\Server\Middleware;
 
+use Dime\Server\Mediator;
+use Dime\Server\Responder\ResponderInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -23,11 +25,12 @@ use Psr\Http\Message\ResponseInterface;
  *
  * @author Danilo Kuehn <dk@nogo-software.de>
  */
-class Authorization implements MiddlewareInterface
+class Authorization
 {
 
-    private $realm = 'Dime Timetracker';
-    private $expires = '1 week';
+    private $mediator;
+    private $realm;
+    private $expires;
     private $access;
     private $responder;
 
@@ -38,8 +41,9 @@ class Authorization implements MiddlewareInterface
      * @param string $realm name of domain (default: 'Dime Timetracker')
      * @param string $expires parsable period (default: '1 week')
      */
-    public function __construct(ResponderInterface $responder, array $access, $realm = 'Dime Timetracker', $expires = '1 week')
+    public function __construct(Mediator $mediator, ResponderInterface $responder, array $access, $realm = 'DimeTimetracker', $expires = '1 week')
     {
+        $this->mediator = $mediator;
         $this->responder = $responder;
         $this->access = $access;
         $this->realm = $realm;
@@ -63,7 +67,7 @@ class Authorization implements MiddlewareInterface
 
     protected function fail(ResponseInterface $response)
     {
-        return $this->responder($response, ['error' => 'Authentication error'], 401);
+        return $this->responder->respond($response, ['error' => 'Authentication error'], 401);
     }
 
     protected function readAuthorizationHeader(ServerRequestInterface $request)
@@ -94,10 +98,10 @@ class Authorization implements MiddlewareInterface
         }
 
         $user = $this->access[$username];
-
         $authorized = false;
         foreach ($user as $item) {
             if ($item['client'] === $client && $item['token'] === $token) {
+                $this->mediator->setUserId($item['user_id']);                
                 $authorized = $this->expired($item['expires']);
                 break;
             }
@@ -108,7 +112,7 @@ class Authorization implements MiddlewareInterface
 
     protected function expired($date)
     {
-        return strtotime('-' . $this->expires) >= strtotime($date);
+        return strtotime('-' . $this->expires) <= strtotime($date);
     }
 
     protected function getUserId($username)

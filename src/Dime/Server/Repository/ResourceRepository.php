@@ -5,7 +5,7 @@ namespace Dime\Server\Repository;
 use Dime\Server\Metadata;
 use Doctrine\DBAL\Connection;
 
-class ResourceRepository implements RepositoryInterface
+class ResourceRepository
 {
 
     private $connection;
@@ -64,7 +64,7 @@ class ResourceRepository implements RepositoryInterface
     {
         $this->name = $name;
     }
-
+        
     /**
      * Find one entity.
      * @param array $identifier
@@ -83,18 +83,18 @@ class ResourceRepository implements RepositoryInterface
 
     /**
      * Find all entities.
-     * @param array $filter array with callables getting QueryBuilder as parameter.
+     * @param array $filters array with callables getting QueryBuilder as parameter.
      * @param int $page page number (default: 1)
      * @param int $with amount of entity (default: 0)
      * @return array
      */
-    public function findAll(array $filter = [], $page = 1, $with = 0)
+    public function findAll(array $filters = [], $page = 1, $with = 0)
     {
         $qb = $this->getConnection()->createQueryBuilder()->select("*")->from($this->getName());
 
         // Filter
-        foreach ($filter as $function) {
-            call_user_func($function, $qb);
+        foreach ($filters as $filter) {            
+            $qb = call_user_func($filter, $qb);
         }
 
         // Pager
@@ -102,7 +102,7 @@ class ResourceRepository implements RepositoryInterface
         if ($with > 0) {
             $qb->setMaxResults($with);
         }
-
+        
         return $qb->execute()->fetchAll();
     }
 
@@ -113,10 +113,14 @@ class ResourceRepository implements RepositoryInterface
      */
     public function insert(array $data)
     {
-        $this->getConnection()->insert(
-            $this->getName(), 
-            $this->getMetadata()->filter($this->getName(), $data)->collect()
-        );
+        try {
+            $this->getConnection()->insert(
+                $this->getName(), 
+                $this->getMetadata()->filter($this->getName(), $data)->collect()
+            );
+        } catch (\Exception $e) {
+            throw new RepositoryException('No data', $e->getCode(), $e);
+        }
 
         return $this->getConnection()->lastInsertId();
     }
@@ -146,4 +150,13 @@ class ResourceRepository implements RepositoryInterface
         return $this->connection->delete($this->getName(), $identifier);
     }
 
+    /**
+     * Count all entities.
+     * @return int
+     */
+    public function count()
+    {
+        $qb = $this->getConnection()->createQueryBuilder()->select("count(*)")->from($this->getName());
+        return $qb->execute()->fetchColumn();
+    }
 }

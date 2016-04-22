@@ -13,7 +13,7 @@ class Timestampable
         $this->updatedAt = $updatedAt;
     }
 
-    public function __invoke(array $data)
+    public function __invoke(array $data = [])
     {
         $now = date('Y-m-d H:i:s');
         

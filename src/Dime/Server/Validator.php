@@ -4,20 +4,20 @@ namespace Dime\Server\Validator;
 
 class Validator
 {
-    private $validators = [];
     private $errors = [];
+    protected $runnables = [];
 
-    public function add($validator, $name = null)
+    public function prepare($function, $name = null)
     {
-        if (!is_callable($validator, true, $callableName)) {
-            throw new \Exception("Validator is not a callable");
+        if (!is_callable($function, true, $callableName)) {
+            throw new Exception("Function can not be called. Use a callable.");
         }
-        
+
         if (empty($name)) {
             $name = $callableName;
         }
-        
-        $this->validators[$name] = $validator;
+
+        $this->runnables[$name] = $function;
     }
     
     public function getErrors()
@@ -25,15 +25,17 @@ class Validator
         return $this->errors;
     }
 
-    public function validate(array $data)
+    public function validate($data)
     {
         $result = true;
-        foreach ($this->validators as $functor) {
-            if (!call_user_func($functor, $data, $this->errors)) {
+        $errors = [];
+        foreach ($this->runnables as $function) {
+            if (!call_user_func($function, $data, $errors)) {
                 $result = false;
                 break;
             }
         }
+        $this->errors = $errors;
         return $result;
     }
 }

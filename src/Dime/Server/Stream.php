@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Stream;
+namespace Dime\Server;
 
 class Stream
 {
@@ -24,6 +24,28 @@ class Stream
     public static function can($data)
     {
         return is_array($data) || ($data instanceof \Traversable);
+    }
+    
+    /**
+     * Append or merge the result of the callable into the data. If result has 
+     * integer key it will append, other key will merge and override.
+     * 
+     * @param callable $function
+     * @return self
+     */
+    public function append($function)
+    {
+        $result = call_user_func($function);
+        
+        foreach ($result as $key => $value) {
+            if (is_int($key)) {
+                $this->data[] = $value;
+            } else {
+                $this->data[$key] = $value;
+            }
+        }        
+        
+        return $this;
     }
 
     public function collect()
@@ -105,6 +127,11 @@ class Stream
         return self::of($result);
     }
 
+    /**
+     * Change the key, not the value.
+     * @param callable $function
+     * @return Stream
+     */
     public function remap($function)
     {
         $result = [];

@@ -2,6 +2,21 @@
 
 API provider written php.
 
+
+## Install
+
+Copy config file and edit database entry. Create database.
+
+```
+cp config/parameters.php.dist config/parameters.php
+```
+
+Install dime via console.
+
+```
+php console.php dime:install
+```
+
 ## API call
 ```
 Request   Authorization   ResourceType    

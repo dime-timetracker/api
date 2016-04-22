@@ -38,7 +38,6 @@ Request
  <o------------<|
 Response
 ```
-```
 
 ## Authentication call - Logout
 ```

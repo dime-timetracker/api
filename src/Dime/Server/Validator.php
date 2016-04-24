@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Validator;
+namespace Dime\Server;
 
 class Validator
 {

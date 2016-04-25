@@ -91,7 +91,7 @@ $container['assignable'] = function (ContainerInterface $container) {
 };
 
 $container['activities_repository'] = function (ContainerInterface $container) {
-    return new Dime\Server\Repository\ResourceRepository($container->get('connection'), 'activities');
+    return new Dime\Server\Repository\ActivitiesResourceRepository($container->get('connection'));
 };
 $container['activities_filter'] = function (ContainerInterface $container) {
     return [
@@ -368,7 +368,9 @@ $app->group('/api', function () {
         return $this->get('resonder')->respond($response, $result);
     });
 
-})->add('Dime\Server\Middleware\Authorization')->add('Dime\Server\Middleware\ResourceType');
+})
+    //->add('Dime\Server\Middleware\Authorization')
+    ->add('Dime\Server\Middleware\ResourceType');
 
 
 $app->run();

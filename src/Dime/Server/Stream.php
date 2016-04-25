@@ -48,11 +48,20 @@ class Stream
         return $this;
     }
 
+    /**
+     * Return the internal data object.
+     * @return Traversable
+     */
     public function collect()
     {
         return $this->data;
     }
 
+    /**
+     * Iterate over each item and execute the consumer function.
+     * @param callable $consumer Consumer function result will be ignored.
+     * @return Stream
+     */
     public function each($consumer)
     {
         foreach ($this->data as $key => $value) {
@@ -62,6 +71,11 @@ class Stream
         return $this;
     }
 
+    /**
+     * Filte the stream of items with a function.
+     * @param callable $function
+     * @return Stream filtered items as Stream.
+     */
     public function filter($function)
     {
         $result = [];
@@ -75,6 +89,12 @@ class Stream
         return self::of($result);
     }
 
+    /**
+     * Accumulate all items and return the result.
+     * @param callable $function
+     * @param mixed $accumulator inital value.
+     * @return Result of the accuumulation.
+     */
     public function fold($function, $accumulator = null)
     {
         foreach ($this->data as $key => $value) {
@@ -88,6 +108,11 @@ class Stream
         return $accumulator;
     }
 
+    /**
+     * Every item has to match with the function.
+     * @param callable $function must return a boolean result.
+     * @return boolean
+     */
     public function matchAll($function)
     {
         $result = true;
@@ -102,6 +127,11 @@ class Stream
         return $result;
     }
 
+    /**
+     * One or more items has to match with the function.
+     * @param callable $function must return a boolean result.
+     * @return boolean
+     */
     public function matchAny($function)
     {
         $result = false;
@@ -116,6 +146,11 @@ class Stream
         return $result;
     }
 
+    /**
+     * Change the value, keep the key.
+     * @param callable $function
+     * @return Stream
+     */
     public function map($function)
     {
         $result = [];
@@ -128,7 +163,7 @@ class Stream
     }
 
     /**
-     * Change the key, not the value.
+     * Change the key, keep the value.
      * @param callable $function
      * @return Stream
      */

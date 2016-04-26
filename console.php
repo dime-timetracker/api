@@ -27,7 +27,6 @@ $cli = new \Symfony\Component\Console\Application('Dime Timetracker');
 $cli->setCatchExceptions(true);
 $cli->setHelperSet($helpers);
 $cli->addCommands([
-    new Dime\Server\Command\InstallCommand(),
-    new Dime\Server\Command\UpgradeCommand()
+    new Dime\Server\Command\InstallCommand()
 ]);
 $cli->run();

@@ -25,27 +25,32 @@ class Stream
     {
         return is_array($data) || ($data instanceof \Traversable);
     }
-    
+
     /**
-     * Append or merge the result of the callable into the data. If result has 
+     * Append or merge the result of the callable into the data. If result has
      * integer key it will append, other key will merge and override.
-     * 
+     *
      * @param callable $function
      * @return self
      */
     public function append($function)
     {
         $result = call_user_func($function);
-        
+
         foreach ($result as $key => $value) {
             if (is_int($key)) {
                 $this->data[] = $value;
             } else {
                 $this->data[$key] = $value;
             }
-        }        
-        
+        }
+
         return $this;
+    }
+
+    public function isEmpty()
+    {
+        return emtpy($this->data);
     }
 
     /**
@@ -72,6 +77,19 @@ class Stream
     }
 
     /**
+     * Execute a callable on the whole data object.
+     *
+     * Stream::of(['id' => 'test'])->execute(function ($data) { return $modifiedData; })->collect();
+     *
+     * @param callable $callable Callabe recieve the whole data object as first parameter.
+     * @return Stream
+     */
+    public function execute($callable)
+    {
+        return self::of(call_user_func($callable, $this->data));
+    }
+
+    /**
      * Filte the stream of items with a function.
      * @param callable $function
      * @return Stream filtered items as Stream.
@@ -79,13 +97,13 @@ class Stream
     public function filter($function)
     {
         $result = [];
-        
+
         foreach ($this->data as $key => $value) {
             if (call_user_func($function, $value, $key)) {
                 $result[$key] = $value;
             }
         }
-        
+
         return self::of($result);
     }
 
@@ -104,7 +122,7 @@ class Stream
                 $accumulator = call_user_func($function, $accumulator, $value, $key);
             }
         }
-        
+
         return $accumulator;
     }
 
@@ -178,5 +196,5 @@ class Stream
 
         return self::of($result);
     }
-    
+
 }

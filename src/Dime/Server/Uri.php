@@ -39,4 +39,54 @@ class Uri
         return $result;
     }
 
+    public function buildLinkHeader(ServerRequestInterface $request, $total)
+    {
+        $args = $request->getAttribute('routeInfo')[2];
+        $page = $this->getQueryParam($request, 'page', 1);
+        $with = $this->getQueryParam($request, 'with', 0);
+
+        $lastPage = 1;
+        $queryParameter = $request->getQueryParams();
+        if ($with > 1) {
+            $lastPage = ceil($total / $with);
+            $queryParameter['with'] = $with;
+        }
+
+        $link = [];
+        if ($page + 1 <= $lastPage) {
+            $queryParameter['page'] =  $page + 1;
+            $link[] = sprintf('<%s>; rel="next"', $this->pathFor(
+                'resource_list',
+                $args,
+                $queryParameter
+            ));
+        }
+        if ($page - 1 > 0) {
+            $queryParameter['page'] =  $page - 1;
+            $link[] = sprintf('<%s>; rel="prev"', $this->pathFor(
+                'resource_list',
+                $args,
+                $queryParameter
+            ));
+        }
+        if ($page != 1) {
+            $queryParameter['page'] =  1;
+            $link[] = sprintf('<%s>; rel="first"', $this->pathFor(
+                'resource_list',
+                $args,
+                $queryParameter
+            ));
+        }
+        if ($page != $lastPage) {
+            $queryParameter['page'] =  $lastPage;
+            $link[] = sprintf('<%s>; rel="last"', $this->pathFor(
+                'resource_list',
+                $args,
+                $queryParameter
+            ));
+        }
+
+        return $link;
+    }
+
 }

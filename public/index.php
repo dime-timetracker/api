@@ -9,7 +9,6 @@ if (!file_exists(ROOT_DIR . '/vendor/autoload.php')) {
 }
 require_once ROOT_DIR . '/vendor/autoload.php';
 
-
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -30,6 +29,8 @@ $settings = array_replace_recursive(
 // DI Container
 
 $container = new \Slim\Container(['settings' => $settings]);
+
+// Dependencies
 
 $container['connection'] = function (ContainerInterface $container) {
     $connection = \Doctrine\DBAL\DriverManager::getConnection($container['settings']['database'], new \Doctrine\DBAL\Configuration());
@@ -55,6 +56,11 @@ $container['uri'] = function (ContainerInterface $container) {
     return new Dime\Server\Uri($container->get('router'), $container->get('environment'));
 };
 
+$container['security'] = function (ContainerInterface $container) {
+    return new Dime\Server\SecurityProvider();
+};
+
+// Middleware
 
 $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterface $container) {
     $accessRepository = $container->get('access_repository');
@@ -76,10 +82,10 @@ $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterfac
                     ->collect();
         })
         ->collect();
-        
+
     return new Dime\Server\Middleware\Authorization(
-        $container->get('mediator'), 
-        $container->get('responder'), 
+        $container->get('mediator'),
+        $container->get('responder'),
         $access
     );
 };
@@ -130,34 +136,35 @@ $container['validator'] = function (ContainerInterface $container) {
 
 $app = new \Slim\App($container);
 
-// Authenication
+// Authentication routes
+
 $app->post('/login', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
     $login = $request->getParsedBody();
-    
+
     $user = $this->get('users_repository')->find(['username' => $login['username']]);
     if (!$this->get('security')->authenticate($user, $login['password'])) {
         return $this->get('responder')->respond($response, ['message' => 'Bad password.'], 401);
     }
-    
+
     $identifier = [ 'user_id' => $user['id'], 'client' => $login['client'] ];
-    
+
     $access = $this->get('access_repository')->find($identifier);
     if (empty($access)) {
         $access = $identifier;
         $access['token'] = $this->get('security')->createToken($user['id'], $login['client']);
-        
+
         $access = \Dime\Server\Stream::of($access)
                 ->append(new \Dime\Server\Behavior\Timestampable())
                 ->collect();
-        
+
         $this->get('access_repository')->insert($access);
     } else {
         $access['token'] = $this->get('security')->createToken($user['id'], $login['client']);
-        
+
         $access = \Dime\Server\Stream::of($access)
                 ->append(new \Dime\Server\Behavior\Timestampable(null))
                 ->collect();
-        
+
         $this->get('access_repository')->update($access, $identifier);
     }
 
@@ -182,7 +189,7 @@ $app->post('/logout', function (ServerRequestInterface $request, ResponseInterfa
             'client' => $client
         ]);
     }
-    
+
     return $response;
 })->add('Dime\Server\Middleware\Authorization');
 
@@ -219,47 +226,8 @@ $app->group('/api', function () {
 
         // add header X-Dime-Total and Link
         $total = $repository->count();
-        
-        $lastPage = 1;
-        $queryParameter = $request->getQueryParams();
-        if ($with > 1) {
-            $lastPage = ceil($total / $with);
-            $queryParameter['with'] = $with;
-        }
-        $link = [];
-        if ($page + 1 <= $lastPage) {
-            $queryParameter['page'] =  $page + 1;
-            $link[] = sprintf('<%s>; rel="next"', $this->get('uri')->pathFor(
-                'resource_list',
-                ['resource' => $args['resource']],
-                $queryParameter
-            ));
-        }
-        if ($page - 1 > 0) {
-            $queryParameter['page'] =  $page - 1;
-            $link[] = sprintf('<%s>; rel="prev"', $this->get('uri')->pathFor(
-                'resource_list',
-                ['resource' => $args['resource']],
-                $queryParameter
-            ));
-        }
-        if ($page != 1) {
-            $queryParameter['page'] =  1;
-            $link[] = sprintf('<%s>; rel="first"', $this->get('uri')->pathFor(
-                'resource_list',
-                ['resource' => $args['resource']],
-                $queryParameter
-            ));
-        }
-        if ($page != $lastPage) {
-            $queryParameter['page'] =  $lastPage;
-            $link[] = sprintf('<%s>; rel="last"', $this->get('uri')->pathFor(
-                'resource_list',
-                ['resource' => $args['resource']],
-                $queryParameter
-            ));
-        }        
-                
+        $link = $this->get('uri')->buildLinkHeader($request, $total);
+
         return $this->get('responder')->respond(
             $response
                 ->withHeader("X-Dime-Total", $total)
@@ -368,9 +336,8 @@ $app->group('/api', function () {
         return $this->get('resonder')->respond($response, $result);
     });
 
-})
-    //->add('Dime\Server\Middleware\Authorization')
-    ->add('Dime\Server\Middleware\ResourceType');
+})//->add('Dime\Server\Middleware\Authorization')
+  ->add('Dime\Server\Middleware\ResourceType');
 
 
 $app->run();

@@ -1,23 +1,23 @@
 <?php
 
-namespace Dime\Server\Repository;
+namespace Dime\Server;
 
 use Dime\Server\Metadata;
 use Doctrine\DBAL\Connection;
 
-class ResourceRepository
+class Repository
 {
 
     private $connection;
     private $metadata;
-    private $name;
+    private $table;
 
     /**
      * Constructor.
      * @param Connection $connection Database connection
-     * @param string $name Resource name.
+     * @param string $table Name of the table.
      */
-    public function __construct(Connection $connection, $name = null)
+    public function __construct(Connection $connection, $table = null)
     {
         $this->connection = $connection;
 
@@ -25,8 +25,8 @@ class ResourceRepository
             $this->metadata = Metadata::with($this->connection->getSchemaManager());
         }
 
-        if (!empty($name)) {
-            $this->name = $name;
+        if (!empty($table)) {
+            $this->table = $table;
         }
     }
 
@@ -53,7 +53,7 @@ class ResourceRepository
      */
     public function getName()
     {
-        return $this->name;
+        return $this->table;
     }
 
     /**
@@ -62,47 +62,39 @@ class ResourceRepository
      */
     public function setName($name)
     {
-        $this->name = $name;
+        $this->table = $name;
     }
-        
+
     /**
      * Find one entity.
-     * @param array $identifier
+     * @param array $with array with callables getting QueryBuilder as parameter.
      * @return array
      */
-    public function find(array $identifier)
+    public function find(array $with = [])
     {
         $qb = $this->getConnection()->createQueryBuilder()->select("*")->from($this->getName());
-        
-        foreach ($identifier as $key => $value) {
-            $qb->where($qb->expr()->eq($key, ':' . $key))->setParameter($key, $value);
+
+        foreach ($with as $action) {
+            $qb = call_user_func($action, $qb);
         }
-        
+
         return $qb->execute()->fetch();
     }
 
     /**
      * Find all entities.
-     * @param array $filters array with callables getting QueryBuilder as parameter.
-     * @param int $page page number (default: 1)
-     * @param int $with amount of entity (default: 0)
+     * @param array $with array with callables getting QueryBuilder as parameter.
      * @return array
      */
-    public function findAll(array $filters = [], $page = 1, $with = 0)
+    public function findAll(array $with = [])
     {
         $qb = $this->getConnection()->createQueryBuilder()->select("*")->from($this->getName());
 
-        // Filter
-        foreach ($filters as $filter) {            
-            $qb = call_user_func($filter, $qb);
+
+        foreach ($with as $action) {
+            $qb = call_user_func($action, $qb);
         }
 
-        // Pager
-        $qb->setFirstResult($with * ($page - 1));
-        if ($with > 0) {
-            $qb->setMaxResults($with);
-        }
-        
         return $qb->execute()->fetchAll();
     }
 
@@ -115,7 +107,7 @@ class ResourceRepository
     {
         try {
             $this->getConnection()->insert(
-                $this->getName(), 
+                $this->getName(),
                 $this->getMetadata()->filter($this->getName(), $data)->collect()
             );
         } catch (\Exception $e) {
@@ -134,8 +126,8 @@ class ResourceRepository
     public function update(array $data, array $identifier)
     {
         return $this->getConnection()->update(
-            $this->getName(), 
-            $this->getMetadata()->filter($this->getName(), $data)->collect(), 
+            $this->getName(),
+            $this->getMetadata()->filter($this->getName(), $data)->collect(),
             $identifier
         );
     }

@@ -58,13 +58,20 @@ $container['uri'] = function (ContainerInterface $container) {
 
 $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterface $container) {
     $accessRepository = $container->get('access_repository');
-    
-    $access = Dime\Server\Stream::of($container->get('users_repository')->findAll())
+
+    $users = $container->get('users_repository')->findAll([
+        new \Dime\Server\Scope\WithIdentity([ 'enabled' => true ])
+    ]);
+
+    $access = Dime\Server\Stream::of($users)
         ->remap(function ($value, $key) {
             return $value['username'];
         })
         ->map(function ($value, $key) use ($accessRepository) {
-            return Dime\Server\Stream::of($accessRepository->findAll([new Dime\Server\Scope\UserScope($value['id'])]))
+            $accessData = $accessRepository->findAll([
+                new Dime\Server\Scope\WithUser($value['id'])
+            ]);
+            return Dime\Server\Stream::of($accessData)
                     ->map(new Dime\Server\Transformer\ExpireTransformer())
                     ->collect();
         })
@@ -81,47 +88,42 @@ $container['Dime\Server\Middleware\ResourceType'] = function (ContainerInterface
     return new Dime\Server\Middleware\ResourceType($container->get('metadata')->resources());
 };
 
-$container['validator'] = function (ContainerInterface $container) {
-    return new Dime\Server\Validator();
+// Repositories
+
+$container['access_repository'] = function (ContainerInterface $container) {
+    return new Dime\Server\Repository($container->get('connection'), 'access');
+};
+$container['activities_repository'] = function (ContainerInterface $container) {
+    return new Dime\Server\Repository\Activities($container->get('connection'));
+};
+$container['customers_repository'] = function (ContainerInterface $container) {
+    return new Dime\Server\Repository($container->get('connection'), 'customers');
+};
+$container['projects_repository'] = function (ContainerInterface $container) {
+    return new Dime\Server\Repository($container->get('connection'), 'projects');
+};
+$container['services_repository'] = function (ContainerInterface $container) {
+    return new Dime\Server\Repository($container->get('connection'), 'services');
+};
+$container['settings_repository'] = function (ContainerInterface $container) {
+    return new Dime\Server\Repository($container->get('connection'), 'settings');
+};
+$container['tags_repository'] = function (ContainerInterface $container) {
+    return new Dime\Server\Repository($container->get('connection'), 'tags');
+};
+$container['timeslices_repository'] = function (ContainerInterface $container) {
+    return new Dime\Server\Repository\Timeslices($container->get('connection'));
+};
+$container['users_repository'] = function (ContainerInterface $container) {
+    return new Dime\Server\Repository($container->get('connection'), 'users');
 };
 
-// Behavior
 $container['assignable'] = function (ContainerInterface $container) {
     return new \Dime\Server\Behavior\Assignable($container->get('mediator')->getUserId());
 };
 
-$container['activities_repository'] = function (ContainerInterface $container) {
-    return new Dime\Server\Repository\ActivitiesResourceRepository($container->get('connection'));
-};
-$container['activities_filter'] = function (ContainerInterface $container) {
-    return [
-        new Dime\Server\Scope\UserScope($container->get('mediator')->getUserId())
-    ];
-};
-
-$container['customers_repository'] = function (ContainerInterface $container) {
-    return new Dime\Server\Repository\ResourceRepository($container->get('connection'), 'customers');
-};
-$container['projects_repository'] = function (ContainerInterface $container) {
-    return new Dime\Server\Repository\ResourceRepository($container->get('connection'), 'projects');
-};
-$container['services_repository'] = function (ContainerInterface $container) {
-    return new Dime\Server\Repository\ResourceRepository($container->get('connection'), 'services');
-};
-$container['settings_repository'] = function (ContainerInterface $container) {
-    return new Dime\Server\Repository\ResourceRepository($container->get('connection'), 'settings');
-};
-$container['tags_repository'] = function (ContainerInterface $container) {
-    return new Dime\Server\Repository\ResourceRepository($container->get('connection'), 'settings');
-};
-$container['access_repository'] = function (ContainerInterface $container) {
-    return new Dime\Server\Repository\ResourceRepository($container->get('connection'), 'access');
-};
-$container['users_repository'] = function (ContainerInterface $container) {
-    return new Dime\Server\Repository\ResourceRepository($container->get('connection'), 'users');
-};
-$container['security'] = function (ContainerInterface $container) {
-    return new Dime\Server\SecurityProvider();
+$container['validator'] = function (ContainerInterface $container) {
+    return new Dime\Server\Validator();
 };
 
 // App
@@ -184,7 +186,8 @@ $app->post('/logout', function (ServerRequestInterface $request, ResponseInterfa
     return $response;
 })->add('Dime\Server\Middleware\Authorization');
 
-// API
+// API routes
+
 $app->group('/api', function () {
 
     $this->get('/{resource}/{id:\d+}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
@@ -192,16 +195,14 @@ $app->group('/api', function () {
         $identifier = ['id' => filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT)];
 
         // Select
-        $result = $repository->find($identifier);
+        $result = $repository->find([
+            new Dime\Server\Scope\WithIdentity($identifier),
+            new Dime\Server\Scope\WithUser($this->get('mediator')->getUserId())
+        ]);
+
         if ($result === FALSE) {
             throw new NotFoundException($request, $response);
         }
-
-        // TODO Filter and extend data
-        
-        $result = Dime\Server\Stream::of($result)
-                ->remap(new Dime\Server\Transformer\CamelizeKey())
-                ->collect();
 
         return $this->get('responder')->respond($response, $result);
     });
@@ -210,15 +211,12 @@ $app->group('/api', function () {
         $repository = $this->get($args['resource'] . '_repository');
         $page = $this->get('uri')->getQueryParam($request, 'page', 1);
         $with = $this->get('uri')->getQueryParam($request, 'with', 0);
-        
-        $result = Dime\Server\Stream::of($repository->findAll([], $page, $with))
-                ->map(function ($value, $key) {
-                    return Dime\Server\Stream::of($value)
-                            ->remap(new Dime\Server\Transformer\CamelizeKey())
-                            ->collect();
-                })
-                ->collect();
-                
+
+        $result = $repository->findAll([
+            new Dime\Server\Scope\WithUser($this->get('mediator')->getUserId()),
+            new Dime\Server\Scope\Pagination($page, $with)
+        ]);
+
         // add header X-Dime-Total and Link
         $total = $repository->count();
         
@@ -272,15 +270,14 @@ $app->group('/api', function () {
 
     $this->post('/{resource}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
         $repository = $this->get($args['resource'] . '_repository');
-        
+
         $parsedData = $request->getParsedBody();
         if (empty($parsedData)) {
             throw new \Exception("No data");
         }
-        
+
         // Tranform and behave
         $behavedData = Dime\Server\Stream::of($parsedData)
-                ->remap(new Dime\Server\Transformer\DecamelizeKey())
                 ->append(new \Dime\Server\Behavior\Timestampable())
                 ->append($this->get('assignable'))
                 ->collect();
@@ -297,10 +294,11 @@ $app->group('/api', function () {
             throw new \Exception("No data");
         }
 
-        $result = Dime\Server\Stream::of($repository->find(['id' => $id]))
-                ->remap(new Dime\Server\Transformer\CamelizeKey())
-                ->collect();
-        
+        $result = $repository->find([
+            new \Dime\Server\Scope\WithIdentity(['id' => $id]),
+            new \Dime\Server\Scope\WithUser($this->get('mediator')->getUserId())
+        ]);
+
         return $this->get('responder')->respond($response, $result);
 
     })->setName('resource_list');
@@ -311,7 +309,10 @@ $app->group('/api', function () {
             'id' => filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT)
         ];
 
-        $result = $repository->find($identifier);
+        $result = $repository->find([
+            new \Dime\Server\Scope\WithIdentity(['id' => $id]),
+            new \Dime\Server\Scope\WithUser($this->get('mediator')->getUserId())
+        ]);
         if ($result === FALSE) {
             throw new NotFoundException($request, $response);
         }
@@ -320,10 +321,9 @@ $app->group('/api', function () {
         if (empty($parsedData)) {
             throw new \Exception("No data");
         }
-        
+
         // Tranform and behave
         $behavedData = Dime\Server\Stream::of($parsedData)
-                ->remap(new Dime\Server\Transformer\DecamelizeKey())
                 ->append(new \Dime\Server\Behavior\Timestampable(null))
                 ->append($this->get('assignable'))
                 ->collect();
@@ -340,10 +340,11 @@ $app->group('/api', function () {
             var_dump($e);
         }
 
-        $result = Dime\Server\Stream::of($this->repository->find($identifier))
-                ->remap(new Dime\Server\Transformer\CamelizeKey())
-                ->collect();
-        
+        $result = $this->repository->find([
+            new \Dime\Server\Scope\WithIdentity(['id' => $id]),
+            new \Dime\Server\Scope\WithUser($this->get('mediator')->getUserId())
+        ]);
+
         return $this->get('resonder')->respond($response, $result);
 
     });
@@ -353,17 +354,16 @@ $app->group('/api', function () {
         $identifier = ['id' => filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT)];
 
         // Select
-        $result = $repository->find($identifier);
+        $result = $repository->find([
+            new \Dime\Server\Scope\WithIdentity(['id' => $id]),
+            new \Dime\Server\Scope\WithUser($this->get('mediator')->getUserId())
+        ]);
         if ($result === FALSE) {
             throw new NotFoundException($request, $response);
         }
 
         // Delete
         $repository->delete($identifier);
-        
-        $result = Dime\Server\Stream::of($result)
-                ->remap(new Dime\Server\Transformer\CamelizeKey())
-                ->collect();
 
         return $this->get('resonder')->respond($response, $result);
     });

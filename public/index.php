@@ -299,7 +299,7 @@ $app->group('/api', function () {
         // Validate
         $validator = $this->get('validator');
         if (!$validator->validate($behavedData)) {
-            return $this->get('resonder')->respond($response, $validator->getErrors(), 400);
+            return $this->get('responder')->respond($response, $validator->getErrors(), 400);
         }
 
         try {
@@ -308,12 +308,12 @@ $app->group('/api', function () {
             var_dump($e);
         }
 
-        $result = $this->repository->find([
+        $result = $repository->find([
             new \Dime\Server\Scope\WithIdentity(['id' => $id]),
             new \Dime\Server\Scope\WithUser($this->get('mediator')->getUserId())
         ]);
 
-        return $this->get('resonder')->respond($response, $result);
+        return $this->get('responder')->respond($response, $result);
 
     });
 
@@ -333,7 +333,7 @@ $app->group('/api', function () {
         // Delete
         $repository->delete($identifier);
 
-        return $this->get('resonder')->respond($response, $result);
+        return $this->get('responder')->respond($response, $result);
     });
 
 })//->add('Dime\Server\Middleware\Authorization')

@@ -16,7 +16,7 @@ class WithIdentity
     public function __invoke(QueryBuilder $qb)
     {
         foreach ($this->identifier as $key => $value) {
-            $qb = $qb->where(
+            $qb = $qb->andWhere(
                 $qb->expr()->eq($key, ':' . $key)
             )->setParameter($key, $value);
         }

@@ -16,7 +16,7 @@ class WithUser
 
     public function __invoke(QueryBuilder $qb)
     {
-        return $qb->where($qb->expr()->eq('user_id', ':user_id'))->setParameter('user_id', $this->userId);
+        return $qb->andWhere($qb->expr()->eq('user_id', ':user_id'))->setParameter('user_id', $this->userId);
     }
 
 }

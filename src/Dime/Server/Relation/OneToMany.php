@@ -23,7 +23,7 @@ class OneToMany
     {
         if (!empty($data) && isset($data[$this->identifier])) {
             $data[$this->foreignName] = $this->repository->findAll([
-                new \Dime\Server\Scope\WithIdentity([
+                new \Dime\Server\Scope\With([
                     $this->foreignKey => $data[$this->identifier]
                 ])
             ]);

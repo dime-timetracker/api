@@ -26,7 +26,7 @@ class OneToManyFlatten
     {
         if (!empty($data) && isset($data[$this->identifier])) {
             $data[$this->foreignName] = Stream::of($this->repository->findAll([
-                new \Dime\Server\Scope\WithIdentity([
+                new \Dime\Server\Scope\With([
                     $this->foreignKey => $data[$this->identifier]
                 ])
             ]))->map([$this, 'flatten'])->collect();

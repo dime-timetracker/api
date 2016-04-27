@@ -66,7 +66,7 @@ $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterfac
     $accessRepository = $container->get('access_repository');
 
     $users = $container->get('users_repository')->findAll([
-        new \Dime\Server\Scope\WithIdentity([ 'enabled' => true ])
+        new \Dime\Server\Scope\With(['enabled' => true])
     ]);
 
     $access = Dime\Server\Stream::of($users)
@@ -75,7 +75,7 @@ $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterfac
         })
         ->map(function ($value, $key) use ($accessRepository) {
             $accessData = $accessRepository->findAll([
-                new Dime\Server\Scope\WithUser($value['id'])
+                new Dime\Server\Scope\With(['user_id' => $value['id']])
             ]);
             return Dime\Server\Stream::of($accessData)
                     ->map(new Dime\Server\Transformer\ExpireTransformer())
@@ -101,6 +101,13 @@ $container['access_repository'] = function (ContainerInterface $container) {
 };
 $container['activities_repository'] = function (ContainerInterface $container) {
     return new Dime\Server\Repository\Activities($container->get('connection'));
+};
+$container['activities_filter'] = function (ContainerInterface $container) {
+    return new Dime\Server\Filter([
+        new \Dime\Server\Filter\Relation('customer'),
+        new \Dime\Server\Filter\Relation('project'),
+        new \Dime\Server\Filter\Relation('service')
+    ]);
 };
 $container['customers_repository'] = function (ContainerInterface $container) {
     return new Dime\Server\Repository($container->get('connection'), 'customers');
@@ -182,7 +189,9 @@ $app->post('/logout', function (ServerRequestInterface $request, ResponseInterfa
         throw new NotFoundException();
     }
 
-    $user = $this->get('users_repository')->find(['username' => $username]);
+    $user = $this->get('users_repository')->find(
+        new Dime\Server\Scope\With([ 'username' => $username ])
+    );
     if (!empty($user)) {
         $this->get('access_repository')->delete([
             'user_id' => $user['id'],
@@ -199,12 +208,14 @@ $app->group('/api', function () {
 
     $this->get('/{resource}/{id:\d+}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
         $repository = $this->get($args['resource'] . '_repository');
-        $identifier = ['id' => filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT)];
+        $identifier = [
+            'id' => filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT),
+            'user_id' => $this->get('mediator')->getUserId()
+        ];
 
         // Select
         $result = $repository->find([
-            new Dime\Server\Scope\WithIdentity($identifier),
-            new Dime\Server\Scope\WithUser($this->get('mediator')->getUserId())
+            new Dime\Server\Scope\With($identifier),
         ]);
 
         if ($result === FALSE) {
@@ -218,11 +229,17 @@ $app->group('/api', function () {
         $repository = $this->get($args['resource'] . '_repository');
         $page = $this->get('uri')->getQueryParam($request, 'page', 1);
         $with = $this->get('uri')->getQueryParam($request, 'with', 0);
+        $by = $this->get('uri')->getQueryParam($request, 'by', []);
 
-        $result = $repository->findAll([
-            new Dime\Server\Scope\WithUser($this->get('mediator')->getUserId()),
+        $filter = [];
+        if ($this->has($args['resource'] . '_filter')) {
+            $filter = $this->get($args['resource'] . '_filter')->build($by);
+        }
+
+        $result = $repository->findAll(array_merge($filter, [
+            new Dime\Server\Scope\With(['user_id' => $this->get('mediator')->getUserId()]),
             new Dime\Server\Scope\Pagination($page, $with)
-        ]);
+        ]));
 
         // add header X-Dime-Total and Link
         $total = $repository->count();
@@ -262,9 +279,13 @@ $app->group('/api', function () {
             throw new \Exception("No data");
         }
 
+        $identity = [
+            'id' => $id,
+            'user_id' => $this->get('mediator')->getUserId()
+        ];
+
         $result = $repository->find([
-            new \Dime\Server\Scope\WithIdentity(['id' => $id]),
-            new \Dime\Server\Scope\WithUser($this->get('mediator')->getUserId())
+            new \Dime\Server\Scope\With($identity)
         ]);
 
         return $this->get('responder')->respond($response, $result);
@@ -274,12 +295,12 @@ $app->group('/api', function () {
     $this->put('/{resource}/{id:\d+}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
         $repository = $this->get($args['resource'] . '_repository');
         $identifier = [
-            'id' => filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT)
+            'id' => filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT),
+            'user_id' => $this->get('mediator')->getUserId()
         ];
 
         $result = $repository->find([
-            new \Dime\Server\Scope\WithIdentity(['id' => $id]),
-            new \Dime\Server\Scope\WithUser($this->get('mediator')->getUserId())
+            new \Dime\Server\Scope\With($identifier)
         ]);
         if ($result === FALSE) {
             throw new NotFoundException($request, $response);
@@ -309,8 +330,7 @@ $app->group('/api', function () {
         }
 
         $result = $repository->find([
-            new \Dime\Server\Scope\WithIdentity(['id' => $id]),
-            new \Dime\Server\Scope\WithUser($this->get('mediator')->getUserId())
+            new \Dime\Server\Scope\With($identifier)
         ]);
 
         return $this->get('responder')->respond($response, $result);
@@ -319,12 +339,14 @@ $app->group('/api', function () {
 
     $this->delete('/{resource}/{id:\d+}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
         $repository = $this->get($args['resource'] . '_repository');
-        $identifier = ['id' => filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT)];
+        $identifier = [
+            'id' => filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT),
+            'user_id' => $this->get('mediator')->getUserId()
+        ];
 
         // Select
         $result = $repository->find([
-            new \Dime\Server\Scope\WithIdentity(['id' => $id]),
-            new \Dime\Server\Scope\WithUser($this->get('mediator')->getUserId())
+            new \Dime\Server\Scope\With($identifier)
         ]);
         if ($result === FALSE) {
             throw new NotFoundException($request, $response);

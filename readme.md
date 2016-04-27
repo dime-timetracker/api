@@ -19,7 +19,7 @@ php console.php dime:install
 
 ## API call
 ```
-Request   Authorization   ResourceType    
+Request   Authorization   ResourceType
  >o-------------o--------------o------------>|
                 |              |             |
                 | Error        | Error       o Endpoint < -- > Repository

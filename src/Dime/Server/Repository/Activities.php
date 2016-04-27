@@ -46,4 +46,13 @@ class Activities extends Repository
                         ->map($this->otmTags)
                         ->collect();
     }
+
+    public function filter($by)
+    {
+        // Running?
+        // Search
+        // Date
+        // Relation (Customer, Project, Service, Tag)
+        //
+    }
 }

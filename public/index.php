@@ -285,7 +285,7 @@ $app->group('/api', function () {
 
         // add header X-Dime-Total and Link
         $total = $repository->count();
-        $link = $this->get('uri')->buildLinkHeader($request, $total);
+        $link = $this->get('uri')->buildLinkHeader($request, $total, $page, $with);
 
         return $this->get('responder')->respond(
             $response

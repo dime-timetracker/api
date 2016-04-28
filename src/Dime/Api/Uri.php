@@ -39,11 +39,9 @@ class Uri
         return $result;
     }
 
-    public function buildLinkHeader(ServerRequestInterface $request, $total)
+    public function buildLinkHeader(ServerRequestInterface $request, $total, $page, $with)
     {
         $args = $request->getAttribute('routeInfo')[2];
-        $page = $this->getQueryParam($request, 'page', 1);
-        $with = $this->getQueryParam($request, 'with', 0);
 
         $lastPage = 1;
         $queryParameter = $request->getQueryParams();
@@ -85,7 +83,7 @@ class Uri
                 $queryParameter
             ));
         }
-
+        
         return $link;
     }
 

@@ -10,7 +10,7 @@ class Stream
     public function __construct($data)
     {
         if (!self::can($data)) {
-            throw new Exception("Data not an array or Traversable and could not used as stream.");
+            throw new Exception('Data not an array or Traversable and could not used as stream.');
         }
 
         $this->data = $data;

@@ -2,7 +2,7 @@
 
 namespace Dime\Server;
 
-class Mediator
+class Session
 {
     private $userId = 1;
     

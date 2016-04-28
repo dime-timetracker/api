@@ -2,7 +2,7 @@
 
 namespace Dime\Server\Middleware;
 
-use Dime\Server\Mediator;
+use Dime\Server\Session;
 use Dime\Server\Responder\ResponderInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -28,7 +28,7 @@ use Psr\Http\Message\ResponseInterface;
 class Authorization
 {
 
-    private $mediator;
+    private $session;
     private $realm;
     private $expires;
     private $access;
@@ -41,9 +41,9 @@ class Authorization
      * @param string $realm name of domain (default: 'Dime Timetracker')
      * @param string $expires parsable period (default: '1 week')
      */
-    public function __construct(Mediator $mediator, ResponderInterface $responder, array $access, $realm = 'DimeTimetracker', $expires = '1 week')
+    public function __construct(Session $session, ResponderInterface $responder, array $access, $realm = 'DimeTimetracker', $expires = '1 week')
     {
-        $this->mediator = $mediator;
+        $this->session = $session;
         $this->responder = $responder;
         $this->access = $access;
         $this->realm = $realm;
@@ -101,7 +101,7 @@ class Authorization
         $authorized = false;
         foreach ($user as $item) {
             if ($item['client'] === $client && $item['token'] === $token) {
-                $this->mediator->setUserId($item['user_id']);                
+                $this->session->setUserId($item['user_id']);
                 $authorized = $this->expired($item['expires']);
                 break;
             }

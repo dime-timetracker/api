@@ -10,7 +10,7 @@ class Validator
     public function prepare($function, $name = null)
     {
         if (!is_callable($function, true, $callableName)) {
-            throw new Exception("Function can not be called. Use a callable.");
+            throw new Exception('Function can not be called. Use a callable.');
         }
 
         if (empty($name)) {

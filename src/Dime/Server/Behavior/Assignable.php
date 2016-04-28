@@ -2,8 +2,6 @@
 
 namespace Dime\Server\Behavior;
 
-use Dime\Server\Mediator;
-
 class Assignable
 {
     private $userId;

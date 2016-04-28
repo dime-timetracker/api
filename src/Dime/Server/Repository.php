@@ -72,7 +72,7 @@ class Repository
      */
     public function find(array $with = [])
     {
-        $qb = $this->getConnection()->createQueryBuilder()->select("*")->from($this->getName());
+        $qb = $this->getConnection()->createQueryBuilder()->select('*')->from($this->getName());
 
         foreach ($with as $action) {
             $qb = call_user_func($action, $qb);
@@ -88,7 +88,7 @@ class Repository
      */
     public function findAll(array $with = [])
     {
-        $qb = $this->getConnection()->createQueryBuilder()->select("*")->from($this->getName());
+        $qb = $this->getConnection()->createQueryBuilder()->select('*')->from($this->getName());
 
 
         foreach ($with as $action) {
@@ -148,7 +148,7 @@ class Repository
      */
     public function count()
     {
-        $qb = $this->getConnection()->createQueryBuilder()->select("count(*)")->from($this->getName());
+        $qb = $this->getConnection()->createQueryBuilder()->select('count(*)')->from($this->getName());
         return $qb->execute()->fetchColumn();
     }
 }

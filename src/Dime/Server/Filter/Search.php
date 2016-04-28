@@ -8,6 +8,13 @@ class Search implements FilterInterface
 {
     const NAME = 'search';
 
+    private $map;
+
+    public function __construct(array $map = ['description'])
+    {
+        $this->map = $map;
+    }
+
     public function name()
     {
         return self::NAME;
@@ -15,6 +22,6 @@ class Search implements FilterInterface
 
     public function __invoke($value)
     {
-        return new SearchScope(filter_var($value, FILTER_SANITIZE_STRING));
+        return new SearchScope(filter_var($value, FILTER_SANITIZE_STRING), $this->map);
     }
 }

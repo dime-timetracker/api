@@ -106,7 +106,9 @@ $container['activities_filter'] = function (ContainerInterface $container) {
     return new Dime\Server\Filter([
         new \Dime\Server\Filter\Relation('customer'),
         new \Dime\Server\Filter\Relation('project'),
-        new \Dime\Server\Filter\Relation('service')
+        new \Dime\Server\Filter\Relation('service'),
+        new \Dime\Server\Filter\Date(),
+        new \Dime\Server\Filter\Search(),
     ]);
 };
 $container['customers_repository'] = function (ContainerInterface $container) {

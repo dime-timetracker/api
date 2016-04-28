@@ -7,14 +7,21 @@ use Doctrine\DBAL\Query\QueryBuilder;
 class Search
 {
     private $text;
+    private $map;
 
-    public function __construct($text)
+    public function __construct($text, array $map = ['description'])
     {
         $this->text = $text;
+        $this->map = $map;
     }
 
     public function __invoke(QueryBuilder $qb)
     {
-        // tbd
+        foreach ($this->map as $key) {
+            $qb->andWhere(
+                $qb->expr()->like($key, ':' . $key . '_like')
+            )->setParameter($key . '_like', $this->text);
+        }
+        return $qb;
     }
 }

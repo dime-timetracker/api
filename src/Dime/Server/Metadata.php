@@ -15,11 +15,6 @@ class Metadata
         $this->schemaManager = $schemaManager;
     }
 
-    public static function with(AbstractSchemaManager $schemaManager)
-    {
-        return new self($schemaManager);
-    }
-
     public function resources()
     {
         return $this->schemaManager->listTableNames();

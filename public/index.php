@@ -22,7 +22,10 @@ if (file_exists(ROOT_DIR . '/config/parameters.php')) {
 $settings = array_replace_recursive(
     [
         'displayErrorDetails' => true,
-        'enableSecurity' => false
+        'enableSecurity' => false,
+        'allowedResources' => [
+            'activities', 'timeslices', 'customers', 'projects', 'services', 'settings', 'tags'
+        ]
     ],
     $configuration
 );
@@ -42,10 +45,10 @@ $container['connection'] = function (ContainerInterface $container) {
 };
 
 $container['metadata'] = function (ContainerInterface $container) {
-    return \Dime\Server\Metadata::with($container->get('connection')->getSchemaManager());
+    return new \Dime\Server\Metadata($container->get('connection')->getSchemaManager());
 };
 
-$container['session'] = function (ContainerInterface $container) {
+$container['session'] = function () {
     return new \Dime\Server\Session();
 };
 
@@ -57,7 +60,7 @@ $container['uri'] = function (ContainerInterface $container) {
     return new \Dime\Server\Uri($container->get('router'), $container->get('environment'));
 };
 
-$container['security'] = function (ContainerInterface $container) {
+$container['security'] = function () {
     return new \Dime\Server\SecurityProvider();
 };
 
@@ -96,7 +99,7 @@ $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterfac
 };
 
 $container['Dime\Server\Middleware\ResourceType'] = function (ContainerInterface $container) {
-    return new \Dime\Server\Middleware\ResourceType($container->get('metadata')->resources());
+    return new \Dime\Server\Middleware\ResourceType($container->get('settings')['allowedResources']);
 };
 
 // Repositories
@@ -107,7 +110,7 @@ $container['access_repository'] = function (ContainerInterface $container) {
 $container['activities_repository'] = function (ContainerInterface $container) {
     return new \Dime\Server\Repository\Activities($container->get('connection'));
 };
-$container['activities_filter'] = function (ContainerInterface $container) {
+$container['activities_filter'] = function () {
     return new \Dime\Server\Filter([
         new \Dime\Server\Filter\Relation('customer'),
         new \Dime\Server\Filter\Relation('project'),
@@ -122,11 +125,11 @@ $container['customers_repository'] = function (ContainerInterface $container) {
 $container['projects_repository'] = function (ContainerInterface $container) {
     return new \Dime\Server\Repository($container->get('connection'), 'projects');
 };
-$container['projects_filter'] = function (ContainerInterface $container) {
+$container['projects_filter'] = function () {
     return new \Dime\Server\Filter([
         new \Dime\Server\Filter\Relation('customer'),
         new \Dime\Server\Filter\Date(),
-        new \Dime\Server\Filter\Search(['description']),
+        new \Dime\Server\Filter\Search(['name', 'description']),
     ]);
 };
 $container['services_repository'] = function (ContainerInterface $container) {
@@ -141,7 +144,7 @@ $container['tags_repository'] = function (ContainerInterface $container) {
 $container['timeslices_repository'] = function (ContainerInterface $container) {
     return new \Dime\Server\Repository\Timeslices($container->get('connection'));
 };
-$container['timeslices_filter'] = function (ContainerInterface $container) {
+$container['timeslices_filter'] = function () {
     return new \Dime\Server\Filter([
         new \Dime\Server\Filter\Relation('activity'),
         new \Dime\Server\Filter\Date(['start' => 'started_at', 'end' => 'stopped_at']),
@@ -234,11 +237,12 @@ $app->get('/apidoc[/{resource}]', function (ServerRequestInterface $request, Res
             return $value->getType()->getName();
         })->collect();
     } else {
-        $result = $metadata->resources();
+        $result = $this->get('settings')['allowedResources'];
     }
 
     return $this->get('responder')->respond($response, $result);
-})->add('Dime\Server\Middleware\Authorization');
+})->add('Dime\Server\Middleware\Authorization')
+  ->add('Dime\Server\Middleware\ResourceType');
 
 // API routes
 

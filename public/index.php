@@ -137,14 +137,34 @@ $container['projects_filter'] = function () {
         new \Dime\Server\Filter\Search(['name', 'description']),
     ]);
 };
+$container['projects_validator'] = function () {
+    return new \Dime\Server\Validator([
+        'required' => new \Dime\Server\Validator\Required(['alias'])
+    ]);
+};
 $container['services_repository'] = function (ContainerInterface $container) {
     return new \Dime\Server\Repository($container->get('connection'), 'services');
+};
+$container['services_validator'] = function () {
+    return new \Dime\Server\Validator([
+        'required' => new \Dime\Server\Validator\Required(['alias'])
+    ]);
 };
 $container['settings_repository'] = function (ContainerInterface $container) {
     return new \Dime\Server\Repository($container->get('connection'), 'settings');
 };
+$container['services_validator'] = function () {
+    return new \Dime\Server\Validator([
+        'required' => new \Dime\Server\Validator\Required(['name', 'value'])
+    ]);
+};
 $container['tags_repository'] = function (ContainerInterface $container) {
     return new \Dime\Server\Repository($container->get('connection'), 'tags');
+};
+$container['tags_validator'] = function () {
+    return new \Dime\Server\Validator([
+        'required' => new \Dime\Server\Validator\Required(['name'])
+    ]);
 };
 $container['timeslices_repository'] = function (ContainerInterface $container) {
     return new \Dime\Api\Repository\Timeslices($container->get('connection'));
@@ -153,6 +173,11 @@ $container['timeslices_filter'] = function () {
     return new \Dime\Server\Filter([
         new \Dime\Server\Filter\Relation('activity'),
         new \Dime\Server\Filter\Date(['start' => 'started_at', 'end' => 'stopped_at']),
+    ]);
+};
+$container['timeslices_validator'] = function () {
+    return new \Dime\Server\Validator([
+        'required' => new \Dime\Server\Validator\Required(['activity_id', 'duration'])
     ]);
 };
 $container['users_repository'] = function (ContainerInterface $container) {

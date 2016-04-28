@@ -122,6 +122,11 @@ $container['activities_filter'] = function () {
 $container['customers_repository'] = function (ContainerInterface $container) {
     return new \Dime\Server\Repository($container->get('connection'), 'customers');
 };
+$container['customers_validator'] = function () {
+    return new \Dime\Server\Validator([
+        'required' => new \Dime\Server\Validator\Required(['alias'])
+    ]);
+};
 $container['projects_repository'] = function (ContainerInterface $container) {
     return new \Dime\Server\Repository($container->get('connection'), 'projects');
 };
@@ -156,10 +161,6 @@ $container['users_repository'] = function (ContainerInterface $container) {
 
 $container['assignable'] = function (ContainerInterface $container) {
     return new \Dime\Server\Behavior\Assignable($container->get('session')->getUserId());
-};
-
-$container['validator'] = function (ContainerInterface $container) {
-    return new \Dime\Server\Validator();
 };
 
 // App
@@ -311,9 +312,9 @@ $app->group('/api', function () {
 
         // Validate
         if ($this->has($args['resource'] . '_validator')) {
-            $validator = $this->get('validator');
-            if (!$validator->validate($behavedData)) {
-                return $this->get('responder')->respond($response, $validator->getErrors(), 400);
+            $errors = $this->get($args['resource'] . '_validator')->validate($behavedData);
+            if (!empty($errors)) {
+                return $this->get('responder')->respond($response, $errors, 400);
             }
         }
 
@@ -362,9 +363,11 @@ $app->group('/api', function () {
                 ->collect();
 
         // Validate
-        $validator = $this->get('validator');
-        if (!$validator->validate($behavedData)) {
-            return $this->get('responder')->respond($response, $validator->getErrors(), 400);
+        if ($this->has($args['resource'] . '_validator')) {
+            $errors = $this->get($args['resource'] . '_validator')->validate($behavedData);
+            if (!empty($errors)) {
+                return $this->get('responder')->respond($response, $errors, 400);
+            }
         }
 
         try {

@@ -4,8 +4,19 @@ namespace Dime\Server;
 
 class Validator
 {
-    private $errors = [];
     protected $runnables = [];
+
+    public function __construct(array $validators = [])
+    {
+        foreach ($validators as $name => $function) {
+            $callername = null;
+            if (is_string($name)) {
+                $callername = $name;
+            }
+
+            $this->prepare($function, $callername);
+        }
+    }
 
     public function prepare($function, $name = null)
     {
@@ -19,23 +30,21 @@ class Validator
 
         $this->runnables[$name] = $function;
     }
-    
-    public function getErrors()
-    {
-        return $this->errors;
-    }
 
     public function validate($data)
     {
-        $result = true;
         $errors = [];
-        foreach ($this->runnables as $function) {
-            if (!call_user_func($function, $data, $errors)) {
-                $result = false;
-                break;
+        foreach ($this->runnables as $name => $function) {
+            $result = call_user_func($function, $data);
+            if (!empty($result)) {
+                $errors[$name] = $result;
             }
         }
-        $this->errors = $errors;
-        return $result;
+        return $errors;
+    }
+
+    public function __invoke($data)
+    {
+        return $this->validate($data);
     }
 }

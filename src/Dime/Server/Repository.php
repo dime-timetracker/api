@@ -111,7 +111,7 @@ class Repository
                 $this->getMetadata()->filter($this->getName(), $data)->collect()
             );
         } catch (\Exception $e) {
-            throw new RepositoryException('No data', $e->getCode(), $e);
+            throw new \Exception('No data', $e->getCode(), $e);
         }
 
         return $this->getConnection()->lastInsertId();

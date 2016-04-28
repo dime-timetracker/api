@@ -4,16 +4,18 @@ namespace Dime\Server\Behavior;
 
 class Assignable
 {
-    private $userId;
+    private $value;
+    private $assignTo;
     
-    public function __construct($userId)
+    public function __construct($value, $assignTo = 'user_id')
     {
-        $this->userId = intval($userId);
+        $this->value = $value;
+        $this->assignTo = $assignTo;
     }
 
     public function __invoke(array $data = [])
     {        
-        $data['user_id'] = $this->userId;
+        $data[$this->assignTo] = $this->value;
         return $data;
     }
 }

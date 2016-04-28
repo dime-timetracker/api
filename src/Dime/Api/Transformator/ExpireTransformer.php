@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Transformer;
+namespace Dime\Api\Transformer;
 
 class ExpireTransformer
 {

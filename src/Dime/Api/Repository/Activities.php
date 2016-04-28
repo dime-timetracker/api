@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Repository;
+namespace Dime\Api\Repository;
 
 use Dime\Server\Repository;
 use Dime\Server\Relation\OneToMany;

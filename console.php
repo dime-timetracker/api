@@ -15,7 +15,7 @@ $platform->registerDoctrineTypeMapping('enum', 'string');
 
 $configuration = new \Doctrine\DBAL\Migrations\Configuration\Configuration($connection);
 $configuration->setMigrationsNamespace('Dime\Server\Migrations');
-$configuration->setMigrationsDirectory(ROOT_DIR . '/src/Dime/Server/Migrations');
+$configuration->setMigrationsDirectory(ROOT_DIR . '/src/Dime/Api/Migrations');
 $configuration->setMigrationsTableName('migration_versions');
 $helpers = new Symfony\Component\Console\Helper\HelperSet([
     'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($connection),

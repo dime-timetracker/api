@@ -57,11 +57,11 @@ $container['responder'] = function () {
 };
 
 $container['uri'] = function (ContainerInterface $container) {
-    return new \Dime\Server\Uri($container->get('router'), $container->get('environment'));
+    return new \Dime\Api\Uri($container->get('router'), $container->get('environment'));
 };
 
 $container['security'] = function () {
-    return new \Dime\Server\SecurityProvider();
+    return new \Dime\Api\SecurityProvider();
 };
 
 // Middleware
@@ -108,7 +108,7 @@ $container['access_repository'] = function (ContainerInterface $container) {
     return new \Dime\Server\Repository($container->get('connection'), 'access');
 };
 $container['activities_repository'] = function (ContainerInterface $container) {
-    return new \Dime\Server\Repository\Activities($container->get('connection'));
+    return new \Dime\Api\Repository\Activities($container->get('connection'));
 };
 $container['activities_filter'] = function () {
     return new \Dime\Server\Filter([
@@ -142,7 +142,7 @@ $container['tags_repository'] = function (ContainerInterface $container) {
     return new \Dime\Server\Repository($container->get('connection'), 'tags');
 };
 $container['timeslices_repository'] = function (ContainerInterface $container) {
-    return new \Dime\Server\Repository\Timeslices($container->get('connection'));
+    return new \Dime\Api\Repository\Timeslices($container->get('connection'));
 };
 $container['timeslices_filter'] = function () {
     return new \Dime\Server\Filter([
@@ -270,7 +270,7 @@ $app->group('/api', function () {
     $this->get('/{resource}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
         $repository = $this->get($args['resource'] . '_repository');
         $page = $this->get('uri')->getQueryParam($request, 'page', 1);
-        $with = $this->get('uri')->getQueryParam($request, 'with', 0);
+        $with = $this->get('uri')->getQueryParam($request, 'with',  100);
         $by = $this->get('uri')->getQueryParam($request, 'by', []);
 
         $filter = [];

@@ -22,7 +22,7 @@ class Repository
         $this->connection = $connection;
 
         if ($this->connection != null) {
-            $this->metadata = Metadata::with($this->connection->getSchemaManager());
+            $this->metadata = new Metadata($this->connection->getSchemaManager());
         }
 
         if (!empty($table)) {

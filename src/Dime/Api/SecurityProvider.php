@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server;
+namespace Dime\Api;
 
 class SecurityProvider
 {

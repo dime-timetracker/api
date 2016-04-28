@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server;
+namespace Dime\Api;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\RouterInterface;

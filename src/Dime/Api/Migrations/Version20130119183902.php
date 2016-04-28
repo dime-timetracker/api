@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Migrations;
+namespace Dime\Api\Migrations;
 
 use Doctrine\DBAL\Migrations\AbstractMigration,
     Doctrine\DBAL\Schema\Schema;

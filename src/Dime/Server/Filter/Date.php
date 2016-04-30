@@ -32,7 +32,7 @@ class Date implements FilterInterface
         $start = $this->parseDate($dates, 0);
         $end = $this->parseDate($dates, 1);
 
-        return new DateScope($start, $end, $this->map);
+        return new DateScope($start ?: null, $end ?: null, $this->map);
     }
 
     private function parseDate(array $dates, $position)

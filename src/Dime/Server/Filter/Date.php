@@ -41,9 +41,9 @@ class Date implements FilterInterface
             return null;
         }
         
-        $date[$position] = trim($date[$position]);
+        $dates[$position] = trim($dates[$position]);
 
-        if (empty($date)) {
+        if (empty($dates)) {
             return null;
         }
         

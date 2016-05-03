@@ -1,22 +1,16 @@
 <?php
 
-namespace Dime\Server\Filter;
+namespace Dime\Api\Filter;
 
 use DateTime;
-use Dime\Server\Scope\Date as DateScope;
+use Dime\Api\Scope\TimesliceDate as DateScope;
+use Dime\Server\Filter\FilterInterface;
 
-class Date implements FilterInterface
+class TimesliceDate implements FilterInterface
 {
 
     const NAME = 'date';
     const FORMAT = 'Y-m-d';
-
-    private $map;
-
-    public function __construct(array $map = ['start' => 'updated_at', 'end' => 'updated_at'])
-    {
-        $this->map = $map;
-    }
 
     public function name()
     {
@@ -30,23 +24,36 @@ class Date implements FilterInterface
         // TODO Parsing of [], (], () ...
 
         $start = $this->parseDate($dates, 0);
-        $end = $this->parseDate($dates, 1);
+        if ($start != null) {
+            $start = $start->setTime(0, 0, 0);
+        }
 
-        return new DateScope($start ?: null, $end ?: null, $this->map);
+        $end = $this->parseDate($dates, 1);
+        if ($end != null) {
+            $end = $end->setTime(23, 59, 59);
+        }
+
+        return new DateScope($start ?: null, $end ?: null);
     }
 
+    /**
+     * Parse date
+     * @param array $dates
+     * @param int $position
+     * @return DateTime
+     */
     private function parseDate(array $dates, $position)
     {
         if (!isset($dates[$position])) {
             return null;
         }
-        
+
         $dates[$position] = trim($dates[$position]);
 
         if (empty($dates)) {
             return null;
         }
-        
+
         return DateTime::createFromFormat(self::FORMAT, $dates[$position]);
     }
 

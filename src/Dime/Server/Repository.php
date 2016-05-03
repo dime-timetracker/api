@@ -4,6 +4,7 @@ namespace Dime\Server;
 
 use Dime\Server\Metadata;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Query\QueryBuilder;
 
 class Repository
 {
@@ -67,35 +68,22 @@ class Repository
 
     /**
      * Find one entity.
-     * @param array $with array with callables getting QueryBuilder as parameter.
+     * @param array $scopes array with callables getting QueryBuilder as parameter.
      * @return array
      */
-    public function find(array $with = [])
+    public function find(array $scopes = [])
     {
-        $qb = $this->getConnection()->createQueryBuilder()->select('*')->from($this->getName());
-
-        foreach ($with as $action) {
-            $qb = call_user_func($action, $qb);
-        }
-
-        return $qb->execute()->fetch();
+        return $this->scopedQuery($scopes)->execute()->fetch();
     }
 
     /**
      * Find all entities.
-     * @param array $with array with callables getting QueryBuilder as parameter.
+     * @param array $scopes array with callables getting QueryBuilder as parameter.
      * @return array
      */
-    public function findAll(array $with = [])
+    public function findAll(array $scopes = [])
     {
-        $qb = $this->getConnection()->createQueryBuilder()->select('*')->from($this->getName());
-
-
-        foreach ($with as $action) {
-            $qb = call_user_func($action, $qb);
-        }
-
-        return $qb->execute()->fetchAll();
+        return $this->scopedQuery($scopes)->execute()->fetchAll();
     }
 
     /**
@@ -146,9 +134,32 @@ class Repository
      * Count all entities.
      * @return int
      */
-    public function count()
+    public function count(array $scopes = [])
     {
-        $qb = $this->getConnection()->createQueryBuilder()->select('count(*)')->from($this->getName());
-        return $qb->execute()->fetchColumn();
+        return $this->scopedQuery($scopes)->select('count(*)')->execute()->fetchColumn();
+    }
+
+    /**
+     * Create a scope query builder.
+     *
+     * @param array $scopes
+     * @param QueryBuilder $qb
+     * @return QueryBuilder
+     */
+    protected function scopedQuery(array $scopes = [], QueryBuilder $qb = null)
+    {
+        if ($qb == null) {
+            $qb = $this
+                ->getConnection()
+                ->createQueryBuilder()
+                ->from($this->getName())
+                ->select('*');
+        }
+
+        foreach ($scopes as $action) {
+            $qb = call_user_func($action, $qb);
+        }
+
+        return $qb;
     }
 }

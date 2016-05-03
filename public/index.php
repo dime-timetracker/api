@@ -12,6 +12,7 @@ require_once ROOT_DIR . '/vendor/autoload.php';
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Slim\Exception\NotFoundException;
 
 // Configuration
 
@@ -86,7 +87,13 @@ $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterfac
                 new \Dime\Server\Scope\With(['user_id' => $value['id']])
             ]);
             return \Dime\Server\Stream::of($accessData)
-                    ->map(new \Dime\Server\Transformer\ExpireTransformer())
+                    ->map(function (array $value, $key) {
+                        $value['expires'] = $value['updated_at'];
+                        unset($value['created_at']);
+                        unset($value['updated_at']);
+
+                        return $value;
+                    })
                     ->collect();
         })
         ->collect();
@@ -115,7 +122,7 @@ $container['activities_filter'] = function () {
         new \Dime\Server\Filter\Relation('customer'),
         new \Dime\Server\Filter\Relation('project'),
         new \Dime\Server\Filter\Relation('service'),
-        new \Dime\Server\Filter\Date(),
+        new \Dime\Api\Filter\TimesliceDate(),
         new \Dime\Server\Filter\Search(),
     ]);
 };
@@ -235,7 +242,7 @@ $app->post('/logout', function (ServerRequestInterface $request, ResponseInterfa
     $client = $request->getAttribute('client');
 
     if (empty($username) || empty($client)) {
-        throw new NotFoundException();
+        throw new NotFoundException($request, $response);
     }
 
     $user = $this->get('users_repository')->find(
@@ -258,7 +265,7 @@ $app->get('/apidoc[/{resource}]', function (ServerRequestInterface $request, Res
         if (!$metadata->hasResource($args['resource'])) {
             throw new NotFoundException($request, $response);
         }
-        
+
         $result = \Dime\Server\Stream::of($metadata->resource($args['resource'])->getColumns())->map(function ($value, $key) {
             return $value->getType()->getName();
         })->collect();
@@ -304,13 +311,19 @@ $app->group('/api', function () {
             $filter = $this->get($args['resource'] . '_filter')->build($by);
         }
 
-        $result = $repository->findAll(array_merge($filter, [
+        $scopes = array_merge($filter, [
             new \Dime\Server\Scope\With(['user_id' => $this->get('session')->getUserId()]),
             new \Dime\Server\Scope\Pagination($page, $with)
-        ]));
+        ]);
+
+        try {
+            $result = $repository->findAll($scopes);
+        } catch (\Exception $ex) {
+            throw new NotFoundException($request, $response);
+        }
 
         // add header X-Dime-Total and Link
-        $total = $repository->count();
+        $total = $repository->count($scopes);
         $link = $this->get('uri')->buildLinkHeader($request, $total, $page, $with);
 
         return $this->get('responder')->respond(

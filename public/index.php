@@ -137,13 +137,6 @@ $container['customers_validator'] = function () {
 $container['projects_repository'] = function (ContainerInterface $container) {
     return new \Dime\Server\Repository($container->get('connection'), 'projects');
 };
-$container['projects_filter'] = function () {
-    return new \Dime\Server\Filter([
-        new \Dime\Server\Filter\Relation('customer'),
-        new \Dime\Server\Filter\Date(),
-        new \Dime\Server\Filter\Search(['name', 'description']),
-    ]);
-};
 $container['projects_validator'] = function () {
     return new \Dime\Server\Validator([
         'required' => new \Dime\Server\Validator\Required(['alias'])
@@ -175,12 +168,6 @@ $container['tags_validator'] = function () {
 };
 $container['timeslices_repository'] = function (ContainerInterface $container) {
     return new \Dime\Api\Repository\Timeslices($container->get('connection'));
-};
-$container['timeslices_filter'] = function () {
-    return new \Dime\Server\Filter([
-        new \Dime\Server\Filter\Relation('activity'),
-        new \Dime\Server\Filter\Date(['start' => 'started_at', 'end' => 'stopped_at']),
-    ]);
 };
 $container['timeslices_validator'] = function () {
     return new \Dime\Server\Validator([

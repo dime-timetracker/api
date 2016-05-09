@@ -4,7 +4,7 @@ namespace Dime\Api\Scope;
 
 use PDO;
 use DateTime;
-use Dime\Server\Scope\In;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 
 class TimesliceDate
@@ -38,13 +38,9 @@ class TimesliceDate
         }
 
         $activityIds = $qbTimeslice->execute()->fetchAll(PDO::FETCH_COLUMN);
-        if (!empty($activityIds)) {
-            $inScope = new In('id', $activityIds);
-            $qb = $inScope($qb);
-        } else {
-            throw new \Exception('No data');
-        }
 
-        return $qb;
+        return $qb
+                ->andWhere('id IN (:id_list)')
+                ->setParameter('id_list', $activityIds, Connection::PARAM_INT_ARRAY);
     }
 }

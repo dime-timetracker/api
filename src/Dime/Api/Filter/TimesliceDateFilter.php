@@ -3,10 +3,10 @@
 namespace Dime\Api\Filter;
 
 use DateTime;
-use Dime\Api\Scope\TimesliceDate as DateScope;
+use Dime\Api\Scope\TimesliceDateScope;
 use Dime\Server\Filter\FilterInterface;
 
-class TimesliceDate implements FilterInterface
+class TimesliceDateFilter implements FilterInterface
 {
 
     const NAME = 'date';
@@ -21,8 +21,6 @@ class TimesliceDate implements FilterInterface
     {
         $dates = explode(';', $value);
 
-        // TODO Parsing of [], (], () ...
-
         $start = $this->parseDate($dates, 0);
         if ($start != null) {
             $start = $start->setTime(0, 0, 0);
@@ -33,7 +31,7 @@ class TimesliceDate implements FilterInterface
             $end = $end->setTime(23, 59, 59);
         }
 
-        return new DateScope($start ?: null, $end ?: null);
+        return new TimesliceDateScope($start ?: null, $end ?: null);
     }
 
     /**

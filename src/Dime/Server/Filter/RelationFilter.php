@@ -2,7 +2,9 @@
 
 namespace Dime\Server\Filter;
 
-class Relation implements FilterInterface
+use Dime\Server\Scope\WithScope;
+
+class RelationFilter implements FilterInterface
 {
     private $name;
     private $mappedTo;
@@ -23,7 +25,11 @@ class Relation implements FilterInterface
 
     public function __invoke($value)
     {
-       // TODO Sanetize or Arrayize
-       return new \Dime\Server\Scope\With([ $this->mappedTo => $value ]);
+        $value = explode(';', filter_var($value, FILTER_SANITIZE_STRING));
+        if (count($value) === 1) {
+            $value = $value[0];
+        }
+
+        return new WithScope([ $this->mappedTo => $value ]);
     }
 }

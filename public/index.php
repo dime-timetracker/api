@@ -75,7 +75,7 @@ $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterfac
     $accessRepository = $container->get('access_repository');
 
     $users = $container->get('users_repository')->findAll([
-        new \Dime\Server\Scope\With(['enabled' => true])
+        new \Dime\Server\Scope\WithScope(['enabled' => true])
     ]);
 
     $access = \Dime\Server\Stream::of($users)
@@ -84,7 +84,7 @@ $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterfac
         })
         ->map(function ($value, $key) use ($accessRepository) {
             $accessData = $accessRepository->findAll([
-                new \Dime\Server\Scope\With(['user_id' => $value['id']])
+                new \Dime\Server\Scope\WithScope(['user_id' => $value['id']])
             ]);
             return \Dime\Server\Stream::of($accessData)
                     ->map(function (array $value, $key) {
@@ -119,11 +119,12 @@ $container['activities_repository'] = function (ContainerInterface $container) {
 };
 $container['activities_filter'] = function () {
     return new \Dime\Server\Filter([
-        new \Dime\Server\Filter\Relation('customer'),
-        new \Dime\Server\Filter\Relation('project'),
-        new \Dime\Server\Filter\Relation('service'),
-        new \Dime\Api\Filter\TimesliceDate(),
-        new \Dime\Server\Filter\Search(),
+        new \Dime\Server\Filter\RelationFilter('customer'),
+        new \Dime\Server\Filter\RelationFilter('project'),
+        new \Dime\Server\Filter\RelationFilter('service'),
+        new \Dime\Api\Filter\TimesliceDateFilter(),
+        new \Dime\Api\Filter\TagFilter(),
+        new \Dime\Server\Filter\SearchFilter(),
     ]);
 };
 $container['customers_repository'] = function (ContainerInterface $container) {
@@ -233,7 +234,7 @@ $app->post('/logout', function (ServerRequestInterface $request, ResponseInterfa
     }
 
     $user = $this->get('users_repository')->find(
-        new \Dime\Server\Scope\With([ 'username' => $username ])
+        new \Dime\Server\Scope\WithScope([ 'username' => $username ])
     );
     if (!empty($user)) {
         $this->get('access_repository')->delete([
@@ -271,13 +272,13 @@ $app->group('/api', function () {
     $this->get('/{resource}/{id:\d+}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
         $repository = $this->get($args['resource'] . '_repository');
         $identifier = [
-            'id' => filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT),
+            'id' => $args['id'],
             'user_id' => $this->get('session')->getUserId()
         ];
 
         // Select
         $result = $repository->find([
-            new \Dime\Server\Scope\With($identifier),
+            new \Dime\Server\Scope\WithScope($identifier),
         ]);
 
         if ($result === FALSE) {
@@ -299,8 +300,8 @@ $app->group('/api', function () {
         }
 
         $scopes = array_merge($filter, [
-            new \Dime\Server\Scope\With(['user_id' => $this->get('session')->getUserId()]),
-            new \Dime\Server\Scope\Pagination($page, $with)
+            new \Dime\Server\Scope\WithScope(['user_id' => $this->get('session')->getUserId()]),
+            new \Dime\Server\Scope\PaginationScope($page, $with)
         ]);
 
         try {
@@ -355,7 +356,7 @@ $app->group('/api', function () {
         ];
 
         $result = $repository->find([
-            new \Dime\Server\Scope\With($identity)
+            new \Dime\Server\Scope\WithScope($identity)
         ]);
 
         return $this->get('responder')->respond($response, $result);
@@ -365,12 +366,12 @@ $app->group('/api', function () {
     $this->put('/{resource}/{id:\d+}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
         $repository = $this->get($args['resource'] . '_repository');
         $identifier = [
-            'id' => filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT),
+            'id' => $args['id'],
             'user_id' => $this->get('session')->getUserId()
         ];
 
         $result = $repository->find([
-            new \Dime\Server\Scope\With($identifier)
+            new \Dime\Server\Scope\WithScope($identifier)
         ]);
         if ($result === FALSE) {
             throw new NotFoundException($request, $response);
@@ -402,7 +403,7 @@ $app->group('/api', function () {
         }
 
         $result = $repository->find([
-            new \Dime\Server\Scope\With($identifier)
+            new \Dime\Server\Scope\WithScope($identifier)
         ]);
 
         return $this->get('responder')->respond($response, $result);
@@ -412,13 +413,13 @@ $app->group('/api', function () {
     $this->delete('/{resource}/{id:\d+}', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
         $repository = $this->get($args['resource'] . '_repository');
         $identifier = [
-            'id' => filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT),
+            'id' => $args['id'],
             'user_id' => $this->get('session')->getUserId()
         ];
 
         // Select
         $result = $repository->find([
-            new \Dime\Server\Scope\With($identifier)
+            new \Dime\Server\Scope\WithScope($identifier)
         ]);
         if ($result === FALSE) {
             throw new NotFoundException($request, $response);

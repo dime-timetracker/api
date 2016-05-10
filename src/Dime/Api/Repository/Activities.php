@@ -6,7 +6,7 @@ use Dime\Server\Repository;
 use Dime\Server\Relation\OneToMany;
 use Dime\Server\Relation\OneToManyFlatten;
 use Dime\Server\Stream;
-use Dime\Server\Scope\OrderBy;
+use Dime\Server\Scope\OrderByScope;
 
 class Activities extends Repository
 {
@@ -37,7 +37,7 @@ class Activities extends Repository
 
     public function findAll(array $with = [])
     {
-        $with[] = new OrderBy(['updated_at' => 'DESC']);
+        $with[] = new OrderByScope(['updated_at' => 'DESC']);
 
         $activities = parent::findAll($with);
 

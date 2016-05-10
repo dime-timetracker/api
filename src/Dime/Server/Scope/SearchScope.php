@@ -4,7 +4,7 @@ namespace Dime\Server\Scope;
 
 use Doctrine\DBAL\Query\QueryBuilder;
 
-class Search
+class SearchScope
 {
     private $text;
     private $map;
@@ -19,7 +19,7 @@ class Search
     {
         foreach ($this->map as $key) {
             $qb->andWhere(
-                $qb->expr()->like($key, ':' . $key . '_like')
+                $qb->expr()->like('LOWER(' . $key . ')', ':' . $key . '_like')
             )->setParameter($key . '_like', $this->text);
         }
         return $qb;

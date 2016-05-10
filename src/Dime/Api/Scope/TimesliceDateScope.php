@@ -7,7 +7,7 @@ use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 
-class TimesliceDate
+class TimesliceDateScope
 {
     const TABLE = 'timeslices';
 

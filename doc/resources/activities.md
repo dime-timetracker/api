@@ -62,6 +62,12 @@ The search filter do a like on description field.
   ```
   by[search]=foo*
   ```
+  ```
+  by[search]=*foo*
+  ```
+  ```
+  by[search]=fo*o*
+  ```
 
 ## Filter - by[{relation}]
 

@@ -5,7 +5,7 @@ namespace Dime\Api\Repository;
 use Dime\Server\Relation\OneToManyFlatten;
 use Dime\Server\Repository;
 use Dime\Server\Stream;
-use Dime\Server\Scope\OrderBy;
+use Dime\Server\Scope\OrderByScope;
 
 class Timeslices extends Repository
 {
@@ -34,7 +34,7 @@ class Timeslices extends Repository
 
     public function findAll(array $with = [])
     {
-        $with[] = new OrderBy(['started_at' => 'DESC']);
+        $with[] = new OrderByScope(['started_at' => 'DESC']);
 
         $timeslices = parent::findAll($with);
 

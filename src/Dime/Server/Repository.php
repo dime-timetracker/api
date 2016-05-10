@@ -50,6 +50,15 @@ class Repository
     }
 
     /**
+     * The alias are the first three letters of tablename. Example user -> use
+     * @return string
+     */
+    public function getAlias()
+    {
+        return substr($this->table, 0, 3);
+    }
+
+    /**
      * @return string name of resource
      */
     public function getName()
@@ -152,7 +161,7 @@ class Repository
             $qb = $this
                 ->getConnection()
                 ->createQueryBuilder()
-                ->from($this->getName())
+                ->from($this->getName(), $this->getAlias())
                 ->select('*');
         }
 

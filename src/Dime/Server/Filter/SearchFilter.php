@@ -2,9 +2,9 @@
 
 namespace Dime\Server\Filter;
 
-use Dime\Server\Scope\Search as SearchScope;
+use Dime\Server\Scope\SearchScope;
 
-class Search implements FilterInterface
+class SearchFilter implements FilterInterface
 {
     const NAME = 'search';
 
@@ -22,6 +22,7 @@ class Search implements FilterInterface
 
     public function __invoke($value)
     {
-        return new SearchScope(filter_var($value, FILTER_SANITIZE_STRING), $this->map);
+        $value = preg_replace('/\*+/', '%', filter_var($value, FILTER_SANITIZE_STRING));
+        return new SearchScope($value, $this->map);
     }
 }

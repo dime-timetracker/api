@@ -5,7 +5,7 @@ namespace Dime\Server\Scope;
 use DateTime;
 use Doctrine\DBAL\Query\QueryBuilder;
 
-class Date
+class DateScope
 {
     private $start;
     private $end;

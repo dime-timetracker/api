@@ -11,7 +11,10 @@
     "autoload": {
         "psr-0": {
             "": "src/"
-        }
+        },
+        "files": [
+            "src/Dime/Server/Functional.php"
+        ]
     },
     "require": {
         "php": "^5.6|^7.0",

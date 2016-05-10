@@ -4,7 +4,7 @@ namespace Dime\Server\Scope;
 
 use Doctrine\DBAL\Query\QueryBuilder;
 
-class OrderBy
+class OrderByScope
 {
 
     private $order;

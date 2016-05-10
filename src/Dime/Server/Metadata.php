@@ -15,26 +15,35 @@ class Metadata
         $this->schemaManager = $schemaManager;
     }
 
+    /**
+     * List of all table resources.
+     * @return array
+     */
     public function resources()
     {
         return $this->schemaManager->listTableNames();
     }
-    
+
+    /**
+     * Resource table definition.
+     * @param string $name
+     * @return \Doctrine\DBAL\Schema\Table
+     */
     public function resource($name)
     {
         return $this->schemaManager->listTableDetails($name);
     }
 
+    /**
+     * Check if the resource table exists.
+     * @param string $name
+     * @return boolean
+     */
     public function hasResource($name)
     {
         return $this->schemaManager->tablesExist($name);
     }
-    
-    public function getPrimaryKey($name)
-    {
-        return $this->schemaManager->listTableDetails($name)->getPrimaryKey();
-    }
-    
+      
     /**
      * Iterate thrue data array and filter non existing columns.
      * 

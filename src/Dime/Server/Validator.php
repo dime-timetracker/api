@@ -18,6 +18,12 @@ class Validator
         }
     }
 
+    /**
+     * Prepare validator with callables to run validate() later.
+     * @param callable $function
+     * @param string $name if null the callableName will be used.
+     * @throws Exception
+     */
     public function prepare($function, $name = null)
     {
         if (!is_callable($function, true, $callableName)) {
@@ -31,6 +37,11 @@ class Validator
         $this->runnables[$name] = $function;
     }
 
+    /**
+     * Validate data with prepared callables.
+     * @param mixed $data
+     * @return array with errors.
+     */
     public function validate($data)
     {
         $errors = [];

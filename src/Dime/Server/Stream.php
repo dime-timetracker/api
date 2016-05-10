@@ -16,11 +16,20 @@ class Stream
         $this->data = $data;
     }
 
+    /**
+     * @param mixed $data array or Traversable
+     * @return \self
+     */
     public static function of($data)
     {
         return new self($data);
     }
 
+    /**
+     * Check if the data can be a stream.
+     * @param \Traversable $data
+     * @return boolean
+     */
     public static function can($data)
     {
         return is_array($data) || ($data instanceof \Traversable);
@@ -48,6 +57,10 @@ class Stream
         return $this;
     }
 
+    /**
+     * Check if stream data is empty.
+     * @return boolean
+     */
     public function isEmpty()
     {
         return emtpy($this->data);

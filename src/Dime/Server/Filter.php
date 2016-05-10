@@ -23,5 +23,8 @@ class Filter
         return $result;
     }
 
-
+    public function __invoke(array $data)
+    {
+        return $this->build($data);
+    }
 }

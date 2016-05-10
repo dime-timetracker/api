@@ -15,8 +15,8 @@ class InstallCommand extends Command
     protected function configure()
     {
         $this
-                ->setName('dime:install')
-                ->setDescription('Install this dime timetracker instance');
+            ->setName('dime:install')
+            ->setDescription('Install this dime timetracker api provider.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

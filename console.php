@@ -7,6 +7,8 @@ $loader = require_once ROOT_DIR . '/vendor/autoload.php';
 $configuration = [];
 if (file_exists(ROOT_DIR . '/config/parameters.php')) {
     $configuration = require_once ROOT_DIR . '/config/parameters.php';
+} else {
+    die('Please, create copy "parameters.php.dist" to "parameters.php" in config folder!');
 }
 
 $connection = \Doctrine\DBAL\DriverManager::getConnection($configuration['database'], new \Doctrine\DBAL\Configuration());

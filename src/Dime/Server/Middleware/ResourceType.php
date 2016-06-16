@@ -20,7 +20,7 @@ class ResourceType
     {
         $resource = $request->getAttribute('route')->getArgument('resource');
 
-        if (!empty($resource) && !in_array($resource, $this->resources, true)) {
+        if (!empty($this->resources) && !empty($resource) && !in_array($resource, $this->resources, true)) {
             throw new NotFoundException($request, $response);
         }
 

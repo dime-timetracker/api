@@ -13,6 +13,7 @@ use Interop\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\NotFoundException;
+use Slim\Exception\SlimException;
 
 // Configuration
 
@@ -58,7 +59,7 @@ $container['responder'] = function () {
 };
 
 $container['uri'] = function (ContainerInterface $container) {
-    return new \Dime\Api\Uri($container->get('router'), $container->get('environment'));
+    return new \Dime\Server\Uri($container->get('router'), $container->get('environment'));
 };
 
 $container['security'] = function () {
@@ -67,7 +68,7 @@ $container['security'] = function () {
 
 // Middleware
 
-$container['Dime\Server\Middleware\Authorization'] = function (ContainerInterface $container) {
+$container['middleware.authorization'] = function (ContainerInterface $container) {
     if (!$container->get('settings')['enableSecurity']) {
         return new \Dime\Server\Middleware\Pass();
     }
@@ -105,7 +106,7 @@ $container['Dime\Server\Middleware\Authorization'] = function (ContainerInterfac
     );
 };
 
-$container['Dime\Server\Middleware\ResourceType'] = function (ContainerInterface $container) {
+$container['middleware.resource'] = function (ContainerInterface $container) {
     return new \Dime\Server\Middleware\ResourceType($container->get('settings')['allowedResources']);
 };
 
@@ -154,7 +155,7 @@ $container['services_validator'] = function () {
 $container['settings_repository'] = function (ContainerInterface $container) {
     return new \Dime\Server\Repository($container->get('connection'), 'settings');
 };
-$container['services_validator'] = function () {
+$container['settings_validator'] = function () {
     return new \Dime\Server\Validator([
         'required' => new \Dime\Server\Validator\Required(['name', 'value'])
     ]);
@@ -244,7 +245,7 @@ $app->post('/logout', function (ServerRequestInterface $request, ResponseInterfa
     }
 
     return $response;
-})->add('Dime\Server\Middleware\Authorization');
+})->add('middleware.authorization');
 
 $app->get('/apidoc[/{resource}]', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
     $metadata = $this->get('metadata');
@@ -262,8 +263,8 @@ $app->get('/apidoc[/{resource}]', function (ServerRequestInterface $request, Res
     }
 
     return $this->get('responder')->respond($response, $result);
-})->add('Dime\Server\Middleware\Authorization')
-  ->add('Dime\Server\Middleware\ResourceType');
+})->add('middleware.authorization')
+  ->add('middleware.resource');
 
 // API routes
 
@@ -307,7 +308,10 @@ $app->group('/api', function () {
         try {
             $result = $repository->findAll($scopes);
         } catch (\Exception $ex) {
-            throw new NotFoundException($request, $response);
+            if ($this->get('settings')['displayErrorDetails']) {
+                $response->getBody()->write($ex->getMessage());
+            }
+            throw new SlimException($request, $response->withStatus(500));
         }
 
         // add header X-Dime-Total and Link
@@ -431,8 +435,8 @@ $app->group('/api', function () {
         return $this->get('responder')->respond($response, $result);
     });
 
-})->add('Dime\Server\Middleware\Authorization')
-  ->add('Dime\Server\Middleware\ResourceType');
+})->add('middleware.authorization')
+  ->add('middleware.resource');
 
 
 $app->run();

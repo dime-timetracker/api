@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'displayErrorDetails' => false,
+    'enableSecurity' => true,
     'database' => [
         'driver' => 'pdo_mysql',
         'dbname' => 'Dime',

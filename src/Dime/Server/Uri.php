@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Api;
+namespace Dime\Server;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\RouterInterface;
@@ -83,7 +83,7 @@ class Uri
                 $queryParameter
             ));
         }
-        
+
         return $link;
     }
 

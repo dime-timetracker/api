@@ -55,7 +55,7 @@ class Repository
      */
     public function getAlias()
     {
-        return substr($this->table, 0, 3);
+        return substr($this->table, 0, 4);
     }
 
     /**
@@ -73,6 +73,8 @@ class Repository
     public function setName($name)
     {
         $this->table = $name;
+
+        return $this;
     }
 
     /**

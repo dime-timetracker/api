@@ -168,7 +168,9 @@ class Repository
         }
 
         foreach ($scopes as $action) {
-            $qb = call_user_func($action, $qb);
+            if (is_callable($action, true)) {
+                $qb = call_user_func($action, $qb);
+            }
         }
 
         return $qb;

@@ -22,3 +22,21 @@ function abs($value)
     }
     return $value;
 }
+
+function coalesce(array $values = [])
+{
+    $result = NULL;
+    foreach ($values as $value) {
+        if ($value === NULL) {
+            continue;
+        }
+
+        if (is_string($value) && $value === '') {
+            continue;
+        }
+
+        $result = $value;
+        break;
+    }
+    return $result;
+}

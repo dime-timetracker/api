@@ -111,6 +111,10 @@ $container['middleware.resource'] = function (ContainerInterface $container) {
 };
 
 // Repositories
+//
+$container['access_repository'] = function (ContainerInterface $container) {
+    return new \Dime\Server\Repository($container->get('connection'), 'access');
+};
 
 $container['access_repository'] = function (ContainerInterface $container) {
     return new \Dime\Server\Repository($container->get('connection'), 'access');
@@ -173,7 +177,7 @@ $container['timeslices_repository'] = function (ContainerInterface $container) {
 };
 $container['timeslices_validator'] = function () {
     return new \Dime\Server\Validator([
-        'required' => new \Dime\Server\Validator\Required(['activity_id', 'duration'])
+        'required' => new \Dime\Server\Validator\Required(['activity_id'])
     ]);
 };
 $container['users_repository'] = function (ContainerInterface $container) {
@@ -331,7 +335,7 @@ $app->group('/api', function () {
 
         $parsedData = $request->getParsedBody();
         if (empty($parsedData)) {
-            throw new \Exception("No data");
+            throw new \Exception("No data recieved.");
         }
 
         // Tranform and behave
@@ -351,7 +355,7 @@ $app->group('/api', function () {
         try {
             $id = $repository->insert($behavedData);
         } catch (\Exception $e) {
-            throw new \Exception("No data");
+            throw new \Exception("No data", $e->getCode(), $e);
         }
 
         $identity = [

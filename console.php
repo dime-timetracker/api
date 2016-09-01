@@ -16,7 +16,7 @@ $platform = $connection->getDatabasePlatform();
 $platform->registerDoctrineTypeMapping('enum', 'string');
 
 $configuration = new \Doctrine\DBAL\Migrations\Configuration\Configuration($connection);
-$configuration->setMigrationsNamespace('Dime\Server\Migrations');
+$configuration->setMigrationsNamespace('Dime\Api\Migrations');
 $configuration->setMigrationsDirectory(ROOT_DIR . '/src/Dime/Api/Migrations');
 $configuration->setMigrationsTableName('migration_versions');
 $helpers = new Symfony\Component\Console\Helper\HelperSet([
@@ -29,6 +29,6 @@ $cli = new \Symfony\Component\Console\Application('Dime Timetracker');
 $cli->setCatchExceptions(true);
 $cli->setHelperSet($helpers);
 $cli->addCommands([
-    new Dime\Server\Command\InstallCommand()
+    new Dime\Api\Command\InstallCommand()
 ]);
 $cli->run();

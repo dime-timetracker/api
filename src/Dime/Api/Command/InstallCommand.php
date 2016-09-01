@@ -1,6 +1,6 @@
 <?php
 
-namespace Dime\Server\Command;
+namespace Dime\Api\Command;
 
 use Doctrine\DBAL\Migrations\Tools\Console\Command\MigrateCommand;
 

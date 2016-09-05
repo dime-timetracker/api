@@ -439,6 +439,14 @@ $app->group('/api', function () {
         return $this->get('responder')->respond($response, $result);
     });
 
+    $this->post('/invoice/html', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+        $parsedData = $request->getParsedBody();
+        $renderer = new \Dime\InvoiceRenderer\Renderer();
+        $html = $renderer->setTemplate(ROOT_DIR . '/vendor/dime-timetracker/invoice-renderer/templates/default.twig')->html($parsedData);
+        $body = $response->getBody();
+        $body->write($html);
+    });
+
 })->add('middleware.authorization')
   ->add('middleware.resource');
 

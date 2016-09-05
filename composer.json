@@ -16,9 +16,13 @@
             "src/Dime/Server/Functional.php"
         ]
     },
+    "repositories": [
+        { "type": "vcs", "url": "git@github.com:dime-timetracker/invoice-renderer.git"}
+    ],
     "require": {
         "php": "^5.6|^7.0",
         "slim/slim": "^3.3",
+        "dime-timetracker/invoice-renderer": "^1.0",
         "doctrine/dbal": "^2.5",
         "doctrine/migrations": "^1.4"
     },

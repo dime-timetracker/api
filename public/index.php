@@ -255,6 +255,42 @@ $app->post('/logout', function (ServerRequestInterface $request, ResponseInterfa
     return $response;
 })->add('middleware.authorization');
 
+$app->post('/register', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+    $parsedData = $request->getParsedBody();
+
+    if (empty($parsedData['username'])) {
+        throw new \Exception('No data');
+    }
+
+    $repository = $this->get('users_repository');
+    $user = $repository->find([
+        new \Dime\Server\Scope\WithScope([ 'username' => $parsedData['username'] ])
+    ]);
+    if (!empty($user)) {
+        throw new \Exception('Username is already in use.');
+    }
+    $userData = [
+        'username'  => $parsedData['username'],
+        'email'     => $parsedData['email'],
+        'firstname' => $parsedData['firstname'],
+        'lastname'  => $parsedData['lastname'],
+        'enabled'   => true
+    ];
+    $this->get('security')->addUserCredentials(
+        $userData,
+        $parsedData['password'],
+        $this->get('timeslices_repository')->count() // some unknown number
+    );
+    $user = \Dime\Server\Stream::of($userData)
+        ->append(new \Dime\Server\Behavior\Timestampable())
+        ->collect();
+
+    $repository->insert($user);
+
+    return $response;
+});
+
+
 $app->get('/apidoc[/{resource}]', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
     $metadata = $this->get('metadata');
 

@@ -13,12 +13,12 @@ class SecurityProvider
     {
         return !empty($user)
             && $this->check(
-                $password, 
+                $password,
                 $user['password'],
                 [ 'salt' => $user['salt'] ]
             );
     }
-    
+
     public function createToken($username, $client)
     {
         return $this->make(uniqid($username . $client . microtime(), true));
@@ -28,7 +28,7 @@ class SecurityProvider
     {
         return date('Y-m-d H:i:s', strtotime($this->expires, strtotime($from)));
     }
-    
+
     public function getAlgorithm()
     {
         return $this->algorithm;
@@ -51,6 +51,12 @@ class SecurityProvider
         return $this;
     }
 
+    public function addUserCredentials(&$user, $password, $randomString)
+    {
+        $user['salt'] = $this->createToken($user['username'], $randomString);
+        $user['password'] = $this->make($password, [ 'salt' => $user['salt'] ]);
+    }
+
     protected function make($value, array $options = array())
     {
         if (array_key_exists('salt', $options)) {
@@ -69,7 +75,7 @@ class SecurityProvider
     {
         return $this->make($value, $options) === $hashedValue;
     }
-    
+
     protected function mergePasswordAndSalt($password, $salt)
     {
         if (empty($salt)) {

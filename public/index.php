@@ -197,14 +197,18 @@ $app = new \Slim\App($container);
 $app->post('/login', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
     $login = $request->getParsedBody();
 
-    $user = $this->get('users_repository')->find(['username' => $login['username']]);
+    $user = $this->get('users_repository')->find([
+        new \Dime\Server\Scope\WithScope([ 'username' => $username ])
+    ]);
     if (!$this->get('security')->authenticate($user, $login['password'])) {
         return $this->get('responder')->respond($response, ['message' => 'Bad password.'], 401);
     }
 
     $identifier = [ 'user_id' => $user['id'], 'client' => $login['client'] ];
 
-    $access = $this->get('access_repository')->find($identifier);
+    $access = $this->get('access_repository')->find([
+        new \Dime\Server\Scope\WithScope($identifier)
+    ]);
     if (empty($access)) {
         $access = $identifier;
         $access['token'] = $this->get('security')->createToken($user['id'], $login['client']);

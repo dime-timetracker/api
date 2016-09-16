@@ -198,7 +198,7 @@ $app->post('/login', function (ServerRequestInterface $request, ResponseInterfac
     $login = $request->getParsedBody();
 
     $user = $this->get('users_repository')->find([
-        new \Dime\Server\Scope\WithScope([ 'username' => $username ])
+        new \Dime\Server\Scope\WithScope([ 'username' => $login['username']])
     ]);
     if (!$this->get('security')->authenticate($user, $login['password'])) {
         return $this->get('responder')->respond($response, ['message' => 'Bad password.'], 401);

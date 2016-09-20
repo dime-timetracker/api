@@ -28,7 +28,7 @@ class Version20121031191344 extends AbstractMigration
         $customers = $schema->createTable('customers');
         $customers->addColumn('id', 'integer', [ 'autoincrement' => true ]);
         $customers->addColumn('user_id', 'integer');
-        $customers->addColumn('name', 'string', [ 'length' => 255 ]);
+        $customers->addColumn('name', 'string', [ 'length' => 255, 'notnull' => false ]);
         $customers->addColumn('alias', 'string', [ 'length' => 30 ]);
         $customers->addColumn('created_at', 'datetime');
         $customers->addColumn('updated_at', 'datetime');

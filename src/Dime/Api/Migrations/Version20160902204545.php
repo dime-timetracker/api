@@ -10,7 +10,7 @@ class Version20160902204545 extends AbstractMigration
     public function up(Schema $schema)
     {
         $customers = $schema->getTable('customers');
-        $customers->addColumn('address', 'string', [ 'length' => 1000, 'default' => null ]);
+        $customers->addColumn('address', 'string', [ 'length' => 1000, 'notnull' => false ]);
     }
 
     public function down(Schema $schema)

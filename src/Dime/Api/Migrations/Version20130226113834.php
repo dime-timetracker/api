@@ -16,7 +16,7 @@ class Version20130226113834 extends AbstractMigration
         $tags->addColumn('id', 'integer', [ 'autoincrement' => true ]);
         $tags->addColumn('user_id', 'integer');
         $tags->addColumn('name', 'string', [ 'length' => 255 ]);
-        $tags->addColumn('system', 'boolean');
+        $tags->addColumn('system', 'boolean', [ 'default' => false ]);
         $tags->addColumn('created_at', 'datetime');
         $tags->addColumn('updated_at', 'datetime');
         

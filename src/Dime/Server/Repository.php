@@ -2,15 +2,14 @@
 
 namespace Dime\Server;
 
-use Dime\Server\Metadata;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Dime\Server\Db\Query;
 
 class Repository
 {
 
     private $connection;
-    private $metadata;
     private $table;
 
     /**
@@ -21,11 +20,6 @@ class Repository
     public function __construct(Connection $connection, $table = null)
     {
         $this->connection = $connection;
-
-        if ($this->connection != null) {
-            $this->metadata = new Metadata($this->connection->getSchemaManager());
-        }
-
         if (!empty($table)) {
             $this->table = $table;
         }
@@ -40,13 +34,9 @@ class Repository
         return $this->connection;
     }
 
-    /**
-     * Get table metadata.
-     * @return Metadata
-     */
-    public function getMetadata()
+    public function getSchemaManager()
     {
-        return $this->metadata;
+        return $this->getConnection()->getSchemaManager();
     }
 
     /**
@@ -70,7 +60,7 @@ class Repository
      * Resource name.
      * @param string $name
      */
-    public function setName($name)
+    public function setName($name) : Repository
     {
         $this->table = $name;
 
@@ -78,13 +68,26 @@ class Repository
     }
 
     /**
+     * Generate a new query builder.
+     * @return Query
+     */
+    public function query() : Query
+    {
+        return Query::of($this->getConnection()
+            ->createQueryBuilder()
+            ->from($this->getName())
+            ->select('*')
+        );
+    }
+
+    /**
      * Find one entity.
      * @param array $scopes array with callables getting QueryBuilder as parameter.
      * @return array
      */
-    public function find(array $scopes = [])
+    public function find(array $identifier)
     {
-        return $this->scopedQuery($scopes)->execute()->fetch();
+        return $this->query()->map(new \Dime\Server\Scope\WithScope($identifier))->one();
     }
 
     /**
@@ -107,7 +110,7 @@ class Repository
         try {
             $this->getConnection()->insert(
                 $this->getName(),
-                $this->getMetadata()->filter($this->getName(), $data)->collect()
+                $this->filter($this->getName(), $data)->collect()
             );
         } catch (\Exception $e) {
             throw new \Exception('No data', $e->getCode(), $e);
@@ -126,7 +129,7 @@ class Repository
     {
         return $this->getConnection()->update(
             $this->getName(),
-            $this->getMetadata()->filter($this->getName(), $data)->collect(),
+            $this->filter($this->getName(), $data)->collect(),
             $identifier
         );
     }
@@ -174,5 +177,13 @@ class Repository
         }
 
         return $qb;
+    }
+
+    protected function filter($name, array $data)
+    {
+        $columns = $this->getSchemaManager()->listTableColumns($name);
+        return Stream::of($data)->filter(function ($value, $key) use ($columns) {
+            return array_key_exists($key, $columns);
+        });
     }
 }

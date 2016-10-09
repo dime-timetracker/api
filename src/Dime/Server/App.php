@@ -4,6 +4,8 @@ namespace Dime\Server;
 
 use League\Container\Container;
 use League\Container\ReflectionContainer;
+use League\Container\Argument\RawArgument;
+
 use Slim\App as Slim;
 use Slim\CallableResolver;
 use Slim\Collection;
@@ -95,8 +97,8 @@ class App extends Slim
             return new CallableResolver($this->getContainer());
         });
 
-        $this->getContainer()->add(Connection::class, 'connection');
-        $this->getContainer()->share('connection', function () {
+        $this->getContainer()->add('connection', Connection::class);
+        $this->getContainer()->share(Connection::class, function () {
           $settings = $this->getContainer()->get('settings')['database'];
           $connection = \Doctrine\DBAL\DriverManager::getConnection($settings, new \Doctrine\DBAL\Configuration());
 
@@ -104,8 +106,6 @@ class App extends Slim
           $platform->registerDoctrineTypeMapping('enum', 'string');
           return $connection;
         });
-        $this->getContainer()->add('metadata', \Dime\Server\Metadata::class);
-
 
         $this->getContainer()->share('uri', function () {
             return new \Dime\Server\Uri(
@@ -160,16 +160,13 @@ class App extends Slim
             );
         });
 
-        $this->getContainer()->share('access_repository', function() {
-            return new \Dime\Server\Repository($this->getContainer()->get('connection'), 'access');
-        });
+        $this->getContainer()->share('access_repository', \Dime\Server\Repository::class, true)
+            ->withArgument(Connection::class)
+            ->withArgument(new RawArgument('access'));
+            
+        $this->getContainer()->add('activities_repository', \Dime\Api\Repository\Activities::class, true)
+            ->withArgument(Connection::class);
 
-        $this->getContainer()->share('access_repository', function() {
-            return new \Dime\Server\Repository($this->getContainer()->get('connection'), 'access');
-        });
-        $this->getContainer()->share('activities_repository', function() {
-            return new \Dime\Api\Repository\Activities($this->getContainer()->get('connection'));
-        });
         $this->getContainer()->share('activities_filter', function () {
             return new \Dime\Server\Filter([
                 new \Dime\Server\Filter\RelationFilter('customer'),
@@ -180,57 +177,62 @@ class App extends Slim
                 new \Dime\Server\Filter\SearchFilter(),
             ]);
         });
-        $this->getContainer()->share('customers_repository', function() {
-            return new \Dime\Server\Repository($this->getContainer()->get('connection'), 'customers');
-        });
+        $this->getContainer()->share('customers_repository', \Dime\Server\Repository::class, true)
+            ->withArgument(Connection::class)
+            ->withArgument(new RawArgument('customers'));
+
         $this->getContainer()->share('customers_validator', function () {
             return new \Dime\Server\Validator([
                 'required' => new \Dime\Server\Validator\Required(['alias'])
             ]);
         });
-        $this->getContainer()->share('projects_repository', function() {
-            return new \Dime\Server\Repository($this->getContainer()->get('connection'), 'projects');
-        });
+        $this->getContainer()->share('projects_repository', \Dime\Server\Repository::class, true)
+            ->withArgument(Connection::class)
+            ->withArgument(new RawArgument('projects'));
+
         $this->getContainer()->share('projects_validator', function () {
             return new \Dime\Server\Validator([
                 'required' => new \Dime\Server\Validator\Required(['alias'])
             ]);
         });
-        $this->getContainer()->share('services_repository', function() {
-            return new \Dime\Server\Repository($this->getContainer()->get('connection'), 'services');
-        });
+        $this->getContainer()->add('services_repository', \Dime\Server\Repository::class, true)
+            ->withArgument(Connection::class)
+            ->withArgument(new RawArgument('services'));
+
         $this->getContainer()->share('services_validator', function () {
             return new \Dime\Server\Validator([
                 'required' => new \Dime\Server\Validator\Required(['alias'])
             ]);
         });
-        $this->getContainer()->share('settings_repository', function() {
-            return new \Dime\Server\Repository($this->getContainer()->get('connection'), 'settings');
-        });
+        $this->getContainer()->share('settings_repository', \Dime\Server\Repository::class, true)
+            ->withArgument(Connection::class)
+            ->withArgument(new RawArgument('settings'));
+
         $this->getContainer()->share('settings_validator', function () {
             return new \Dime\Server\Validator([
                 'required' => new \Dime\Server\Validator\Required(['name', 'value'])
             ]);
         });
-        $this->getContainer()->share('tags_repository', function() {
-            return new \Dime\Server\Repository($this->getContainer()->get('connection'), 'tags');
-        });
+        $this->getContainer()->share('tags_repository', \Dime\Server\Repository::class, true)
+            ->withArgument(Connection::class)
+            ->withArgument(new RawArgument('tags'));
         $this->getContainer()->share('tags_validator', function () {
             return new \Dime\Server\Validator([
                 'required' => new \Dime\Server\Validator\Required(['name'])
             ]);
         });
-        $this->getContainer()->share('timeslices_repository', function() {
-            return new \Dime\Api\Repository\Timeslices($this->getContainer()->get('connection'));
-        });
+        $this->getContainer()->add('timeslices_repository', \Dime\Api\Repository\Timeslices::class, true)
+            ->withArgument(Connection::class);
+
         $this->getContainer()->share('timeslices_validator', function () {
             return new \Dime\Server\Validator([
                 'required' => new \Dime\Server\Validator\Required(['activity_id'])
             ]);
         });
-        $this->getContainer()->share('users_repository', function() {
-            return new \Dime\Server\Repository($this->getContainer()->get('connection'), 'users');
-        });
+
+        $this->getContainer()->add('users_repository', \Dime\Server\Repository::class, true)
+            ->withArgument(Connection::class)
+            ->withArgument(new RawArgument('users'));
 
         $this->getContainer()->share('assignable', function() {
             return new \Dime\Server\Behavior\Assignable($this->getContainer()->get('session')->getUserId());

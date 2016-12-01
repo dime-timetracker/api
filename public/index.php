@@ -34,19 +34,17 @@ $settings = array_replace_recursive(
 $app = new \Dime\Server\App($settings);
 $app->getContainer()->addServiceProvider(\Dime\Api\Provider::class);
 
-// Authentication routes
-
-$app->post('/login', \Dime\Api\Action\LoginAction::class);
-$app->post('/logout', \Dime\Api\Action\LogoutAction::class)->add('middleware.authorization');
-$app->post('/register', \Dime\Api\Action\RegisterAction::class);
+$app->post('/login', \Dime\Api\Action\LoginAction::class)->setName('login');
+$app->post('/logout', \Dime\Api\Action\LogoutAction::class)->setName('logout')->add('middleware.authorization');
+$app->post('/register', \Dime\Api\Action\RegisterAction::class)->setName('register');
 
 $app->group('/api', function () {
 
-    $this->get('/{resource}/{id:\d+}', \Dime\Api\Action\GetAction::class);
-    $this->get('/{resource}', \Dime\Api\Action\ListAction::class);
-    $this->post('/{resource}', \Dime\Api\Action\PostAction::class);
-    $this->put('/{resource}/{id:\d+}', \Dime\Api\Action\PutAction::class);
-    $this->delete('/{resource}/{id:\d+}', \Dime\Api\Action\DeleteAction::class);
+    $this->get('/{resource}/{id:\d+}', \Dime\Api\Action\GetAction::class)->setName('resource_get');
+    $this->get('/{resource}', \Dime\Api\Action\ListAction::class)->setName('resource_list');
+    $this->post('/{resource}', \Dime\Api\Action\PostAction::class)->setName('resource_post');
+    $this->put('/{resource}/{id:\d+}', \Dime\Api\Action\PutAction::class)->setName('resource_put');
+    $this->delete('/{resource}/{id:\d+}', \Dime\Api\Action\DeleteAction::class)->setName('resource_delete');
 
     $this->post('/invoice/html', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
         $parsedData = $request->getParsedBody();
@@ -54,7 +52,7 @@ $app->group('/api', function () {
         $html = $renderer->setTemplate(ROOT_DIR . '/vendor/dime-timetracker/invoice-renderer/templates/default.twig')->html($parsedData);
         $body = $response->getBody();
         $body->write($html);
-    });
+    })->setName('invoice');
 
 })->add('middleware.authorization')
   ->add('middleware.resource');

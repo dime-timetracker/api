@@ -21,10 +21,10 @@ class PutAction implements ContainerAwareInterface
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-        $repository = $this->get($args['resource'] . '_repository');
+        $repository = $this->getContainer()->get($args['resource'] . '_repository');
         $identifier = [
             'id' => $args['id'],
-            'user_id' => $this->get('session')->getUserId()
+            'user_id' => $this->getContainer()->get('session')->getUserId()
         ];
 
         $result = $repository->find($identifier);
@@ -40,14 +40,14 @@ class PutAction implements ContainerAwareInterface
         // Tranform and behave
         $behavedData = \Dime\Server\Stream::of($parsedData)
                 ->append(new \Dime\Server\Behavior\Timestampable(null))
-                ->append($this->get('assignable'))
+                ->append($this->getContainer()->get('assignable'))
                 ->collect();
 
         // Validate
-        if ($this->has($args['resource'] . '_validator')) {
-            $errors = $this->get($args['resource'] . '_validator')->validate($behavedData);
+        if ($this->getContainer()->has($args['resource'] . '_validator')) {
+            $errors = $this->getContainer()->get($args['resource'] . '_validator')->validate($behavedData);
             if (!empty($errors)) {
-                return $this->get('responder')->respond($response, $errors, 400);
+                return $this->getContainer()->get('responder')->respond($response, $errors, 400);
             }
         }
 
@@ -59,6 +59,6 @@ class PutAction implements ContainerAwareInterface
 
         $result = $repository->find($identifier);
 
-        return $this->get('responder')->respond($response, $result);
+        return $this->getContainer()->get('responder')->respond($response, $result);
     }
 }

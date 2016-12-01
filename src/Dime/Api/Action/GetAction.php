@@ -21,10 +21,10 @@ class GetAction implements ContainerAwareInterface
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
     {
-        $repository = $this->get($args['resource'] . '_repository');
+        $repository = $this->getContainer()->get($args['resource'] . '_repository');
         $identifier = [
             'id' => $args['id'],
-            'user_id' => $this->get('session')->getUserId()
+            'user_id' => $this->getContainer()->get('session')->getUserId()
         ];
 
         // Select
@@ -33,6 +33,6 @@ class GetAction implements ContainerAwareInterface
             throw new NotFoundException($request, $response);
         }
 
-        return $this->get('responder')->respond($response, $result);
+        return $this->getContainer()->get('responder')->respond($response, $result);
     }
 }

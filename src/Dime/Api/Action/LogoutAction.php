@@ -28,9 +28,9 @@ class LogoutAction implements ContainerAwareInterface
             throw new NotFoundException($request, $response);
         }
 
-        $user = $this->get('users_repository')->find([ 'username' => $username ]);
+        $user = $this->getContainer()->get('users_repository')->find([ 'username' => $username ]);
         if (!empty($user)) {
-            $this->get('access_repository')->delete([
+            $this->getContainer()->get('access_repository')->delete([
                 'user_id' => $user['id'],
                 'client' => $client
             ]);

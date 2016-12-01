@@ -27,7 +27,7 @@ class RegisterAction implements ContainerAwareInterface
             throw new \Exception('No data');
         }
 
-        $repository = $this->get('users_repository');
+        $repository = $this->getContainer()->get('users_repository');
         $user = $repository->find([ 'username' => $parsedData['username'] ]);
         if (!empty($user)) {
             throw new \Exception('Username is already in use.');
@@ -39,10 +39,10 @@ class RegisterAction implements ContainerAwareInterface
             'lastname'  => $parsedData['lastname'],
             'enabled'   => true
         ];
-        $this->get('security')->addUserCredentials(
+        $this->getContainer()->get('security')->addUserCredentials(
             $userData,
             $parsedData['password'],
-            $this->get('timeslices_repository')->count() // some unknown number
+            $this->getContainer()->get('timeslices_repository')->count() // some unknown number
         );
         $user = \Dime\Server\Stream::of($userData)
             ->append(new \Dime\Server\Behavior\Timestampable())

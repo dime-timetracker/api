@@ -46,16 +46,15 @@ $app->group('/api', function () {
     $this->put('/{resource}/{id:\d+}', \Dime\Api\Action\PutAction::class)->setName('resource_put');
     $this->delete('/{resource}/{id:\d+}', \Dime\Api\Action\DeleteAction::class)->setName('resource_delete');
 
-    $this->post('/invoice/html', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
-        $parsedData = $request->getParsedBody();
-        $renderer = new \Dime\InvoiceRenderer\Renderer();
-        $html = $renderer->setTemplate(ROOT_DIR . '/vendor/dime-timetracker/invoice-renderer/templates/default.twig')->html($parsedData);
-        $body = $response->getBody();
-        $body->write($html);
-    })->setName('invoice');
-
 })->add('middleware.authorization')
   ->add('middleware.resource');
 
+$app->post('/invoice/html', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
+    $parsedData = $request->getParsedBody();
+    $renderer = new \Dime\InvoiceRenderer\Renderer();
+    $html = $renderer->setTemplate(ROOT_DIR . '/vendor/dime-timetracker/invoice-renderer/templates/default.twig')->html($parsedData);
+    $body = $response->getBody();
+    $body->write($html);
+})->setName('invoice');
 
 $app->run();

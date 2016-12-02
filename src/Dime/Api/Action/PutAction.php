@@ -54,7 +54,7 @@ class PutAction implements ContainerAwareInterface
         try {
             $repository->update($behavedData, $identifier);
         } catch (\Exception $e) {
-            var_dump($e);
+            return $this->getContainer()->get('responder')->respond($response, [ 'Could not update.'/*, $e->getMessage()*/ ], 500);
         }
 
         $result = $repository->find($identifier);

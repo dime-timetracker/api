@@ -49,10 +49,10 @@ $app->group('/api', function () {
 })->add('middleware.authorization')
   ->add('middleware.resource');
 
-$app->post('/invoice/html', function (ServerRequestInterface $request, ResponseInterface $response, array $args) {
-    $parsedData = $request->getParsedBody();
+$app->post('/invoice/html', function (ServerRequestInterface $request, ResponseInterface $response) {
+    $invoiceData = json_decode($request->getParam('invoice'), true);
     $renderer = new \Dime\InvoiceRenderer\Renderer();
-    $html = $renderer->setTemplate(ROOT_DIR . '/vendor/dime-timetracker/invoice-renderer/templates/default.twig')->html($parsedData);
+    $html = $renderer->setTemplate(ROOT_DIR . '/vendor/dime-timetracker/invoice-renderer/templates/default.twig')->html($invoiceData);
     $body = $response->getBody();
     $body->write($html);
 })->setName('invoice');

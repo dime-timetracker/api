@@ -17,6 +17,7 @@
         ]
     },
     "repositories": [
+        { "type": "vcs", "url": "git@github.com:dime-timetracker/frontend.git"},
         { "type": "vcs", "url": "git@github.com:dime-timetracker/invoice-renderer.git"}
     ],
     "require": {
@@ -25,6 +26,7 @@
         "league/container": "^2.2",
         "doctrine/dbal": "^2.5",
         "doctrine/migrations": "^1.4",
+        "dime/frontend": "^1.0",
         "dime-timetracker/invoice-renderer": "^1.0"
     },
     "require-dev": {

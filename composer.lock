@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "291791f6e1b09392bd731b2599cdf222",
-    "content-hash": "5572161c9727478ff27d1c01f42e2097",
+    "hash": "8c372157614825bdc925e4a68ada8ad7",
+    "content-hash": "4421bee85da962b0dbef52e19d0da235",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -72,10 +72,38 @@
             ],
             "description": "Invoice rendering package",
             "support": {
-                "source": "https://github.com/dime-timetracker/invoice-renderer/tree/1.0.0",
+                "source": "https://github.com/dime-timetracker/invoice-renderer/tree/develop",
                 "issues": "https://github.com/dime-timetracker/invoice-renderer/issues"
             },
             "time": "2016-09-05 09:27:29"
+        },
+        {
+            "name": "dime/frontend",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dime-timetracker/frontend.git",
+                "reference": "a55a20e076441b17f99ac466f489c66ab9c7427e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dime-timetracker/frontend/zipball/a55a20e076441b17f99ac466f489c66ab9c7427e",
+                "reference": "a55a20e076441b17f99ac466f489c66ab9c7427e",
+                "shasum": ""
+            },
+            "type": "library",
+            "authors": [
+                {
+                    "name": "Thomas Birke",
+                    "email": "dime@quafzi.de"
+                }
+            ],
+            "description": "Web frontend for Dime Timetracker.",
+            "support": {
+                "source": "https://github.com/dime-timetracker/frontend/tree/develop",
+                "issues": "https://github.com/dime-timetracker/frontend/issues"
+            },
+            "time": "2016-12-03 23:25:37"
         },
         {
             "name": "doctrine/annotations",

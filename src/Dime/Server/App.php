@@ -163,7 +163,7 @@ class App extends Slim
         $this->getContainer()->share('access_repository', \Dime\Server\Repository::class, true)
             ->withArgument(Connection::class)
             ->withArgument(new RawArgument('access'));
-            
+
         $this->getContainer()->add('activities_repository', \Dime\Api\Repository\Activities::class, true)
             ->withArgument(Connection::class);
 
@@ -223,6 +223,14 @@ class App extends Slim
         });
         $this->getContainer()->add('timeslices_repository', \Dime\Api\Repository\Timeslices::class, true)
             ->withArgument(Connection::class);
+
+        $this->getContainer()->share('timeslices_filter', function () {
+            return new \Dime\Server\Filter([
+                new \Dime\Server\Filter\RelationFilter('activity'),
+                new \Dime\Api\Filter\DateFilter(),
+                new \Dime\Api\Filter\TagFilter()
+            ]);
+        });
 
         $this->getContainer()->share('timeslices_validator', function () {
             return new \Dime\Server\Validator([

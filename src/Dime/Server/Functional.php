@@ -9,7 +9,7 @@ function positive($value)
 
 function negative($value)
 {
-    return is_numeric($value) && $value < 0 || preg_match('/[-].*/', $value) === 1;
+    return is_numeric($value) && $value < 0 || preg_match('/^[-].*/', $value) === 1;
 }
 
 function abs($value)

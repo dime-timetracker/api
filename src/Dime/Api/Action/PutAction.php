@@ -33,8 +33,10 @@ class PutAction implements ContainerAwareInterface
         }
 
         $parsedData = $request->getParsedBody();
-        if (empty($parsedData)) {
-            throw new \Exception("No data");
+        if (json_last_error() != JSON_ERROR_NONE) {
+            throw new \Exception("Request body could not parsed properly [" + json_last_error_msg() + "]");
+        } else if (empty($parsedData)) {
+            throw new \Exception("Request body was empty.");
         }
 
         // Tranform and behave
@@ -54,7 +56,7 @@ class PutAction implements ContainerAwareInterface
         try {
             $repository->update($behavedData, $identifier);
         } catch (\Exception $e) {
-            return $this->getContainer()->get('responder')->respond($response, [ 'Could not update.'/*, $e->getMessage()*/ ], 500);
+          return $this->getContainer()->get('responder')->respond($response, [ 'Could not update.'/*, $e->getMessage()*/ ], 500);
         }
 
         $result = $repository->find($identifier);

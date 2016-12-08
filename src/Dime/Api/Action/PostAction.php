@@ -24,8 +24,10 @@ class PostAction implements ContainerAwareInterface
         $repository = $this->getContainer()->get($args['resource'] . '_repository');
 
         $parsedData = $request->getParsedBody();
-        if (empty($parsedData)) {
-            throw new \Exception("No data recieved.");
+        if (json_last_error() != JSON_ERROR_NONE) {
+            throw new \Exception("Request body could not parsed properly [" + json_last_error_msg() + "]");
+        } else if (empty($parsedData)) {
+            throw new \Exception("Request body was empty.");
         }
 
         // Tranform and behave
@@ -45,7 +47,7 @@ class PostAction implements ContainerAwareInterface
         try {
             $id = $repository->insert($behavedData);
         } catch (\Exception $e) {
-            throw new \Exception("No data", $e->getCode(), $e);
+            throw new \Exception("Could not save new data.", $e->getCode(), $e);
         }
 
         $identity = [

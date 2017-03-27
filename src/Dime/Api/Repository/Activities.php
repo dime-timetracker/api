@@ -68,7 +68,7 @@ class Activities extends Repository
         // Update tag
         if (array_key_exists("tags", $data)) {
             // TODO check tag id
-            $dbActivitiy = $this->find([new \Dime\Server\Scope\WithScope($identifier)]);
+            $dbActivitiy = $this->find($identifier);
             $removeTags = array_diff($dbActivitiy['tags'], $data['tags']);
             foreach ($removeTags as $id) {
                 $this->activityTagRepository->delete(['activity_id' => $identifier['id'], 'tag_id' => $id]);
